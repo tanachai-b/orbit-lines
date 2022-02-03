@@ -61,6 +61,8 @@ function main() {
     let marsPoses = [marsPos];
     let shipPoses = [shipPos];
 
+    let marsShipPoses = [];
+
 
     for (let i = 0; i < 5000; i++) {
 
@@ -86,23 +88,17 @@ function main() {
         shipV = shipV.plus(shipA);
         shipPos = shipPos.plus(shipV);
         shipPoses.push(shipPos);
+
+
+        let marsShipPos = shipPos.minus(marsPos);
+        // marsShipPos = marsShipPos.dividePoint(marsPoses.unit(),marsV);
+        marsShipPoses.push(marsShipPos);
     }
 
     let venusTraj = new Line(venusPoses);
     let earthTraj = new Line(earthPoses);
     let marsTraj = new Line(marsPoses);
     let shipTraj = new Line(shipPoses);
-
-
-
-
-
-    let marsShipPoses = [];
-
-    for (let i = 0; i < marsPoses.length; i++) {
-        let marsShipPos = shipPoses[i].minus(marsPoses[i]);
-        marsShipPoses.push(marsShipPos);
-    }
 
     let marsShipTraj = new Line(marsShipPoses);
 
@@ -116,21 +112,25 @@ function main() {
 
 
 
+
+
+
+
     let objs = [];
 
-    let frame = [];
-    let size = 800;
-    for (let x = -size / 2; x <= size / 2; x += size) {
-        for (let y = -size / 2; y <= size / 2; y += size) {
-            for (let z = -size / 2; z <= size / 2; z += size) {
-                frame.push(new Point(x, y, z));
-            }
-        }
-    }
-    // objs = objs.concat(frame);
 
 
 
+    // let box = [];
+    // let size = 400;
+    // for (let x = -size / 2; x <= size / 2; x += size) {
+    //     for (let y = -size / 2; y <= size / 2; y += size) {
+    //         for (let z = -size / 2; z <= size / 2; z += size) {
+    //             box.push(new Point(x, y, z));
+    //         }
+    //     }
+    // }
+    // objs = objs.concat(box);
 
 
 
@@ -150,16 +150,13 @@ function main() {
     objs.push(shipTraj);
 
 
-    // objs.push(marsShipTraj);
+    objs.push(marsShipTraj);
 
 
 
 
 
-
-
-
-    frame = 0;
+    let frame = 0;
 
     setInterval(() => {
 
@@ -167,6 +164,14 @@ function main() {
         earth.set(earthPoses[frame]);
         mars.set(marsPoses[frame]);
         ship.set(shipPoses[frame]);
+        // ship.set(marsShipPoses[frame]);
+
+
+        // let cadizx = [];
+        // for (let i = 0; i < venusPoses.length; i++) {
+        //     cadizx.push(venusPoses[i].dividePoint(new Point(1,1,1), new Point(-1, 1, 0)));
+        // }
+        // venusTraj.set(cadizx);
 
 
         let cadiz = [];
@@ -251,6 +256,84 @@ class Point {
 
     minus(point) {
         return new Point(this.x - point.x, this.y - point.y, this.z - point.z);
+    }
+
+
+    timesPoint(pointA, pointB) {
+
+        let ra = Math.atan2(pointA.y, pointA.x);
+
+        let x1 = pointA.x * Math.cos(-ra) - pointA.y * Math.sin(-ra);
+        let y1 = pointA.y * Math.cos(-ra) + pointA.x * Math.sin(-ra);
+        let z1 = pointA.z;
+
+        let rb = Math.atan2(z1, x1);
+
+
+        let x3 = pointB.x * Math.cos(-ra) - pointB.y * Math.sin(-ra);
+        let y3 = pointB.y * Math.cos(-ra) + pointB.x * Math.sin(-ra);
+        let z3 = pointB.z;
+
+        let x4 = x3 * Math.cos(-rb) - z3 * Math.sin(-rb);
+        let y4 = y3;
+        let z4 = z3 * Math.cos(-rb) + x3 * Math.sin(-rb);
+
+        let rc = Math.atan2(z4, y4);
+
+
+        let xx1 = this.x;
+        let yy1 = this.y * Math.cos(rc) - this.z * Math.sin(rc);
+        let zz1 = this.z * Math.cos(rc) + this.y * Math.sin(rc);
+
+        let xx2 = xx1 * Math.cos(rb) - zz1 * Math.sin(rb);
+        let yy2 = yy1;
+        let zz2 = zz1 * Math.cos(rb) + xx1 * Math.sin(rb);
+
+        let xx3 = xx2 * Math.cos(ra) - yy2 * Math.sin(ra);
+        let yy3 = yy2 * Math.cos(ra) + xx2 * Math.sin(ra);
+        let zz3 = zz2;
+
+        return new Point(xx3, yy3, zz3).times(pointA.mag());
+    }
+
+    dividePoint(pointA, pointB) {
+
+        let ra = Math.atan2(pointA.y, pointA.x);
+
+        let x1 = pointA.x * Math.cos(-ra) - pointA.y * Math.sin(-ra);
+        let y1 = pointA.y * Math.cos(-ra) + pointA.x * Math.sin(-ra);
+        let z1 = pointA.z;
+
+        let rb = Math.atan2(z1, x1);
+
+
+        let x3 = pointB.x * Math.cos(-ra) - pointB.y * Math.sin(-ra);
+        let y3 = pointB.y * Math.cos(-ra) + pointB.x * Math.sin(-ra);
+        let z3 = pointB.z;
+
+        let x4 = x3 * Math.cos(-rb) - z3 * Math.sin(-rb);
+        let y4 = y3;
+        let z4 = z3 * Math.cos(-rb) + x3 * Math.sin(-rb);
+
+        let rc = Math.atan2(z4, y4);
+
+
+        let xx1 = this.x * Math.cos(-ra) - this.y * Math.sin(-ra);
+        let yy1 = this.y * Math.cos(-ra) + this.x * Math.sin(-ra);
+        let zz1 = this.z;
+
+
+        let xx2 = xx1 * Math.cos(-rb) - zz1 * Math.sin(-rb);
+        let yy2 = yy1;
+        let zz2 = zz1 * Math.cos(-rb) + xx1 * Math.sin(-rb);
+
+        let xx3 = xx2;
+        let yy3 = yy2 * Math.cos(-rc) - zz2 * Math.sin(-rc);
+        let zz3 = zz2 * Math.cos(-rc) + yy2 * Math.sin(-rc);
+
+
+
+        return new Point(xx3, yy3, zz3).divide(pointA.mag());
     }
 
 
