@@ -97,14 +97,14 @@ function main() {
 
 
 
-    let earthMoonPoses = [];
+    let marsShipPoses = [];
 
     for (let i = 0; i < marsPoses.length; i++) {
-        let earthMoonPos = earthPoses[i].minus(marsPoses[i]);
-        earthMoonPoses.push(earthMoonPos);
+        let marsShipPos = shipPoses[i].minus(marsPoses[i]);
+        marsShipPoses.push(marsShipPos);
     }
 
-    let earthMoonTraj = new Line(earthMoonPoses);
+    let marsShipTraj = new Line(marsShipPoses);
 
 
 
@@ -150,7 +150,7 @@ function main() {
     objs.push(shipTraj);
 
 
-    // objs.push(earthMoonTraj);
+    // objs.push(marsShipTraj);
 
 
 
@@ -170,10 +170,10 @@ function main() {
 
 
         let cadiz = [];
-        for (let i = 0; i < earthMoonPoses.length; i++) {
-            cadiz.push(earthMoonPoses[i].plus(marsPoses[frame]));
+        for (let i = 0; i < marsShipPoses.length; i++) {
+            cadiz.push(marsShipPoses[i].plus(marsPoses[frame]));
         }
-        earthMoonTraj.set(cadiz);
+        marsShipTraj.set(cadiz);
 
 
         /** @type {HTMLCanvasElement} */
