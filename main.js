@@ -143,9 +143,9 @@ function main() {
     objs.push(venusTraj);
     objs.push(earthTraj);
     objs.push(marsTraj);
+
+
     // objs.push(shipTraj);
-
-
     objs.push(marsShipTraj);
 
 
@@ -160,14 +160,6 @@ function main() {
         earth.set(earthPoses[frame]);
         mars.set(marsPoses[frame]);
         ship.set(shipPoses[frame]);
-        // ship.set(marsShipPoses[frame]);
-
-
-        // let cadizx = [];
-        // for (let i = 0; i < venusPoses.length; i++) {
-        //     cadizx.push(venusPoses[i].dividePoint(new Point(1,1,1), new Point(-1, 1, 0)));
-        // }
-        // venusTraj.set(cadizx);
 
 
         let cadiz = [];
