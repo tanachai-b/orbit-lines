@@ -65,6 +65,14 @@ function main() {
     let marsVs = [marsV];
 
 
+    let log = new Point(0, 0, 0);
+    let logPoses = [];
+    let log2 = new Point(0, 0, 0);
+    let logPoses2 = [];
+    let log3 = new Point(0, 0, 0);
+    let logPoses3 = [];
+
+
     for (let i = 0; i < 5000; i++) {
 
         venusA = sunPos.minus(venusPos).unit().divide(Math.pow(sunPos.minus(venusPos).mag(), 2)).times(100);
@@ -95,6 +103,14 @@ function main() {
         // marsShipPos = marsShipPos.dividePoint(marsPos.unit(), marsV);
         // marsShipPoses.push(marsShipPos);
         // marsVs.push(marsV);
+
+
+        let logPos = new Point(venusV.mag() *venusPos.mag(), 0, 0);
+        logPoses.push(logPos);
+        let logPos2 = new Point(earthV.mag() *earthPos.mag(), 20, 0);
+        logPoses2.push(logPos2);
+        let logPos3 = new Point(marsV.mag() *marsPos.mag(), 40, 0);
+        logPoses3.push(logPos3);
     }
 
     let venusTraj = new Line(venusPoses);
@@ -148,6 +164,9 @@ function main() {
     // objs.push(shipTraj);
     // objs.push(marsShipTraj);
 
+    objs.push(log);
+    objs.push(log2);
+    objs.push(log3);
 
 
 
@@ -169,6 +188,9 @@ function main() {
         // }
         // marsShipTraj.set(cadiz);
 
+        log.set(logPoses[frame]);
+        log2.set(logPoses2[frame]);
+        log3.set(logPoses3[frame]);
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
