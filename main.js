@@ -29,20 +29,20 @@ function main() {
 
     let sunPos = new Point(0, 0, 0);
 
-    // let venusPos = new Point(100 * Math.cos(Math.PI * 0), 100 * Math.sin(Math.PI * 0), 0);
-    // let venusV = new Point(-1 * Math.sin(Math.PI * 0), 1 * Math.cos(Math.PI * 0), 0);
-    // let venusA = new Point(0, 0, 0);
+    let venusPos = new Point(100 * Math.cos(Math.PI * 0), 100 * Math.sin(Math.PI * 0), 0);
+    let venusV = new Point(-1.32265 * Math.sin(Math.PI * 0), 1.32265 * Math.cos(Math.PI * 0), 0);
+    let venusA = new Point(0, 0, 0);
 
-    // let earthPos = new Point(200 * Math.cos(Math.PI * 2 / 6), 200 * Math.sin(Math.PI * 2 / 6), 0);
-    // let earthV = new Point(-0.7 * Math.sin(Math.PI * 2 / 6), 0.7 * Math.cos(Math.PI * 2 / 6), 0);
-    // let earthA = new Point(0, 0, 0);
+    let earthPos = new Point(200 * Math.cos(Math.PI * 0 / 6), 200 * Math.sin(Math.PI * 0 / 6), 0);
+    let earthV = new Point(-0.8658 * Math.sin(Math.PI * 0 / 6), 0.8658 * Math.cos(Math.PI * 0 / 6), 0);
+    let earthA = new Point(0, 0, 0);
 
-    let marsPos = new Point(400 * Math.cos(Math.PI * 0/6), 400 * Math.sin(Math.PI * 0/6), 0);
-    let marsV = new Point(-0.5 * Math.sin(Math.PI * 0/6), 0.5 * Math.cos(Math.PI * 0/6), 0);
+    let marsPos = new Point(400 * Math.cos(Math.PI * 0 / 6), 400 * Math.sin(Math.PI * 0 / 6), 0);
+    let marsV = new Point(-0.5 * Math.sin(Math.PI * 0 / 6), 0.5 * Math.cos(Math.PI * 0 / 6), 0);
     let marsA = new Point(0, 0, 0);
 
 
-    let shipPos = new Point(341.222498 * Math.cos(Math.PI * 0), 341.222498 * Math.sin(Math.PI * 0),5);
+    let shipPos = new Point(341.222498 * Math.cos(Math.PI * 0), 341.222498 * Math.sin(Math.PI * 0), 5);
     let shipV = new Point(-0.45 * Math.sin(Math.PI * 0), 0.45 * Math.cos(Math.PI * 0), 0);
     let shipA = new Point(0, 0, 0);
 
@@ -51,15 +51,15 @@ function main() {
 
     let sun = sunPos.copy();
 
-    // let venus = venusPos.copy();
-    // let earth = earthPos.copy();
+    let venus = venusPos.copy();
+    let earth = earthPos.copy();
     let mars = marsPos.copy();
-    let ship = shipPos.copy();
+    // let ship = shipPos.copy();
 
-    // let venusPoses = [venusPos];
-    // let earthPoses = [earthPos];
+    let venusPoses = [venusPos];
+    let earthPoses = [earthPos];
     let marsPoses = [marsPos];
-    let shipPoses = [shipPos];
+    // let shipPoses = [shipPos];
 
     let marsShipPoses = [];
     let marsVs = [marsV];
@@ -67,42 +67,42 @@ function main() {
 
     for (let i = 0; i < 5000; i++) {
 
-        // venusA = sunPos.minus(venusPos).unit().divide(Math.pow(sunPos.minus(venusPos).mag(), 2)).times(100);
-        // venusV = venusV.plus(venusA);
-        // venusPos = venusPos.plus(venusV);
-        // venusPoses.push(venusPos);
+        venusA = sunPos.minus(venusPos).unit().divide(Math.pow(sunPos.minus(venusPos).mag(), 2)).times(100);
+        venusV = venusV.plus(venusA);
+        venusPos = venusPos.plus(venusV);
+        venusPoses.push(venusPos);
 
-        // earthA = sunPos.minus(earthPos).unit().divide(Math.pow(sunPos.minus(earthPos).mag(), 2)).times(100);
-        // earthV = earthV.plus(earthA);
-        // earthPos = earthPos.plus(earthV);
-        // earthPoses.push(earthPos);
+        earthA = sunPos.minus(earthPos).unit().divide(Math.pow(sunPos.minus(earthPos).mag(), 2)).times(100);
+        earthV = earthV.plus(earthA);
+        earthPos = earthPos.plus(earthV);
+        earthPoses.push(earthPos);
 
         marsA = sunPos.minus(marsPos).unit().divide(Math.pow(sunPos.minus(marsPos).mag(), 2)).times(100);
         marsV = marsV.plus(marsA);
         marsPos = marsPos.plus(marsV);
         marsPoses.push(marsPos);
 
-        shipA = sunPos.minus(shipPos).unit().divide(Math.pow(sunPos.minus(shipPos).mag(), 2)).times(100);
-        // shipA = shipA.plus(venusPos.minus(shipPos).unit().divide(Math.pow(venusPos.minus(shipPos).mag(), 2)).times(1));
-        // shipA = shipA.plus(earthPos.minus(shipPos).unit().divide(Math.pow(earthPos.minus(shipPos).mag(), 2)).times(1));
-        shipA = shipA.plus(marsPos.minus(shipPos).unit().divide(Math.pow(marsPos.minus(shipPos).mag(), 2)).times(1));
-        shipV = shipV.plus(shipA);
-        shipPos = shipPos.plus(shipV);
-        shipPoses.push(shipPos);
+        // shipA = sunPos.minus(shipPos).unit().divide(Math.pow(sunPos.minus(shipPos).mag(), 2)).times(100);
+        // // shipA = shipA.plus(venusPos.minus(shipPos).unit().divide(Math.pow(venusPos.minus(shipPos).mag(), 2)).times(1));
+        // // shipA = shipA.plus(earthPos.minus(shipPos).unit().divide(Math.pow(earthPos.minus(shipPos).mag(), 2)).times(1));
+        // shipA = shipA.plus(marsPos.minus(shipPos).unit().divide(Math.pow(marsPos.minus(shipPos).mag(), 2)).times(1));
+        // shipV = shipV.plus(shipA);
+        // shipPos = shipPos.plus(shipV);
+        // shipPoses.push(shipPos);
 
 
-        let marsShipPos = shipPos.minus(marsPos);
-        marsShipPos = marsShipPos.dividePoint(marsPos.unit(), marsV);
-        marsShipPoses.push(marsShipPos);
-        marsVs.push(marsV);
+        // let marsShipPos = shipPos.minus(marsPos);
+        // marsShipPos = marsShipPos.dividePoint(marsPos.unit(), marsV);
+        // marsShipPoses.push(marsShipPos);
+        // marsVs.push(marsV);
     }
 
-    // let venusTraj = new Line(venusPoses);
-    // let earthTraj = new Line(earthPoses);
+    let venusTraj = new Line(venusPoses);
+    let earthTraj = new Line(earthPoses);
     let marsTraj = new Line(marsPoses);
-    let shipTraj = new Line(shipPoses);
+    // let shipTraj = new Line(shipPoses);
 
-    let marsShipTraj = new Line(marsShipPoses);
+    // let marsShipTraj = new Line(marsShipPoses);
 
 
 
@@ -135,18 +135,18 @@ function main() {
 
     objs.push(sun);
 
-    // objs.push(venus);
-    // objs.push(earth);
+    objs.push(venus);
+    objs.push(earth);
     objs.push(mars);
-    objs.push(ship);
+    // objs.push(ship);
 
-    // objs.push(venusTraj);
-    // objs.push(earthTraj);
+    objs.push(venusTraj);
+    objs.push(earthTraj);
     objs.push(marsTraj);
 
 
-    objs.push(shipTraj);
-    objs.push(marsShipTraj);
+    // objs.push(shipTraj);
+    // objs.push(marsShipTraj);
 
 
 
@@ -156,18 +156,18 @@ function main() {
 
     setInterval(() => {
 
-        // venus.set(venusPoses[frame]);
-        // earth.set(earthPoses[frame]);
+        venus.set(venusPoses[frame]);
+        earth.set(earthPoses[frame]);
         mars.set(marsPoses[frame]);
-        ship.set(shipPoses[frame]);
+        // ship.set(shipPoses[frame]);
 
 
-        let cadiz = [];
-        for (let i = 0; i < marsShipPoses.length; i++) {
-            // cadiz.push(marsShipPoses[i].plus(marsPoses[frame]));
-            cadiz.push(marsShipPoses[i].timesPoint(marsPoses[frame].unit(), marsVs[frame]).plus(marsPoses[frame]));
-        }
-        marsShipTraj.set(cadiz);
+        // let cadiz = [];
+        // for (let i = 0; i < marsShipPoses.length; i++) {
+        //     // cadiz.push(marsShipPoses[i].plus(marsPoses[frame]));
+        //     cadiz.push(marsShipPoses[i].timesPoint(marsPoses[frame].unit(), marsVs[frame]).plus(marsPoses[frame]));
+        // }
+        // marsShipTraj.set(cadiz);
 
 
         /** @type {HTMLCanvasElement} */
@@ -204,8 +204,8 @@ class Point2d {
         let y2 = y1 * Math.cos(rb) + z1 * Math.sin(rb);
         let z2 = z1 * Math.cos(rb) - y1 * Math.sin(rb);
 
-        let calcX = (x2 / (y2 + 1000)) * 1000 + canvas.width / 2;
-        let calcY = -(z2 / (y2 + 1000)) * 1000 + canvas.height / 2;
+        let calcX = (x2 / Math.max(y2 + 1000, 0)) * 1000 + canvas.width / 2;
+        let calcY = -(z2 / Math.max(y2 + 1000, 0)) * 1000 + canvas.height / 2;
 
         return new Point2d(calcX, calcY);
     }
