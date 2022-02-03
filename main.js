@@ -62,6 +62,7 @@ function main() {
     let shipPoses = [shipPos];
 
     let marsShipPoses = [];
+    let marsVs = [marsV];
 
 
     for (let i = 0; i < 5000; i++) {
@@ -91,8 +92,9 @@ function main() {
 
 
         let marsShipPos = shipPos.minus(marsPos);
-        // marsShipPos = marsShipPos.dividePoint(marsPoses.unit(),marsV);
+        marsShipPos = marsShipPos.dividePoint(marsPos.unit(), marsV);
         marsShipPoses.push(marsShipPos);
+        marsVs.push(marsV);
     }
 
     let venusTraj = new Line(venusPoses);
@@ -101,12 +103,6 @@ function main() {
     let shipTraj = new Line(shipPoses);
 
     let marsShipTraj = new Line(marsShipPoses);
-
-
-
-
-
-
 
 
 
@@ -147,7 +143,7 @@ function main() {
     objs.push(venusTraj);
     objs.push(earthTraj);
     objs.push(marsTraj);
-    objs.push(shipTraj);
+    // objs.push(shipTraj);
 
 
     objs.push(marsShipTraj);
@@ -176,7 +172,8 @@ function main() {
 
         let cadiz = [];
         for (let i = 0; i < marsShipPoses.length; i++) {
-            cadiz.push(marsShipPoses[i].plus(marsPoses[frame]));
+            // cadiz.push(marsShipPoses[i].plus(marsPoses[frame]));
+            cadiz.push(marsShipPoses[i].timesPoint(marsPoses[frame].unit(), marsVs[frame]).plus(marsPoses[frame]));
         }
         marsShipTraj.set(cadiz);
 
