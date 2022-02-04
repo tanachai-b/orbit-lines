@@ -20,8 +20,6 @@ class Complex {
 
     over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() / complex.magnitude(), 0)); }
 
-    // copy() { return new Complex(this.x, this.y); }
-
     draw(camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -154,14 +152,6 @@ class Vector {
         return new Vector(xx3, yy3, zz3).over(pointA.magnitude());
     }
 
-    // copy() { return new Vector(this.x, this.y, this.z); }
-
-    // set(point) {
-    //     this.x = point.x;
-    //     this.y = point.y;
-    //     this.z = point.z;
-    // }
-
     draw(camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -176,30 +166,3 @@ class Vector {
         ctx.stroke();
     }
 }
-
-// class Trajectory {
-//     constructor(vectors) {
-//         this.vectors = vectors;
-//     }
-
-//     // set(points) { this.points = points; }
-
-//     draw(camera) {
-//         /** @type {HTMLCanvasElement} */
-//         let canvas = document.getElementById('canvas');
-//         let ctx = canvas.getContext('2d');
-//         ctx.strokeStyle = '#FFFFFF';
-//         ctx.lineWidth = 1;
-
-//         for (let i = 0; i < this.vectors.length - 1; i++) {
-
-//             let complexA = Complex.projectFrom3d(this.vectors[i], camera);
-//             let complexB = Complex.projectFrom3d(this.vectors[i + 1], camera);
-
-//             ctx.beginPath();
-//             ctx.moveTo(complexA.x, complexA.y);
-//             ctx.lineTo(complexB.x, complexB.y);
-//             ctx.stroke();
-//         }
-//     }
-// }

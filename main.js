@@ -2,10 +2,12 @@
 
 function main() {
 
-    let sun = new Celestial(1000);
+    let sun = new Celestial(
+        1988470
+    );
 
     let mercury = new Celestial(
-        1,
+        0.330103,
         sun,
         new Orbit(
             20 * 0.38709927,
@@ -17,7 +19,7 @@ function main() {
         0
     );
     let venus = new Celestial(
-        1,
+        4.86731,
         sun,
         new Orbit(
             20 * 0.72333566,
@@ -29,7 +31,7 @@ function main() {
         0
     );
     let earth = new Celestial(
-        1,
+        5.97217,
         sun,
         new Orbit(
             20 * 1.00000261,
@@ -41,7 +43,7 @@ function main() {
         0
     );
     let mars = new Celestial(
-        1,
+        0.641691,
         sun,
         new Orbit(
             20 * 1.52371034,
@@ -53,7 +55,7 @@ function main() {
         0
     );
     let jupiter = new Celestial(
-        1,
+        1898.125,
         sun,
         new Orbit(
             20 * 5.20288700,
@@ -65,7 +67,7 @@ function main() {
         0
     );
     let saturn = new Celestial(
-        1,
+        568.317,
         sun,
         new Orbit(
             20 * 9.53667594,
@@ -77,7 +79,7 @@ function main() {
         0
     );
     let uranus = new Celestial(
-        1,
+        86.8099,
         sun,
         new Orbit(
             20 * 19.18916464,
@@ -89,7 +91,7 @@ function main() {
         0
     );
     let neptune = new Celestial(
-        1,
+        102.4092,
         sun,
         new Orbit(
             20 * 30.06992276,
@@ -154,7 +156,7 @@ class Camera {
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = 0;
+        this.zoom = -9000;
 
         Camera.addMouseListener(
             (event) => {
@@ -208,7 +210,7 @@ class Celestial {
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
         let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 1000000000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
         this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
