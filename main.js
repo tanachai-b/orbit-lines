@@ -3,10 +3,14 @@
 function main() {
 
     let sun = new Celestial(
+        'Sun',
+        0,
         1988470
     );
 
     let mercury = new Celestial(
+        'Mercury',
+        2439.4,
         0.330103,
         sun,
         new Orbit(
@@ -19,6 +23,8 @@ function main() {
         0
     );
     let venus = new Celestial(
+        'Venus',
+        6051.8,
         4.86731,
         sun,
         new Orbit(
@@ -31,6 +37,8 @@ function main() {
         0
     );
     let earth = new Celestial(
+        'Earth',
+        6371.0084,
         5.97217,
         sun,
         new Orbit(
@@ -43,6 +51,8 @@ function main() {
         0
     );
     let mars = new Celestial(
+        'Mars',
+        3389.50,
         0.641691,
         sun,
         new Orbit(
@@ -55,6 +65,8 @@ function main() {
         0
     );
     let jupiter = new Celestial(
+        'Jupiter',
+        69911,
         1898.125,
         sun,
         new Orbit(
@@ -67,6 +79,8 @@ function main() {
         0
     );
     let saturn = new Celestial(
+        'Saturn',
+        58232,
         568.317,
         sun,
         new Orbit(
@@ -79,6 +93,8 @@ function main() {
         0
     );
     let uranus = new Celestial(
+        'Uranus',
+        25362,
         86.8099,
         sun,
         new Orbit(
@@ -91,6 +107,8 @@ function main() {
         0
     );
     let neptune = new Celestial(
+        'Neptune',
+        24622,
         102.4092,
         sun,
         new Orbit(
@@ -104,12 +122,14 @@ function main() {
     );
 
     let moon = new Celestial(
-        1,
+        'Moon',
+        1737.4,
+        0.0734767309,
         earth,
         new Orbit(
             20 * 0.00256955529,
             0.0554,
-            Math.PI / 180 *125.08,
+            Math.PI / 180 * 125.08,
             Math.PI / 180 * 5.16,
             Math.PI / 180 * 318.15,
         ),
@@ -183,7 +203,16 @@ class Camera {
 }
 
 class Celestial {
-    constructor(mass, parent, orbit, trueAnomaly) {
+    constructor(
+        label,
+        radius,
+        mass,
+        parent,
+        orbit,
+        trueAnomaly,
+    ) {
+        this.label = label;
+        this.radius = radius;
         this.mass = mass;
         this.parent = parent;
         this.orbit = orbit;
