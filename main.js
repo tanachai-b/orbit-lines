@@ -10,26 +10,36 @@ function main() {
         new Vector(100, 0, 0),
         new Vector(0, Math.sqrt(1000000 / 100), 0),
         sun,
+        new Orbit(100, 0, 0, 0, 0),
+        0
     );
     let venus = new Celestial(
         new Vector(200, 0, 0),
-        new Vector(0,Math.sqrt(1000000 / 200), 0),
+        new Vector(0, Math.sqrt(1000000 / 200), 0),
         sun,
+        new Orbit(200, 0, 0, 0, 0),
+        0
     );
     let earth = new Celestial(
         new Vector(400, 0, 0),
-        new Vector(0,Math.sqrt(1000000 / 400), 0),
+        new Vector(0, Math.sqrt(1000000 / 400), 0),
         sun,
+        new Orbit(400, 0, 0, 0, 0),
+        0
     );
     let mars = new Celestial(
         new Vector(800, 0, 0),
-        new Vector(0,Math.sqrt(1000000 / 800), 0),
+        new Vector(0, Math.sqrt(1000000 / 800), 0),
         sun,
+        new Orbit(800, 0, 0, 0, 0),
+        0
     );
     let jupiter = new Celestial(
         new Vector(3200, 0, 0),
-        new Vector(0,Math.sqrt(1000000 / 3200), 0),
+        new Vector(0, Math.sqrt(1000000 / 3200), 0),
         sun,
+        new Orbit(3200, 0, 0, 0, 0),
+        0
     );
     // let earth2 = new Celestial(
     //     new Vector(200, 0, 0),
@@ -147,7 +157,7 @@ class Celestial {
             let position2 = this.position.overVector(apoapsis.unit(), orbitDirection);
             let trueAnomaly = Math.atan2(position2.y, position2.x);
 
-            let orbitalSpeed = Math.sqrt(1000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
+            let orbitalSpeed = Math.sqrt(1000000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
             this.velocity = this.orbit.getPosition(trueAnomaly + 0.0000001).minus(this.orbit.getPosition(trueAnomaly)).unit().times(orbitalSpeed);
 
             let angularVelocity = this.velocity.overVector(this.position.unit(), this.velocity).y / this.position.magnitude();
