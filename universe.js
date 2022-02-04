@@ -6,7 +6,7 @@ class Camera {
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = -8000;
+        this.zoom = -7500;
 
         Camera.addMouseListener(
             (event) => {
@@ -73,7 +73,7 @@ class Celestial {
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
         let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass / 1000000000000 * 1 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
         this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();

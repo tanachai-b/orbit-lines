@@ -141,19 +141,40 @@ function main() {
         mercury,
         venus,
         earth,
+        moon,
         mars,
         jupiter,
         saturn,
         uranus,
         neptune,
-
-        moon,
     ];
+
+
+    let focus = 3;
+    let timeSpeed = 0;
+
+    /** @type {HTMLCanvasElement} */
+    let canvas = document.getElementById('canvas');
+    canvas.focus();
+    canvas.addEventListener('keypress', (event) => {
+        switch (event.key) {
+            case '[':
+                focus--;
+                break;
+            case ']':
+                focus++;
+                break;
+        }
+
+        focus += celestials.length;
+        focus %= celestials.length;
+    });
+
 
     let camera = new Camera();
 
     setInterval(() => {
-        camera.position = earth.position;
+        camera.position = celestials[focus].position;
         draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
         celestials.forEach((celestial) => { celestial.updateVelocity(); });
         celestials.forEach((celestial) => { celestial.updatePosition(); });
