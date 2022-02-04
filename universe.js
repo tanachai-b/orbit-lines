@@ -12,6 +12,10 @@ class Camera {
             (event) => {
                 this.yaw += event.movementX / 200;
                 this.pitch -= event.movementY / 200;
+
+                this.pitch = Math.min(this.pitch, Math.PI / 2);
+                this.pitch = Math.max(this.pitch, -Math.PI / 2);
+
             }, (event) => {
                 this.zoom += event.deltaY;
             },
