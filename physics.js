@@ -20,7 +20,7 @@ class Complex {
 
     over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() / complex.magnitude(), 0)); }
 
-    copy() { return new Complex(this.x, this.y); }
+    // copy() { return new Complex(this.x, this.y); }
 
     draw(camera) {
         /** @type {HTMLCanvasElement} */
@@ -29,15 +29,14 @@ class Complex {
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let complex = Complex.get2dPoint(new Vector(this.x, this.y, 0), camera);
+        let complex = Complex.projectFrom3d(new Vector(this.x, this.y, 0), camera);
 
         ctx.beginPath();
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
         ctx.stroke();
     }
 
-    static get2dPoint(point, camera) {
-
+    static projectFrom3d(point, camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
 
@@ -73,105 +72,104 @@ class Vector {
 
     conjugate() { return new Vector(this.x, -this.y, -this.x); }
 
-    plus(point) { return new Vector(this.x + point.x, this.y + point.y, this.z + point.z); }
+    plus(vector) { return new Vector(this.x + vector.x, this.y + vector.y, this.z + vector.z); }
 
-    minus(point) { return new Vector(this.x - point.x, this.y - point.y, this.z - point.z); }
+    minus(vector) { return new Vector(this.x - vector.x, this.y - vector.y, this.z - vector.z); }
 
     times(number) { return new Vector(this.x * number, this.y * number, this.z * number); }
 
     over(number) { return new Vector(this.x / number, this.y / number, this.z / number); }
 
-    timesPoint(pointA, pointB) {
+    timesVector(pointA, pointB) {
 
-        let ra = Math.atan2(pointA.y, pointA.x);
+        let yaw = Math.atan2(pointA.y, pointA.x);
 
-        let x1 = pointA.x * Math.cos(-ra) - pointA.y * Math.sin(-ra);
-        let y1 = pointA.y * Math.cos(-ra) + pointA.x * Math.sin(-ra);
+        let x1 = pointA.x * Math.cos(-yaw) - pointA.y * Math.sin(-yaw);
+        let y1 = pointA.y * Math.cos(-yaw) + pointA.x * Math.sin(-yaw);
         let z1 = pointA.z;
 
-        let rb = Math.atan2(z1, x1);
+        let pitch = Math.atan2(z1, x1);
 
 
-        let x3 = pointB.x * Math.cos(-ra) - pointB.y * Math.sin(-ra);
-        let y3 = pointB.y * Math.cos(-ra) + pointB.x * Math.sin(-ra);
+        let x3 = pointB.x * Math.cos(-yaw) - pointB.y * Math.sin(-yaw);
+        let y3 = pointB.y * Math.cos(-yaw) + pointB.x * Math.sin(-yaw);
         let z3 = pointB.z;
 
-        let x4 = x3 * Math.cos(-rb) - z3 * Math.sin(-rb);
+        let x4 = x3 * Math.cos(-pitch) - z3 * Math.sin(-pitch);
         let y4 = y3;
-        let z4 = z3 * Math.cos(-rb) + x3 * Math.sin(-rb);
+        let z4 = z3 * Math.cos(-pitch) + x3 * Math.sin(-pitch);
 
-        let rc = Math.atan2(z4, y4);
+        let roll = Math.atan2(z4, y4);
 
 
         let xx1 = this.x;
-        let yy1 = this.y * Math.cos(rc) - this.z * Math.sin(rc);
-        let zz1 = this.z * Math.cos(rc) + this.y * Math.sin(rc);
+        let yy1 = this.y * Math.cos(roll) - this.z * Math.sin(roll);
+        let zz1 = this.z * Math.cos(roll) + this.y * Math.sin(roll);
 
-        let xx2 = xx1 * Math.cos(rb) - zz1 * Math.sin(rb);
+        let xx2 = xx1 * Math.cos(pitch) - zz1 * Math.sin(pitch);
         let yy2 = yy1;
-        let zz2 = zz1 * Math.cos(rb) + xx1 * Math.sin(rb);
+        let zz2 = zz1 * Math.cos(pitch) + xx1 * Math.sin(pitch);
 
-        let xx3 = xx2 * Math.cos(ra) - yy2 * Math.sin(ra);
-        let yy3 = yy2 * Math.cos(ra) + xx2 * Math.sin(ra);
+        let xx3 = xx2 * Math.cos(yaw) - yy2 * Math.sin(yaw);
+        let yy3 = yy2 * Math.cos(yaw) + xx2 * Math.sin(yaw);
         let zz3 = zz2;
 
         return new Vector(xx3, yy3, zz3).times(pointA.magnitude());
     }
 
-    overPoint(pointA, pointB) {
+    overVector(pointA, pointB) {
 
-        let ra = Math.atan2(pointA.y, pointA.x);
+        let yaw = Math.atan2(pointA.y, pointA.x);
 
-        let x1 = pointA.x * Math.cos(-ra) - pointA.y * Math.sin(-ra);
-        let y1 = pointA.y * Math.cos(-ra) + pointA.x * Math.sin(-ra);
+        let x1 = pointA.x * Math.cos(-yaw) - pointA.y * Math.sin(-yaw);
+        let y1 = pointA.y * Math.cos(-yaw) + pointA.x * Math.sin(-yaw);
         let z1 = pointA.z;
 
-        let rb = Math.atan2(z1, x1);
+        let pitch = Math.atan2(z1, x1);
 
 
-        let x3 = pointB.x * Math.cos(-ra) - pointB.y * Math.sin(-ra);
-        let y3 = pointB.y * Math.cos(-ra) + pointB.x * Math.sin(-ra);
+        let x3 = pointB.x * Math.cos(-yaw) - pointB.y * Math.sin(-yaw);
+        let y3 = pointB.y * Math.cos(-yaw) + pointB.x * Math.sin(-yaw);
         let z3 = pointB.z;
 
-        let x4 = x3 * Math.cos(-rb) - z3 * Math.sin(-rb);
+        let x4 = x3 * Math.cos(-pitch) - z3 * Math.sin(-pitch);
         let y4 = y3;
-        let z4 = z3 * Math.cos(-rb) + x3 * Math.sin(-rb);
+        let z4 = z3 * Math.cos(-pitch) + x3 * Math.sin(-pitch);
 
-        let rc = Math.atan2(z4, y4);
+        let roll = Math.atan2(z4, y4);
 
 
-        let xx1 = this.x * Math.cos(-ra) - this.y * Math.sin(-ra);
-        let yy1 = this.y * Math.cos(-ra) + this.x * Math.sin(-ra);
+        let xx1 = this.x * Math.cos(-yaw) - this.y * Math.sin(-yaw);
+        let yy1 = this.y * Math.cos(-yaw) + this.x * Math.sin(-yaw);
         let zz1 = this.z;
 
-        let xx2 = xx1 * Math.cos(-rb) - zz1 * Math.sin(-rb);
+        let xx2 = xx1 * Math.cos(-pitch) - zz1 * Math.sin(-pitch);
         let yy2 = yy1;
-        let zz2 = zz1 * Math.cos(-rb) + xx1 * Math.sin(-rb);
+        let zz2 = zz1 * Math.cos(-pitch) + xx1 * Math.sin(-pitch);
 
         let xx3 = xx2;
-        let yy3 = yy2 * Math.cos(-rc) - zz2 * Math.sin(-rc);
-        let zz3 = zz2 * Math.cos(-rc) + yy2 * Math.sin(-rc);
+        let yy3 = yy2 * Math.cos(-roll) - zz2 * Math.sin(-roll);
+        let zz3 = zz2 * Math.cos(-roll) + yy2 * Math.sin(-roll);
 
         return new Vector(xx3, yy3, zz3).over(pointA.magnitude());
     }
 
-    copy() { return new Vector(this.x, this.y, this.z); }
+    // copy() { return new Vector(this.x, this.y, this.z); }
 
-    set(point) {
-        this.x = point.x;
-        this.y = point.y;
-        this.z = point.z;
-    }
+    // set(point) {
+    //     this.x = point.x;
+    //     this.y = point.y;
+    //     this.z = point.z;
+    // }
 
     draw(camera) {
-
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let complex = Complex.get2dPoint(this, camera);
+        let complex = Complex.projectFrom3d(this, camera);
 
         ctx.beginPath();
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
@@ -180,24 +178,23 @@ class Vector {
 }
 
 class Trajectory {
-    constructor(points) {
-        this.points = points;
+    constructor(vectors) {
+        this.vectors = vectors;
     }
 
-    set(points) { this.points = points; }
+    // set(points) { this.points = points; }
 
     draw(camera) {
-
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        for (let i = 0; i < this.points.length - 1; i++) {
+        for (let i = 0; i < this.vectors.length - 1; i++) {
 
-            let complexA = Complex.get2dPoint(this.points[i], camera);
-            let complexB = Complex.get2dPoint(this.points[i + 1], camera);
+            let complexA = Complex.projectFrom3d(this.vectors[i], camera);
+            let complexB = Complex.projectFrom3d(this.vectors[i + 1], camera);
 
             ctx.beginPath();
             ctx.moveTo(complexA.x, complexA.y);

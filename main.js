@@ -11,9 +11,68 @@ class Camera {
 }
 
 class Celestial {
-    constructor(position, velocity) {
+    constructor(position, velocity, parent) {
         this.position = position;
         this.velocity = velocity;
+        this.parent = parent;
+    }
+
+    update() {
+        if (this.parent == null) return;
+        let acceration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(1000);
+        this.velocity = this.velocity.plus(acceration);
+        this.position = this.position.plus(this.velocity);
+    }
+
+    draw(camera) {
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+
+        let complex = Complex.projectFrom3d(this.position, camera);
+
+        ctx.beginPath();
+        ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+}
+
+class Orbit {
+    constructor(semiMajorAxis, eccentricity) {
+
+        this.semiMajorAxis = semiMajorAxis;
+        this.eccentricity = eccentricity;
+
+        let positions = [];
+
+        for (let i = 0; i < 2 * Math.PI; i += 2 * Math.PI / 360) {
+            let distance = semiMajorAxis * (1 - eccentricity ** 2) / (1 + eccentricity * Math.cos(i));
+            let position = new Vector(distance * Math.cos(i), distance * Math.sin(i), 0);
+            positions.push(position);
+        }
+
+        this.trajectory = new Trajectory(positions);
+    }
+
+    draw(camera) {
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+
+        for (let i = 0; i < this.trajectory.vectors.length - 1; i++) {
+
+            let complexA = Complex.projectFrom3d(this.trajectory.vectors[i], camera);
+            let complexB = Complex.projectFrom3d(this.trajectory.vectors[i + 1], camera);
+
+            ctx.beginPath();
+            ctx.moveTo(complexA.x, complexA.y);
+            ctx.lineTo(complexB.x, complexB.y);
+            ctx.stroke();
+        }
     }
 }
 
@@ -30,36 +89,22 @@ function main() {
 
 
 
-
-
-    let xsun = new Celestial(new Vector(0, 0, 0), new Vector(0, 0, 0));
-
-
-
-
-
-    let sunPos = new Vector(0, 0, 0);
-
-    let earthPos = new Vector(200 * Math.cos(Math.PI * 0 / 6), 200 * Math.sin(Math.PI * 0 / 6), 0);
-    let earthV = new Vector(-0.8658 * Math.sin(Math.PI * 0 / 6), 0.8658 * Math.cos(Math.PI * 0 / 6), 0);
-    let earthA = new Vector(0, 0, 0);
+    let sun = new Celestial(
+        new Vector(0, 0, 0),
+        new Vector(0, 0, 0),
+    );
+    let earth = new Celestial(
+        new Vector(400, 0, 0),
+        new Vector(0, 1.58, 0),
+        sun,
+    );
+    let celestials = [sun, earth];
 
 
 
-    let sun = sunPos.copy();
-    let earth = earthPos.copy();
-
-
-    let earthPoses = [earthPos];
-
-    for (let i = 0; i < 5000; i++) {
-        earthA = sunPos.minus(earthPos).over(sunPos.minus(earthPos).magnitude() ** 3).times(100);
-        earthV = earthV.plus(earthA);
-        earthPos = earthPos.plus(earthV);
-        earthPoses.push(earthPos);
-    }
-
-    let earthTraj = new Trajectory(earthPoses);
+    celestials = celestials.concat([
+        new Orbit(400, 0),
+    ]);
 
 
 
@@ -67,23 +112,12 @@ function main() {
 
 
 
-    let objs = [];
-    objs.push(sun);
-    objs.push(earth);
-    objs.push(earthTraj);
-
-
-
-
-    let frame = 0;
     setInterval(() => {
+        earth.update();
 
-        earth.set(earthPoses[frame]);
+        // camera.position = earth.position;
 
-        draw(() => { objs.forEach((obj) => { obj.draw(camera); }); });
-
-        frame += 20;
-        frame %= 5000;
+        draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
     }, 10);
 }
 
