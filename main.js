@@ -4,13 +4,16 @@
 
 function main() {
 
-    let ra = 0 - Math.PI / 6;
-    let rb = 0 - Math.PI / 6;
-    let rc = 0;
+    let camA = 0 - Math.PI / 6;
+    let camB = 0 - Math.PI / 6;
+    let camC = 0;
+    let camZ = 0;
 
     addMouseListener((event) => {
-        ra += event.movementX / 200;
-        rb -= event.movementY / 200;
+        camA += event.movementX / 200;
+        camB -= event.movementY / 200;
+    }, (event) => {
+        camZ += event.deltaY;
     });
 
 
@@ -124,11 +127,13 @@ function main() {
 
 
     // let box = [];
-    // let size = 400;
-    // for (let x = -size / 2; x <= size / 2; x += size) {
-    //     for (let y = -size / 2; y <= size / 2; y += size) {
-    //         for (let z = -size / 2; z <= size / 2; z += size) {
-    //             box.push(new Point(x, y, z));
+    // let size = 1000;
+    // for (let x = -size / 2; x <= size / 2; x += size / 1) {
+    //     for (let y = -size / 2; y <= size / 2; y += size / 1) {
+    //         for (let z = -size / 2; z <= size / 2; z += size / 1) {
+    //             if (x < size / 2) box.push(new Line([new Point(x, y, z), new Point(x + size / 1, y, z)]));
+    //             if (y < size / 2) box.push(new Line([new Point(x, y, z), new Point(x, y + size / 1, z)]));
+    //             if (z < size / 2) box.push(new Line([new Point(x, y, z), new Point(x, y, z + size / 1)]));
     //         }
     //     }
     // }
@@ -161,8 +166,6 @@ function main() {
 
 
 
-    objs.push(new Complex(200, 100));
-    objs.push(new Complex(200, 100).over(new Complex(10, 10)));
 
 
 
@@ -193,14 +196,14 @@ function main() {
         let ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        objs.forEach((obj) => { obj.draw(ra, rb, rc); });
+        objs.forEach((obj) => { obj.draw(camA, camB, camC, camZ); });
 
         frame += 10;
         frame %= 5000;
     }, 10);
 }
 
-function addMouseListener(onMove) {
+function addMouseListener(onMove, onWheel) {
 
     let mButtons = 0;
 
@@ -211,4 +214,5 @@ function addMouseListener(onMove) {
     canvas.addEventListener('mouseleave', (event) => { mButtons = event.buttons; });
     canvas.addEventListener('mouseenter', (event) => { mButtons = event.buttons; });
     canvas.addEventListener('mousemove', (event) => { if (mButtons == 1) onMove(event); });
+    canvas.addEventListener('wheel', (event) => { onWheel(event); });
 }
