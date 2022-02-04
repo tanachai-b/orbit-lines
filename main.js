@@ -4,7 +4,7 @@ function main() {
 
     let sun = new Celestial(
         'Sun',
-        0,
+        695700,
         1988470
     );
 
@@ -169,14 +169,13 @@ function draw(onDraw) {
     onDraw();
 }
 
-
 class Camera {
     constructor() {
         this.position = new Vector(0, 0, 0);
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = -9000;
+        this.zoom = -12000;
 
         Camera.addMouseListener(
             (event) => {
@@ -259,9 +258,10 @@ class Celestial {
         ctx.lineWidth = 1;
 
         let posProj = Complex.projectFrom3d(this.position, camera);
+        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 20, this.position, camera);
 
         ctx.beginPath();
-        ctx.arc(posProj.x, posProj.y, 5, 0, 2 * Math.PI);
+        ctx.arc(posProj.x, posProj.y, radiusProj, 0, 2 * Math.PI);
         ctx.stroke();
 
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
