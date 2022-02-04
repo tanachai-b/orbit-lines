@@ -20,20 +20,6 @@ class Complex {
 
     over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() / complex.magnitude(), 0)); }
 
-    draw(camera) {
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 1;
-
-        let complex = Complex.projectFrom3d(new Vector(this.x, this.y, 0), camera);
-
-        ctx.beginPath();
-        ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
-        ctx.stroke();
-    }
-
     static projectFrom3d(point, camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -56,7 +42,7 @@ class Complex {
         return new Complex(calcX, calcY);
     }
 
-    static projectRadius(radius,point, camera) {
+    static projectRadius(radius, point, camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
 
@@ -72,7 +58,7 @@ class Complex {
         let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
         let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
-        let calcX = (radius / Math.max(y2 + 1000 * 1.001 ** camera.zoom, 0)) * 1000 ;
+        let calcX = (radius / Math.max(y2 + 1000 * 1.001 ** camera.zoom, 0)) * 1000;
 
         return calcX;
     }
@@ -171,19 +157,5 @@ class Vector {
         let zz3 = zz2 * Math.cos(-roll) + yy2 * Math.sin(-roll);
 
         return new Vector(xx3, yy3, zz3).over(pointA.magnitude());
-    }
-
-    draw(camera) {
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 1;
-
-        let complex = Complex.projectFrom3d(this, camera);
-
-        ctx.beginPath();
-        ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
-        ctx.stroke();
     }
 }
