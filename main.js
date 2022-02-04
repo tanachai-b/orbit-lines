@@ -98,11 +98,23 @@ function main() {
         // marsVs.push(marsV);
 
 
-        let logPos = new Point(venusPos.magnitude() * venusV.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
+
+        let scretVenusV = venusV.overPoint(venusPos.unit(), venusV);
+        let scretEarthV = earthV.overPoint(earthPos.unit(), earthV);
+        let scretMarsV = marsV.overPoint(marsPos.unit(), marsV);
+
+        scretVenusV = new Point(scretVenusV.x * 0, scretVenusV.y, scretVenusV.z);
+        scretEarthV = new Point(scretEarthV.x * 0, scretEarthV.y, scretEarthV.z);
+        scretMarsV = new Point(scretMarsV.x * 0, scretMarsV.y, scretMarsV.z);
+
+
+
+
+        let logPos = new Point(venusPos.magnitude() * scretVenusV.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
         logPoses.push(logPos);
-        let logPos2 = new Point(earthPos.magnitude() * earthV.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
+        let logPos2 = new Point(earthPos.magnitude() * scretEarthV.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
         logPoses2.push(logPos2);
-        let logPos3 = new Point(marsPos.magnitude() * marsV.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
+        let logPos3 = new Point(marsPos.magnitude() * scretMarsV.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
         logPoses3.push(logPos3);
     }
 

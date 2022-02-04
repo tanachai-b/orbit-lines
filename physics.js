@@ -119,10 +119,10 @@ class Point {
         let yy3 = yy2 * Math.cos(ra) + xx2 * Math.sin(ra);
         let zz3 = zz2;
 
-        return new Point(xx3, yy3, zz3).times(pointA.mag());
+        return new Point(xx3, yy3, zz3).times(pointA.magnitude());
     }
 
-    dividePoint(pointA, pointB) {
+    overPoint(pointA, pointB) {
 
         let ra = Math.atan2(pointA.y, pointA.x);
 
@@ -156,7 +156,7 @@ class Point {
         let yy3 = yy2 * Math.cos(-rc) - zz2 * Math.sin(-rc);
         let zz3 = zz2 * Math.cos(-rc) + yy2 * Math.sin(-rc);
 
-        return new Point(xx3, yy3, zz3).over(pointA.mag());
+        return new Point(xx3, yy3, zz3).over(pointA.magnitude());
     }
 
     copy() { return new Point(this.x, this.y, this.z); }
