@@ -14,13 +14,13 @@ function main() {
         0.330103,
         sun,
         new Orbit(
-            20 * 0.38709927,
+            100 * 0.38709927,
             0.20563593,
             Math.PI / 180 * 48.33076593,
             Math.PI / 180 * 7.00497902,
             Math.PI / 180 * 29.12703035,
         ),
-        0
+        Math.PI / 180 * 252.25032350
     );
     let venus = new Celestial(
         'Venus',
@@ -28,13 +28,13 @@ function main() {
         4.86731,
         sun,
         new Orbit(
-            20 * 0.72333566,
+            100 * 0.72333566,
             0.00677672,
             Math.PI / 180 * 76.67984255,
             Math.PI / 180 * 3.39467605,
             Math.PI / 180 * 54.92262463,
         ),
-        0
+        Math.PI / 180 * 181.97909950
     );
     let earth = new Celestial(
         'Earth',
@@ -42,13 +42,13 @@ function main() {
         5.97217,
         sun,
         new Orbit(
-            20 * 1.00000261,
+            100 * 1.00000261,
             0.01671123,
             Math.PI / 180 * 0.0,
             Math.PI / 180 * -0.00001531,
             Math.PI / 180 * 102.9376819,
         ),
-        0
+        Math.PI / 180 * 100.46457166
     );
     let mars = new Celestial(
         'Mars',
@@ -56,13 +56,13 @@ function main() {
         0.641691,
         sun,
         new Orbit(
-            20 * 1.52371034,
+            100 * 1.52371034,
             0.09339410,
             Math.PI / 180 * 49.55953891,
             Math.PI / 180 * 1.84969142,
             Math.PI / 180 * -73.5031685,
         ),
-        0
+        Math.PI / 180 * -4.55343205
     );
     let jupiter = new Celestial(
         'Jupiter',
@@ -70,13 +70,13 @@ function main() {
         1898.125,
         sun,
         new Orbit(
-            20 * 5.20288700,
+            100 * 5.20288700,
             0.04838624,
             Math.PI / 180 * 100.47390909,
             Math.PI / 180 * 1.30439695,
             Math.PI / 180 * -85.74542926,
         ),
-        0
+        Math.PI / 180 * 34.39644051
     );
     let saturn = new Celestial(
         'Saturn',
@@ -84,13 +84,13 @@ function main() {
         568.317,
         sun,
         new Orbit(
-            20 * 9.53667594,
+            100 * 9.53667594,
             0.05386179,
             Math.PI / 180 * 113.66242448,
             Math.PI / 180 * 2.48599187,
             -21.06354617,
         ),
-        0
+        Math.PI / 180 * 49.95424423
     );
     let uranus = new Celestial(
         'Uranus',
@@ -98,13 +98,13 @@ function main() {
         86.8099,
         sun,
         new Orbit(
-            20 * 19.18916464,
+            100 * 19.18916464,
             0.04725744,
             Math.PI / 180 * 74.01692503,
             Math.PI / 180 * 0.77263783,
             96.93735127,
         ),
-        0
+        Math.PI / 180 * 313.23810451
     );
     let neptune = new Celestial(
         'Neptune',
@@ -112,13 +112,13 @@ function main() {
         102.4092,
         sun,
         new Orbit(
-            20 * 30.06992276,
+            100 * 30.06992276,
             0.00859048,
             Math.PI / 180 * 131.78422574,
             Math.PI / 180 * 1.77004347,
             -86.81946347,
         ),
-        0
+        Math.PI / 180 * -55.12002969
     );
 
     let moon = new Celestial(
@@ -127,13 +127,13 @@ function main() {
         0.0734767309,
         earth,
         new Orbit(
-            20 * 0.00256955529,
+            100 * 0.00256955529,
             0.0554,
             Math.PI / 180 * 125.08,
             Math.PI / 180 * 5.16,
             Math.PI / 180 * 318.15,
         ),
-        0
+        Math.PI / 180 * 135.27
     );
 
     let celestials = [
@@ -175,7 +175,7 @@ class Camera {
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = -12000;
+        this.zoom = -8000;
 
         Camera.addMouseListener(
             (event) => {
@@ -238,7 +238,7 @@ class Celestial {
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
         let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass / 1000000000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 1000000000000 * 1 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
         this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
@@ -255,14 +255,18 @@ class Celestial {
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
+        ctx.fillStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
         let posProj = Complex.projectFrom3d(this.position, camera);
-        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 20, this.position, camera);
+        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 100, this.position, camera);
 
         ctx.beginPath();
         ctx.arc(posProj.x, posProj.y, radiusProj, 0, 2 * Math.PI);
         ctx.stroke();
+
+        ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
+        ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
     }
@@ -334,25 +338,30 @@ class Orbit {
         }
 
         let apoProj = Complex.projectFrom3d(this.apoapsis.plus(position), camera);
-        ctx.strokeRect(apoProj.x - 3, apoProj.y - 3, 6, 6);
-        ctx.fillRect(apoProj.x - 3, apoProj.y - 3, 6, 6);
+        ctx.beginPath();
+        ctx.arc(apoProj.x, apoProj.y, 3, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.fill();
 
         let periProj = Complex.projectFrom3d(this.periapsis.plus(position), camera);
-        ctx.strokeRect(periProj.x - 3, periProj.y - 3, 6, 6);
+        ctx.beginPath();
+        ctx.arc(periProj.x, periProj.y, 3, 0, 2 * Math.PI);
+        ctx.stroke();
 
         let ascProj = Complex.projectFrom3d(this.ascending.plus(position), camera);
         ctx.beginPath();
-        ctx.moveTo(ascProj.x, ascProj.y - 5);
-        ctx.lineTo(ascProj.x + 4, ascProj.y + 2);
-        ctx.lineTo(ascProj.x - 4, ascProj.y + 2);
+        ctx.moveTo(ascProj.x, ascProj.y - 4);
+        ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
+        ctx.lineTo(ascProj.x - 3, ascProj.y + 2);
         ctx.closePath();
         ctx.stroke();
+        ctx.fill();
 
         let descProj = Complex.projectFrom3d(this.descending.plus(position), camera);
         ctx.beginPath();
-        ctx.moveTo(descProj.x, descProj.y + 5);
-        ctx.lineTo(descProj.x + 4, descProj.y - 2);
-        ctx.lineTo(descProj.x - 4, descProj.y - 2);
+        ctx.moveTo(descProj.x, descProj.y + 4);
+        ctx.lineTo(descProj.x + 3, descProj.y - 2);
+        ctx.lineTo(descProj.x - 3, descProj.y - 2);
         ctx.closePath();
         ctx.stroke();
 
