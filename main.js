@@ -5,49 +5,45 @@ function main() {
     let sun = new Celestial(
         new Vector(0, 0, 0),
         new Vector(0, 0, 0),
+        null,
+        new Orbit(0, 0, 0, 0, 0),
+        0
     );
     let mercury = new Celestial(
         new Vector(100, 0, 0),
-        new Vector(0, Math.sqrt(1000000 / 100), 0),
+        new Vector(0, Math.sqrt(1000 / 100), 0),
         sun,
         new Orbit(100, 0, 0, 0, 0),
         0
     );
     let venus = new Celestial(
         new Vector(200, 0, 0),
-        new Vector(0, Math.sqrt(1000000 / 200), 0),
+        new Vector(0, Math.sqrt(1000 / 200), 0),
         sun,
         new Orbit(200, 0, 0, 0, 0),
         0
     );
     let earth = new Celestial(
         new Vector(400, 0, 0),
-        new Vector(0, Math.sqrt(1000000 / 400), 0),
+        new Vector(0, Math.sqrt(1000 / 400), 0),
         sun,
         new Orbit(400, 0, 0, 0, 0),
         0
     );
     let mars = new Celestial(
         new Vector(800, 0, 0),
-        new Vector(0, Math.sqrt(1000000 / 800), 0),
+        new Vector(0, Math.sqrt(1000 / 800), 0),
         sun,
         new Orbit(800, 0, 0, 0, 0),
         0
     );
     let jupiter = new Celestial(
         new Vector(3200, 0, 0),
-        new Vector(0, Math.sqrt(1000000 / 3200), 0),
+        new Vector(0, Math.sqrt(1000 / 3200), 0),
         sun,
         new Orbit(3200, 0, 0, 0, 0),
         0
     );
-    // let earth2 = new Celestial(
-    //     new Vector(200, 0, 0),
-    //     new Vector(0, 2.3, 0),
-    //     sun,
-    //     new Orbit(400, 0.5, -Math.PI / 2, Math.PI / 6, Math.PI / 2),
-    //     0,
-    // );
     let celestials = [
         sun,
         mercury,
@@ -55,7 +51,6 @@ function main() {
         earth,
         mars,
         jupiter,
-        // earth2
     ];
 
     celestials = celestials.concat([
@@ -74,15 +69,9 @@ function main() {
     setInterval(() => {
         draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
 
+        celestials.forEach((celestial) => { celestial.update(); });
 
-        celestials.forEach((celestial) => {
-            celestial.update();
-        });
-        // earth.update();
-        // earth2.update();
-
-        // camera.position = earth.position;
-
+        camera.position = earth.position;
 
     }, 1000 / 60);
 }
@@ -146,7 +135,7 @@ class Celestial {
         if (this.parent == null) return;
 
         if (this.orbit == null) {
-            let acceration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(1000000);
+            let acceration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(1000);
             this.velocity = this.velocity.plus(acceration);
             this.position = this.position.plus(this.velocity);
 
@@ -157,8 +146,8 @@ class Celestial {
             let position2 = this.position.overVector(apoapsis.unit(), orbitDirection);
             let trueAnomaly = Math.atan2(position2.y, position2.x);
 
-            let orbitalSpeed = Math.sqrt(1000000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
-            this.velocity = this.orbit.getPosition(trueAnomaly + 0.0000001).minus(this.orbit.getPosition(trueAnomaly)).unit().times(orbitalSpeed);
+            let orbitalSpeed = Math.sqrt(1000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
+            this.velocity = this.orbit.getPosition(trueAnomaly + 0.000001).minus(this.orbit.getPosition(trueAnomaly)).unit().times(orbitalSpeed);
 
             let angularVelocity = this.velocity.overVector(this.position.unit(), this.velocity).y / this.position.magnitude();
             this.position = this.orbit.getPosition(trueAnomaly + angularVelocity);
@@ -178,7 +167,7 @@ class Celestial {
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
         ctx.stroke();
 
-        if (this.orbit != null) {
+        if (this.orbit == null) {
             ctx.fill();
         }
     }
