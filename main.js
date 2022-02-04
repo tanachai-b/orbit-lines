@@ -20,9 +20,9 @@ function main() {
     let celestials = [sun, earth, earth2];
 
     celestials = celestials.concat([
-        // new Orbit(200, 0.1, Math.PI / 6, Math.PI / 60, Math.PI / 6,),
+        new Orbit(200, 0.1, Math.PI / 6, Math.PI / 60, Math.PI / 6,),
         new Orbit(400, 0.5, 0, 0, 0,),
-        // new Orbit(800, 0.07, -Math.PI / 2, Math.PI / 60, Math.PI * 4 / 3,),
+        new Orbit(800, 0.07, -Math.PI / 2, Math.PI / 60, Math.PI * 4 / 3,),
     ]);
 
     let camera = new Camera();
@@ -98,7 +98,8 @@ class Celestial {
 
         if (this.orbit == null) return;
 
-        // let speed = Math.sqrt(1000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
+        let speed = Math.sqrt(1000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
+
     }
 
     draw(camera) {
@@ -120,38 +121,43 @@ class Orbit {
     constructor(
         semiMajorAxis,
         eccentricity,
-        ascendingNode,
+        longAscending,
         inclination,
         argPeriapsis,
     ) {
         this.semiMajorAxis = semiMajorAxis;
         this.eccentricity = eccentricity;
-        this.ascendingNode = ascendingNode;
+        this.longAscending = longAscending;
         this.inclination = inclination;
         this.argPeriapsis = argPeriapsis;
 
+        this.apoapsis = this.getPosition(0);
+        this.periapsis = this.getPosition(Math.PI);
+        this.ascending = this.getPosition(-this.argPeriapsis);
+        this.descending = this.getPosition(-this.argPeriapsis + Math.PI);
+
         this.positions = [];
+        for (let i = 0; i <= 2 * Math.PI; i += Math.PI / 180) { this.positions.push(this.getPosition(i)); }
+    }
 
-        for (let i = 0; i <= 2 * Math.PI; i += Math.PI / 180) {
-            let distance = semiMajorAxis * (1 - eccentricity ** 2) / (1 + eccentricity * Math.cos(i));
-            let position = new Vector(distance * Math.cos(i), distance * Math.sin(i), 0);
-            let position2 = position.timesVector(new Vector(Math.cos(argPeriapsis), Math.sin(argPeriapsis), 0), new Vector(-Math.sin(argPeriapsis), Math.cos(argPeriapsis), 0));
-            let position3 = position2.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(inclination), Math.sin(inclination)));
-            let position4 = position3.timesVector(new Vector(Math.cos(ascendingNode), Math.sin(ascendingNode), 0), new Vector(-Math.sin(ascendingNode), Math.cos(ascendingNode), 0));
+    getPosition(trueAnomaly) {
+        let distance = this.semiMajorAxis * (1 - this.eccentricity ** 2) / (1 + this.eccentricity * Math.cos(trueAnomaly));
+        let position = new Vector(distance * Math.cos(trueAnomaly), distance * Math.sin(trueAnomaly), 0);
 
-            this.positions.push(position4);
-        }
+        let position2 = position.timesVector(
+            new Vector(Math.cos(this.argPeriapsis), Math.sin(this.argPeriapsis), 0),
+            new Vector(-Math.sin(this.argPeriapsis), Math.cos(this.argPeriapsis), 0)
+        );
+        let position3 = position2.timesVector(
+            new Vector(1, 0, 0),
+            new Vector(0, Math.cos(this.inclination), Math.sin(this.inclination))
+        );
+        let position4 = position3.timesVector(
+            new Vector(Math.cos(this.longAscending), Math.sin(this.longAscending), 0),
+            new Vector(-Math.sin(this.longAscending), Math.cos(this.longAscending), 0)
+        );
 
-
-        let asc = this.positions[Math.round((-this.argPeriapsis / Math.PI * 180 + 360) % 360)];
-        let desc = this.positions[Math.round((-this.argPeriapsis / Math.PI * 180 + 360 + 180) % 360)];
-
-        this.ascDescLine = [];
-
-        for (let i = 0; i <= 1; i++) {
-            let position = desc.minus(asc).over(1).times(i).plus(asc);
-            this.ascDescLine.push(position);
-        }
+        return position4;
     }
 
     draw(camera) {
@@ -164,43 +170,43 @@ class Orbit {
 
         for (let i = 0; i < this.positions.length - 1; i++) {
 
-            let complexA = Complex.projectFrom3d(this.positions[i], camera);
-            let complexB = Complex.projectFrom3d(this.positions[i + 1], camera);
+            let aProj = Complex.projectFrom3d(this.positions[i], camera);
+            let bProj = Complex.projectFrom3d(this.positions[i + 1], camera);
 
             ctx.beginPath();
-            ctx.moveTo(complexA.x, complexA.y);
-            ctx.lineTo(complexB.x, complexB.y);
+            ctx.moveTo(aProj.x, aProj.y);
+            ctx.lineTo(bProj.x, bProj.y);
             ctx.stroke();
-
-            if (i == 0) {
-                ctx.strokeRect(complexA.x - 3, complexA.y - 3, 6, 6);
-                ctx.fillRect(complexA.x - 3, complexA.y - 3, 6, 6);
-            }
-
-            if (i == 180) {
-                ctx.strokeRect(complexA.x - 3, complexA.y - 3, 6, 6);
-            }
-
-            if (i == Math.round((-this.argPeriapsis / Math.PI * 180 + 360) % 360)) {
-                ctx.beginPath();
-                ctx.moveTo(complexA.x, complexA.y - 5);
-                ctx.lineTo(complexA.x + 4, complexA.y + 2);
-                ctx.lineTo(complexA.x - 4, complexA.y + 2);
-                ctx.closePath();
-                ctx.stroke();
-            }
-
-
-            if (i == Math.round((-this.argPeriapsis / Math.PI * 180 + 360 + 180) % 360)) {
-                ctx.beginPath();
-                ctx.moveTo(complexA.x, complexA.y + 5);
-                ctx.lineTo(complexA.x + 4, complexA.y - 2);
-                ctx.lineTo(complexA.x - 4, complexA.y - 2);
-                ctx.closePath();
-                ctx.stroke();
-            }
         }
 
+        let apoProj = Complex.projectFrom3d(this.apoapsis, camera);
+        ctx.strokeRect(apoProj.x - 3, apoProj.y - 3, 6, 6);
+        ctx.fillRect(apoProj.x - 3, apoProj.y - 3, 6, 6);
+
+        let periProj = Complex.projectFrom3d(this.periapsis, camera);
+        ctx.strokeRect(periProj.x - 3, periProj.y - 3, 6, 6);
+
+        let ascProj = Complex.projectFrom3d(this.ascending, camera);
+        ctx.beginPath();
+        ctx.moveTo(ascProj.x, ascProj.y - 5);
+        ctx.lineTo(ascProj.x + 4, ascProj.y + 2);
+        ctx.lineTo(ascProj.x - 4, ascProj.y + 2);
+        ctx.closePath();
+        ctx.stroke();
+
+        let descProj = Complex.projectFrom3d(this.descending, camera);
+        ctx.beginPath();
+        ctx.moveTo(descProj.x, descProj.y + 5);
+        ctx.lineTo(descProj.x + 4, descProj.y - 2);
+        ctx.lineTo(descProj.x - 4, descProj.y - 2);
+        ctx.closePath();
+        ctx.stroke();
+
+        this.ascDescLine = [];
+        for (let i = 0; i <= 1; i++) {
+            let position = this.descending.minus(this.ascending).over(1).times(i).plus(this.ascending);
+            this.ascDescLine.push(position);
+        }
 
         for (let i = 0; i < this.ascDescLine.length - 1; i++) {
             let start = Complex.projectFrom3d(this.ascDescLine[i], camera);
