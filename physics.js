@@ -1,3 +1,4 @@
+'use strict';
 
 class Complex {
     constructor(x, y) {
@@ -28,7 +29,7 @@ class Complex {
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let complex = Complex.get2dPoint(new Point(this.x, this.y, 0), camera);
+        let complex = Complex.get2dPoint(new Vector(this.x, this.y, 0), camera);
 
         ctx.beginPath();
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
@@ -59,7 +60,7 @@ class Complex {
     }
 }
 
-class Point {
+class Vector {
     constructor(x, y, z) {
         this.x = x;
         this.y = y;
@@ -70,15 +71,15 @@ class Point {
 
     unit() { return this.over(this.magnitude()); }
 
-    conjugate() { return new Point(this.x, -this.y, -this.x); }
+    conjugate() { return new Vector(this.x, -this.y, -this.x); }
 
-    plus(point) { return new Point(this.x + point.x, this.y + point.y, this.z + point.z); }
+    plus(point) { return new Vector(this.x + point.x, this.y + point.y, this.z + point.z); }
 
-    minus(point) { return new Point(this.x - point.x, this.y - point.y, this.z - point.z); }
+    minus(point) { return new Vector(this.x - point.x, this.y - point.y, this.z - point.z); }
 
-    times(number) { return new Point(this.x * number, this.y * number, this.z * number); }
+    times(number) { return new Vector(this.x * number, this.y * number, this.z * number); }
 
-    over(number) { return new Point(this.x / number, this.y / number, this.z / number); }
+    over(number) { return new Vector(this.x / number, this.y / number, this.z / number); }
 
     timesPoint(pointA, pointB) {
 
@@ -114,7 +115,7 @@ class Point {
         let yy3 = yy2 * Math.cos(ra) + xx2 * Math.sin(ra);
         let zz3 = zz2;
 
-        return new Point(xx3, yy3, zz3).times(pointA.magnitude());
+        return new Vector(xx3, yy3, zz3).times(pointA.magnitude());
     }
 
     overPoint(pointA, pointB) {
@@ -151,10 +152,10 @@ class Point {
         let yy3 = yy2 * Math.cos(-rc) - zz2 * Math.sin(-rc);
         let zz3 = zz2 * Math.cos(-rc) + yy2 * Math.sin(-rc);
 
-        return new Point(xx3, yy3, zz3).over(pointA.magnitude());
+        return new Vector(xx3, yy3, zz3).over(pointA.magnitude());
     }
 
-    copy() { return new Point(this.x, this.y, this.z); }
+    copy() { return new Vector(this.x, this.y, this.z); }
 
     set(point) {
         this.x = point.x;
@@ -178,7 +179,7 @@ class Point {
     }
 }
 
-class Line {
+class Trajectory {
     constructor(points) {
         this.points = points;
     }

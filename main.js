@@ -1,7 +1,6 @@
 'use strict';
 
-
-class celestial {
+class Celestial {
     constructor(position, velocity) {
         this.position = position;
         this.velocity = velocity;
@@ -22,28 +21,22 @@ function main() {
 
 
 
-    let xsun = new celestial(new Point(0, 0, 0), new Point(0, 0, 0));
+    let xsun = new Celestial(new Vector(0, 0, 0), new Vector(0, 0, 0));
 
 
-    let sunPos = new Point(0, 0, 0);
+    let sunPos = new Vector(0, 0, 0);
 
-    let venusPos = new Point(100 * Math.cos(Math.PI * 0), 100 * Math.sin(Math.PI * 0), 0);
-    let venusV = new Point(-1.32265 * Math.sin(Math.PI * 0), 1.32265 * Math.cos(Math.PI * 0), 0);
-    let venusA = new Point(0, 0, 0);
+    let venusPos = new Vector(100 * Math.cos(Math.PI * 0), 100 * Math.sin(Math.PI * 0), 0);
+    let venusV = new Vector(-1.32265 * Math.sin(Math.PI * 0), 1.32265 * Math.cos(Math.PI * 0), 0);
+    let venusA = new Vector(0, 0, 0);
 
-    let earthPos = new Point(200 * Math.cos(Math.PI * 0 / 6), 200 * Math.sin(Math.PI * 0 / 6), 0);
-    let earthV = new Point(-0.8658 * Math.sin(Math.PI * 0 / 6), 0.8658 * Math.cos(Math.PI * 0 / 6), 0);
-    let earthA = new Point(0, 0, 0);
+    let earthPos = new Vector(200 * Math.cos(Math.PI * 0 / 6), 200 * Math.sin(Math.PI * 0 / 6), 0);
+    let earthV = new Vector(-0.8658 * Math.sin(Math.PI * 0 / 6), 0.8658 * Math.cos(Math.PI * 0 / 6), 0);
+    let earthA = new Vector(0, 0, 0);
 
-    let marsPos = new Point(400 * Math.cos(Math.PI * 0 / 6), 400 * Math.sin(Math.PI * 0 / 6), 0);
-    let marsV = new Point(-0.5 * Math.sin(Math.PI * 0 / 6), 0.5 * Math.cos(Math.PI * 0 / 6), 0);
-    let marsA = new Point(0, 0, 0);
-
-
-    let shipPos = new Point(341.222498 * Math.cos(Math.PI * 0), 341.222498 * Math.sin(Math.PI * 0), 5);
-    let shipV = new Point(-0.45 * Math.sin(Math.PI * 0), 0.45 * Math.cos(Math.PI * 0), 0);
-    let shipA = new Point(0, 0, 0);
-
+    let marsPos = new Vector(400 * Math.cos(Math.PI * 0 / 6), 400 * Math.sin(Math.PI * 0 / 6), 0);
+    let marsV = new Vector(-0.5 * Math.sin(Math.PI * 0 / 6), 0.5 * Math.cos(Math.PI * 0 / 6), 0);
+    let marsA = new Vector(0, 0, 0);
 
 
 
@@ -77,10 +70,10 @@ function main() {
         marsPoses.push(marsPos);
     }
 
-        
-    let venusTraj = new Line(venusPoses);
-    let earthTraj = new Line(earthPoses);
-    let marsTraj = new Line(marsPoses);
+
+    let venusTraj = new Trajectory(venusPoses);
+    let earthTraj = new Trajectory(earthPoses);
+    let marsTraj = new Trajectory(marsPoses);
 
 
 
@@ -143,7 +136,7 @@ function addMouseListener(onMove, onWheel) {
 
 class Camera {
     constructor() {
-        this.position = new Point(0, 0, 0);
+        this.position = new Vector(0, 0, 0);
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
