@@ -98,20 +98,24 @@ function main() {
         // marsVs.push(marsV);
 
 
-        let logPos = new Point(venusV.magnitude() * venusPos.magnitude(), 0, 0);
+        let logPos = new Point(venusPos.magnitude() * venusV.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
         logPoses.push(logPos);
-        let logPos2 = new Point(earthV.magnitude() * earthPos.magnitude(), 20, 0);
+        let logPos2 = new Point(earthPos.magnitude() * earthV.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
         logPoses2.push(logPos2);
-        let logPos3 = new Point(marsV.magnitude() * marsPos.magnitude(), 40, 0);
+        let logPos3 = new Point(marsPos.magnitude() * marsV.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
         logPoses3.push(logPos3);
     }
 
     let venusTraj = new Line(venusPoses);
     let earthTraj = new Line(earthPoses);
     let marsTraj = new Line(marsPoses);
-    // let shipTraj = new Line(shipPoses);
 
+    // let shipTraj = new Line(shipPoses);
     // let marsShipTraj = new Line(marsShipPoses);
+
+    let logTraj = new Line(logPoses);
+    let logTraj2 = new Line(logPoses2);
+    let logTraj3 = new Line(logPoses3);
 
 
 
@@ -163,7 +167,9 @@ function main() {
     objs.push(log2);
     objs.push(log3);
 
-
+    objs.push(logTraj);
+    objs.push(logTraj2);
+    objs.push(logTraj3);
 
 
 
@@ -198,7 +204,7 @@ function main() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         objs.forEach((obj) => { obj.draw(camA, camB, camC, camZ); });
 
-        frame += 10;
+        frame += 20;
         frame %= 5000;
     }, 10);
 }
