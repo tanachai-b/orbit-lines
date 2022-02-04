@@ -3,7 +3,7 @@
 function main() {
 
     let sun = new Celestial(1000);
-    
+
     let mercury = new Celestial(
         1,
         sun,
@@ -25,7 +25,7 @@ function main() {
     let moon = new Celestial(
         1,
         earth,
-        new Orbit(50, 0, 0, 0, 0),
+        new Orbit(10, 0, 0, 0, 0),
         0
     );
     let mars = new Celestial(
@@ -40,6 +40,24 @@ function main() {
         new Orbit(3200, 0, 0, 0, 0),
         0
     );
+    let saturn = new Celestial(
+        1,
+        sun,
+        new Orbit(6400, 0, 0, 0, 0),
+        0
+    );
+    let uranus = new Celestial(
+        1,
+        sun,
+        new Orbit(12800, 0, 0, 0, 0),
+        0
+    );
+    let neptune = new Celestial(
+        1,
+        sun,
+        new Orbit(25600, 0, 0, 0, 0),
+        0
+    );
 
     let celestials = [
         sun,
@@ -49,26 +67,18 @@ function main() {
         moon,
         mars,
         jupiter,
+        saturn,
+        uranus,
+        neptune,
     ];
-
-    // celestials = celestials.concat([
-    //     new Orbit(100, 0, 0, 0, 0),
-    //     new Orbit(200, 0, 0, 0, 0),
-    //     new Orbit(400, 0, 0, 0, 0),
-    //     new Orbit(800, 0, 0, 0, 0),
-    //     new Orbit(3200, 0, 0, 0, 0),
-    //     new Orbit(6400, 0, 0, 0, 0),
-    //     new Orbit(12800, 0, 0, 0, 0),
-    //     new Orbit(25600, 0, 0, 0, 0),
-    // ]);
-
 
     let camera = new Camera();
 
     setInterval(() => {
         camera.position = earth.position;
         draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
-        celestials.forEach((celestial) => { celestial.update(); });
+        celestials.forEach((celestial) => { celestial.updateVelocity(); });
+        celestials.forEach((celestial) => { celestial.updatePosition(); });
     }, 1000 / 60);
 }
 
@@ -123,30 +133,35 @@ class Celestial {
 
         this.position = new Vector(0, 0, 0);
         this.velocity = new Vector(0, 0, 0);
+        this.angularVelocity = 0;
 
         if (this.parent != null) {
             this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.parent.position);
         }
     }
 
-    update() {
+    updateVelocity() {
         if (this.parent == null) return;
 
         let relativePosition = this.position.minus(this.parent.position);
 
-
         let apoapsis = this.orbit.apoapsis;
         let orbitDirection = this.orbit.getPosition(1).minus(apoapsis);
 
-
         let position2 = relativePosition.overVector(apoapsis.unit(), orbitDirection);
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
+        let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass * (2 / relativePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-        this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(this.orbit.getPosition(this.trueAnomaly)).unit().times(orbitalSpeed);
+        let orbitalSpeed = Math.sqrt(this.parent.mass * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
-        let angularVelocity = this.velocity.overVector(relativePosition.unit(), this.velocity).y / relativePosition.magnitude();
-        this.position = this.orbit.getPosition(this.trueAnomaly + angularVelocity).plus(this.parent.position);
+        this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
+    }
+
+    updatePosition() {
+        if (this.parent == null) return;
+
+        this.position = this.orbit.getPosition(this.trueAnomaly + this.angularVelocity).plus(this.parent.position);
     }
 
     draw(camera) {
