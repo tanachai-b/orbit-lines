@@ -7,38 +7,17 @@ function main() {
         new Vector(0, 0, 0),
     );
     let earth = new Celestial(
-        new Vector(400, 0, 0),
-        new Vector(0, 1.58, 0),
+        new Vector(200, 0, 0),
+        new Vector(0, 2.74, 0),
         sun,
         new Orbit(400, 0, Math.PI / 6, Math.PI / 6, Math.PI / 6,),
     );
     let celestials = [sun, earth];
 
     celestials = celestials.concat([
-        new Orbit(
-            200,
-            0.1,
-            Math.PI / 6,
-            Math.PI / 60,
-            Math.PI / 6,
-        ),
-
-        new Orbit(
-            400,
-            0.05,
-            0,
-            0,
-            Math.PI * 2 / 3,
-        ),
-
-        new Orbit(
-            800,
-            0.07,
-            -Math.PI / 2,
-            Math.PI / 60,
-            Math.PI * 4 / 3,
-        ),
-
+        // new Orbit(200, 0.1, Math.PI / 6, Math.PI / 60, Math.PI / 6,),
+        new Orbit(400, 0.5, 0, 0, 0,),
+        // new Orbit(800, 0.07, -Math.PI / 2, Math.PI / 60, Math.PI * 4 / 3,),
     ]);
 
     let camera = new Camera();
@@ -191,13 +170,6 @@ class Orbit {
             if (i == 180) {
                 ctx.strokeRect(complexA.x - 3, complexA.y - 3, 6, 6);
             }
-
-            // if (
-            //     i == Math.round((-this.argPeriapsis / Math.PI * 180 + 360) % 360) ||
-            //     i == Math.round((-this.argPeriapsis / Math.PI * 180 + 360 + 180) % 360)
-            // ) {
-            //     ctx.strokeRect(complexA.x - 2, complexA.y - 2, 4, 4);
-            // }
 
             if (i == Math.round((-this.argPeriapsis / Math.PI * 180 + 360) % 360)) {
                 ctx.beginPath();
