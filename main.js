@@ -7,55 +7,110 @@ function main() {
     let mercury = new Celestial(
         1,
         sun,
-        new Orbit(100, 0, 0, 0, 0),
+        new Orbit(
+            20 * 0.38709927,
+            0.20563593,
+            Math.PI / 180 * 48.33076593,
+            Math.PI / 180 * 7.00497902,
+            Math.PI / 180 * 29.12703035,
+        ),
         0
     );
     let venus = new Celestial(
         1,
         sun,
-        new Orbit(200, 0, 0, 0, 0),
+        new Orbit(
+            20 * 0.72333566,
+            0.00677672,
+            Math.PI / 180 * 76.67984255,
+            Math.PI / 180 * 3.39467605,
+            Math.PI / 180 * 54.92262463,
+        ),
         0
     );
     let earth = new Celestial(
         1,
         sun,
-        new Orbit(400, 0, 0, 0, 0),
-        0
-    );
-    let moon = new Celestial(
-        1,
-        earth,
-        new Orbit(10, 0, 0, 0, 0),
+        new Orbit(
+            20 * 1.00000261,
+            0.01671123,
+            Math.PI / 180 * 0.0,
+            Math.PI / 180 * -0.00001531,
+            Math.PI / 180 * 102.9376819,
+        ),
         0
     );
     let mars = new Celestial(
         1,
         sun,
-        new Orbit(800, 0, 0, 0, 0),
+        new Orbit(
+            20 * 1.52371034,
+            0.09339410,
+            Math.PI / 180 * 49.55953891,
+            Math.PI / 180 * 1.84969142,
+            Math.PI / 180 * -73.5031685,
+        ),
         0
     );
     let jupiter = new Celestial(
         1,
         sun,
-        new Orbit(3200, 0, 0, 0, 0),
+        new Orbit(
+            20 * 5.20288700,
+            0.04838624,
+            Math.PI / 180 * 100.47390909,
+            Math.PI / 180 * 1.30439695,
+            Math.PI / 180 * -85.74542926,
+        ),
         0
     );
     let saturn = new Celestial(
         1,
         sun,
-        new Orbit(6400, 0, 0, 0, 0),
+        new Orbit(
+            20 * 9.53667594,
+            0.05386179,
+            Math.PI / 180 * 113.66242448,
+            Math.PI / 180 * 2.48599187,
+            -21.06354617,
+        ),
         0
     );
     let uranus = new Celestial(
         1,
         sun,
-        new Orbit(12800, 0, 0, 0, 0),
+        new Orbit(
+            20 * 19.18916464,
+            0.04725744,
+            Math.PI / 180 * 74.01692503,
+            Math.PI / 180 * 0.77263783,
+            96.93735127,
+        ),
         0
     );
     let neptune = new Celestial(
         1,
         sun,
-        new Orbit(25600, 0, 0, 0, 0),
+        new Orbit(
+            20 * 30.06992276,
+            0.00859048,
+            Math.PI / 180 * 131.78422574,
+            Math.PI / 180 * 1.77004347,
+            -86.81946347,
+        ),
+        0
+    );
+
+    let moon = new Celestial(
+        1,
+        earth,
+        new Orbit(
+            20 * 0.00256955529,
+            0.0554,
+            Math.PI / 180 *125.08,
+            Math.PI / 180 * 5.16,
+            Math.PI / 180 * 318.15,
+        ),
         0
     );
 
@@ -64,12 +119,13 @@ function main() {
         mercury,
         venus,
         earth,
-        moon,
         mars,
         jupiter,
         saturn,
         uranus,
         neptune,
+
+        moon,
     ];
 
     let camera = new Camera();
@@ -152,7 +208,7 @@ class Celestial {
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
         let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
         this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
@@ -237,7 +293,6 @@ class Orbit {
         ctx.lineWidth = 1;
 
         for (let i = 0; i < this.positions.length - 1; i++) {
-
             let aProj = Complex.projectFrom3d(this.positions[i].plus(position), camera);
             let bProj = Complex.projectFrom3d(this.positions[i + 1].plus(position), camera);
 
