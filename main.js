@@ -1,5 +1,15 @@
 'use strict';
 
+class Camera {
+    constructor() {
+        this.position = new Vector(0, 0, 0);
+        this.yaw = 0 - Math.PI / 6;
+        this.pitch = 0 - Math.PI / 6;
+        this.roll = 0;
+        this.zoom = 0;
+    }
+}
+
 class Celestial {
     constructor(position, velocity) {
         this.position = position;
@@ -18,11 +28,7 @@ function main() {
         camera.zoom += event.deltaY;
     });
 
-
-
-
     let xsun = new Celestial(new Vector(0, 0, 0), new Vector(0, 0, 0));
-
 
     let sunPos = new Vector(0, 0, 0);
 
@@ -132,14 +138,4 @@ function addMouseListener(onMove, onWheel) {
     canvas.addEventListener('mouseenter', (event) => { mButtons = event.buttons; });
     canvas.addEventListener('mousemove', (event) => { if (mButtons == 1) onMove(event); });
     canvas.addEventListener('wheel', (event) => { onWheel(event); });
-}
-
-class Camera {
-    constructor() {
-        this.position = new Vector(0, 0, 0);
-        this.yaw = 0 - Math.PI / 6;
-        this.pitch = 0 - Math.PI / 6;
-        this.roll = 0;
-        this.zoom = 0;
-    }
 }
