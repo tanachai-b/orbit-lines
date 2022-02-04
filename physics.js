@@ -177,29 +177,29 @@ class Vector {
     }
 }
 
-class Trajectory {
-    constructor(vectors) {
-        this.vectors = vectors;
-    }
+// class Trajectory {
+//     constructor(vectors) {
+//         this.vectors = vectors;
+//     }
 
-    // set(points) { this.points = points; }
+//     // set(points) { this.points = points; }
 
-    draw(camera) {
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 1;
+//     draw(camera) {
+//         /** @type {HTMLCanvasElement} */
+//         let canvas = document.getElementById('canvas');
+//         let ctx = canvas.getContext('2d');
+//         ctx.strokeStyle = '#FFFFFF';
+//         ctx.lineWidth = 1;
 
-        for (let i = 0; i < this.vectors.length - 1; i++) {
+//         for (let i = 0; i < this.vectors.length - 1; i++) {
 
-            let complexA = Complex.projectFrom3d(this.vectors[i], camera);
-            let complexB = Complex.projectFrom3d(this.vectors[i + 1], camera);
+//             let complexA = Complex.projectFrom3d(this.vectors[i], camera);
+//             let complexB = Complex.projectFrom3d(this.vectors[i + 1], camera);
 
-            ctx.beginPath();
-            ctx.moveTo(complexA.x, complexA.y);
-            ctx.lineTo(complexB.x, complexB.y);
-            ctx.stroke();
-        }
-    }
-}
+//             ctx.beginPath();
+//             ctx.moveTo(complexA.x, complexA.y);
+//             ctx.lineTo(complexB.x, complexB.y);
+//             ctx.stroke();
+//         }
+//     }
+// }
