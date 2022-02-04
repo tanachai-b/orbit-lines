@@ -103,18 +103,29 @@ function main() {
         let scretEarthV = earthV.overPoint(earthPos.unit(), earthV);
         let scretMarsV = marsV.overPoint(marsPos.unit(), marsV);
 
-        scretVenusV = new Point(scretVenusV.x * 0, scretVenusV.y, scretVenusV.z);
-        scretEarthV = new Point(scretEarthV.x * 0, scretEarthV.y, scretEarthV.z);
-        scretMarsV = new Point(scretMarsV.x * 0, scretMarsV.y, scretMarsV.z);
+        scretVenusV = new Point(scretVenusV.x * 0, scretVenusV.y * 1, scretVenusV.z * 0);
+        scretEarthV = new Point(scretEarthV.x * 0, scretEarthV.y * 1, scretEarthV.z * 0);
+        scretMarsV = new Point(scretMarsV.x * 0, scretMarsV.y * 1, scretMarsV.z * 0);
 
 
 
+        let scretVV = Math.sqrt(100 * (2 / venusPos.magnitude() - 1 / 400));
+        // scretVV = scretVV.overPoint(venusPos.unit(),scretVV);
 
-        let logPos = new Point(venusPos.magnitude() * scretVenusV.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
+        let least = Math.sqrt(100 * (2 / 100 - 1 / 400));
+        let most = Math.sqrt(100 * (2 / 300 - 1 / 400));
+
+
+
+        let logPos2x = new Point((least + (most - least) * -Math.cos(i / 5000 * 2 * Math.PI)) * 400, (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
+        logPoses2.push(logPos2x);
+
+
+        let logPos = new Point(venusPos.magnitude() * 0 + 40000 * scretVenusV.magnitude() / venusPos.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
         logPoses.push(logPos);
-        let logPos2 = new Point(earthPos.magnitude() * scretEarthV.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
-        logPoses2.push(logPos2);
-        let logPos3 = new Point(marsPos.magnitude() * scretMarsV.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
+        // let logPos2 = new Point(earthPos.magnitude() *0+40000* earthV.magnitude()/earthPos.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
+        // logPoses2.push(logPos2);
+        let logPos3 = new Point(marsPos.magnitude() * 0 + 40000 * marsV.magnitude() / marsPos.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
         logPoses3.push(logPos3);
     }
 
