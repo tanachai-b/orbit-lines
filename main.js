@@ -10,9 +10,14 @@ function main() {
         new Vector(200, 0, 0),
         new Vector(0, 2.74, 0),
         sun,
-        new Orbit(400, 0, Math.PI / 6, Math.PI / 6, Math.PI / 6,),
     );
-    let celestials = [sun, earth];
+    let earth2 = new Celestial(
+        new Vector(200, 0, 0),
+        new Vector(0, 2.3, 0),
+        sun,
+        new Orbit(400, 0.5, 0, 0, 0,),
+    );
+    let celestials = [sun, earth, earth2];
 
     celestials = celestials.concat([
         // new Orbit(200, 0.1, Math.PI / 6, Math.PI / 60, Math.PI / 6,),
@@ -23,12 +28,15 @@ function main() {
     let camera = new Camera();
 
     setInterval(() => {
+        draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
+
         earth.update();
+        earth2.update();
 
         // camera.position = earth.position;
 
-        draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
-    }, 10);
+
+    }, 1000 / 60);
 }
 
 function draw(onDraw) {
@@ -87,6 +95,8 @@ class Celestial {
         let acceration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(1000);
         this.velocity = this.velocity.plus(acceration);
         this.position = this.position.plus(this.velocity);
+
+        if (this.orbit == null) return;
 
         // let speed = Math.sqrt(1000 * (2 / this.position.minus(this.parent.position).magnitude() - 1 / this.orbit.semiMajorAxis));
     }
