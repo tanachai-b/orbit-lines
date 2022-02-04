@@ -21,35 +21,35 @@ class Complex {
 
     copy() { return new Complex(this.x, this.y); }
 
-    draw(camA, camB, camC, camZ) {
+    draw(camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let complex = Complex.get2dPoint(new Point(this.x, this.y, 0), camA, camB, camC, camZ);
+        let complex = Complex.get2dPoint(new Point(this.x, this.y, 0), camera);
 
         ctx.beginPath();
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
         ctx.stroke();
     }
 
-    static get2dPoint(point, camA, camB, camC, camZ) {
+    static get2dPoint(point, camera) {
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
 
-        let x1 = point.x * Math.cos(camA) - point.y * Math.sin(camA);
-        let y1 = point.y * Math.cos(camA) + point.x * Math.sin(camA);
+        let x1 = point.x * Math.cos(camera.yaw) - point.y * Math.sin(camera.yaw);
+        let y1 = point.y * Math.cos(camera.yaw) + point.x * Math.sin(camera.yaw);
         let z1 = point.z;
 
         let x2 = x1;
-        let y2 = y1 * Math.cos(camB) + z1 * Math.sin(camB);
-        let z2 = z1 * Math.cos(camB) - y1 * Math.sin(camB);
+        let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
+        let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
-        let calcX = (x2 / Math.max(y2 + 1000 * Math.pow(1.001, camZ), 0)) * 1000 + canvas.width / 2;
-        let calcY = -(z2 / Math.max(y2 + 1000 * Math.pow(1.001, camZ), 0)) * 1000 + canvas.height / 2;
+        let calcX = (x2 / Math.max(y2 + 1000 * Math.pow(1.001, camera.zoom), 0)) * 1000 + canvas.width / 2;
+        let calcY = -(z2 / Math.max(y2 + 1000 * Math.pow(1.001, camera.zoom), 0)) * 1000 + canvas.height / 2;
 
         return new Complex(calcX, calcY);
 
@@ -167,7 +167,7 @@ class Point {
         this.z = point.z;
     }
 
-    draw(camA, camB, camC, camZ) {
+    draw(camera) {
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -175,7 +175,7 @@ class Point {
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let complex = Complex.get2dPoint(this, camA, camB, camC, camZ);
+        let complex = Complex.get2dPoint(this, camera);
 
         ctx.beginPath();
         ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
@@ -190,7 +190,7 @@ class Line {
 
     set(points) { this.points = points; }
 
-    draw(camA, camB, camC, camZ) {
+    draw(camera) {
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -200,8 +200,8 @@ class Line {
 
         for (let i = 0; i < this.points.length - 1; i++) {
 
-            let complexA = Complex.get2dPoint(this.points[i], camA, camB, camC, camZ);
-            let complexB = Complex.get2dPoint(this.points[i + 1], camA, camB, camC, camZ);
+            let complexA = Complex.get2dPoint(this.points[i], camera);
+            let complexB = Complex.get2dPoint(this.points[i + 1], camera);
 
             ctx.beginPath();
             ctx.moveTo(complexA.x, complexA.y);

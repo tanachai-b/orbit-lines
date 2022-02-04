@@ -1,19 +1,14 @@
 'use strict';
 
-
-
 function main() {
 
-    let camA = 0 - Math.PI / 6;
-    let camB = 0 - Math.PI / 6;
-    let camC = 0;
-    let camZ = 0;
+    let camera = new Camera();
 
     addMouseListener((event) => {
-        camA += event.movementX / 200;
-        camB -= event.movementY / 200;
+        camera.yaw += event.movementX / 200;
+        camera.pitch -= event.movementY / 200;
     }, (event) => {
-        camZ += event.deltaY;
+        camera.zoom += event.deltaY;
     });
 
 
@@ -54,16 +49,16 @@ function main() {
     let marsPoses = [marsPos];
     // let shipPoses = [shipPos];
 
-    let marsShipPoses = [];
-    let marsVs = [marsV];
+    // let marsShipPoses = [];
+    // let marsVs = [marsV];
 
 
-    let log = new Point(0, 0, 0);
-    let logPoses = [];
-    let log2 = new Point(0, 0, 0);
-    let logPoses2 = [];
-    let log3 = new Point(0, 0, 0);
-    let logPoses3 = [];
+    // let log = new Point(0, 0, 0);
+    // let logPoses = [];
+    // let log2 = new Point(0, 0, 0);
+    // let logPoses2 = [];
+    // let log3 = new Point(0, 0, 0);
+    // let logPoses3 = [];
 
 
     for (let i = 0; i < 5000; i++) {
@@ -99,34 +94,34 @@ function main() {
 
 
 
-        let scretVenusV = venusV.overPoint(venusPos.unit(), venusV);
-        let scretEarthV = earthV.overPoint(earthPos.unit(), earthV);
-        let scretMarsV = marsV.overPoint(marsPos.unit(), marsV);
+        // let scretVenusV = venusV.overPoint(venusPos.unit(), venusV);
+        // let scretEarthV = earthV.overPoint(earthPos.unit(), earthV);
+        // let scretMarsV = marsV.overPoint(marsPos.unit(), marsV);
 
-        scretVenusV = new Point(scretVenusV.x * 0, scretVenusV.y * 1, scretVenusV.z * 0);
-        scretEarthV = new Point(scretEarthV.x * 0, scretEarthV.y * 1, scretEarthV.z * 0);
-        scretMarsV = new Point(scretMarsV.x * 0, scretMarsV.y * 1, scretMarsV.z * 0);
-
-
-
-        let scretVV = Math.sqrt(100 * (2 / venusPos.magnitude() - 1 / 400));
-        // scretVV = scretVV.overPoint(venusPos.unit(),scretVV);
-
-        let least = Math.sqrt(100 * (2 / 100 - 1 / 400));
-        let most = Math.sqrt(100 * (2 / 300 - 1 / 400));
+        // scretVenusV = new Point(scretVenusV.x * 0, scretVenusV.y * 1, scretVenusV.z * 0);
+        // scretEarthV = new Point(scretEarthV.x * 0, scretEarthV.y * 1, scretEarthV.z * 0);
+        // scretMarsV = new Point(scretMarsV.x * 0, scretMarsV.y * 1, scretMarsV.z * 0);
 
 
 
-        let logPos2x = new Point((least + (most - least) * -Math.cos(i / 5000 * 2 * Math.PI)) * 400, (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
-        logPoses2.push(logPos2x);
+        // let scretVV = Math.sqrt(100 * (2 / venusPos.magnitude() - 1 / 400));
+        // // scretVV = scretVV.overPoint(venusPos.unit(),scretVV);
+
+        // let least = Math.sqrt(100 * (2 / 100 - 1 / 400));
+        // let most = Math.sqrt(100 * (2 / 300 - 1 / 400));
 
 
-        let logPos = new Point(venusPos.magnitude() * 0 + 40000 * scretVenusV.magnitude() / venusPos.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
-        logPoses.push(logPos);
-        // let logPos2 = new Point(earthPos.magnitude() *0+40000* earthV.magnitude()/earthPos.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
-        // logPoses2.push(logPos2);
-        let logPos3 = new Point(marsPos.magnitude() * 0 + 40000 * marsV.magnitude() / marsPos.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
-        logPoses3.push(logPos3);
+
+        // let logPos2x = new Point((least + (most - least) * -Math.cos(i / 5000 * 2 * Math.PI)) * 400, (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
+        // logPoses2.push(logPos2x);
+
+
+        // let logPos = new Point(venusPos.magnitude() * 0 + 40000 * scretVenusV.magnitude() / venusPos.magnitude(), (Math.atan2(venusPos.y, venusPos.x) / Math.PI * 400 + 800) % 800 - 400, -100);
+        // logPoses.push(logPos);
+        // // let logPos2 = new Point(earthPos.magnitude() *0+40000* earthV.magnitude()/earthPos.magnitude(), (Math.atan2(earthPos.y, earthPos.x) / Math.PI * 400 + 800) % 800 - 400, 0);
+        // // logPoses2.push(logPos2);
+        // let logPos3 = new Point(marsPos.magnitude() * 0 + 40000 * marsV.magnitude() / marsPos.magnitude(), (Math.atan2(marsPos.y, marsPos.x) / Math.PI * 400 + 800) % 800 - 400, 100);
+        // logPoses3.push(logPos3);
     }
 
     let venusTraj = new Line(venusPoses);
@@ -136,9 +131,9 @@ function main() {
     // let shipTraj = new Line(shipPoses);
     // let marsShipTraj = new Line(marsShipPoses);
 
-    let logTraj = new Line(logPoses);
-    let logTraj2 = new Line(logPoses2);
-    let logTraj3 = new Line(logPoses3);
+    // let logTraj = new Line(logPoses);
+    // let logTraj2 = new Line(logPoses2);
+    // let logTraj3 = new Line(logPoses3);
 
 
 
@@ -186,13 +181,13 @@ function main() {
     // objs.push(shipTraj);
     // objs.push(marsShipTraj);
 
-    objs.push(log);
-    objs.push(log2);
-    objs.push(log3);
+    // objs.push(log);
+    // objs.push(log2);
+    // objs.push(log3);
 
-    objs.push(logTraj);
-    objs.push(logTraj2);
-    objs.push(logTraj3);
+    // objs.push(logTraj);
+    // objs.push(logTraj2);
+    // objs.push(logTraj3);
 
 
 
@@ -214,9 +209,9 @@ function main() {
         // }
         // marsShipTraj.set(cadiz);
 
-        log.set(logPoses[frame]);
-        log2.set(logPoses2[frame]);
-        log3.set(logPoses3[frame]);
+        // log.set(logPoses[frame]);
+        // log2.set(logPoses2[frame]);
+        // log3.set(logPoses3[frame]);
 
 
 
@@ -225,7 +220,7 @@ function main() {
         let ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        objs.forEach((obj) => { obj.draw(camA, camB, camC, camZ); });
+        objs.forEach((obj) => { obj.draw(camera); });
 
         frame += 20;
         frame %= 5000;
@@ -244,4 +239,14 @@ function addMouseListener(onMove, onWheel) {
     canvas.addEventListener('mouseenter', (event) => { mButtons = event.buttons; });
     canvas.addEventListener('mousemove', (event) => { if (mButtons == 1) onMove(event); });
     canvas.addEventListener('wheel', (event) => { onWheel(event); });
+}
+
+class Camera {
+    constructor() {
+        this.position = new Point(0, 0, 0);
+        this.yaw = 0 - Math.PI / 6;
+        this.pitch = 0 - Math.PI / 6;
+        this.roll = 0;
+        this.zoom = 0;
+    }
 }
