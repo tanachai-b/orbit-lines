@@ -40,9 +40,13 @@ class Complex {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
 
-        let x1 = point.x * Math.cos(camera.yaw) - point.y * Math.sin(camera.yaw);
-        let y1 = point.y * Math.cos(camera.yaw) + point.x * Math.sin(camera.yaw);
-        let z1 = point.z;
+        let x0 = point.x - camera.position.x;
+        let y0 = point.y - camera.position.y;
+        let z0 = point.z - camera.position.z;
+
+        let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
+        let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
+        let z1 = z0;
 
         let x2 = x1;
         let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);

@@ -191,7 +191,7 @@ function main() {
 
 
 
-
+    camera.position = venus;
 
     let frame = 0;
     setInterval(() => {
