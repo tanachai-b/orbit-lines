@@ -75,17 +75,17 @@ function main() {
 
     for (let i = 0; i < 5000; i++) {
 
-        venusA = sunPos.minus(venusPos).unit().divide(Math.pow(sunPos.minus(venusPos).mag(), 2)).times(100);
+        venusA = sunPos.minus(venusPos).over(Math.pow(sunPos.minus(venusPos).magnitude(), 3)).times(100);
         venusV = venusV.plus(venusA);
         venusPos = venusPos.plus(venusV);
         venusPoses.push(venusPos);
 
-        earthA = sunPos.minus(earthPos).unit().divide(Math.pow(sunPos.minus(earthPos).mag(), 2)).times(100);
+        earthA = sunPos.minus(earthPos).over(Math.pow(sunPos.minus(earthPos).magnitude(), 3)).times(100);
         earthV = earthV.plus(earthA);
         earthPos = earthPos.plus(earthV);
         earthPoses.push(earthPos);
 
-        marsA = sunPos.minus(marsPos).unit().divide(Math.pow(sunPos.minus(marsPos).mag(), 2)).times(100);
+        marsA = sunPos.minus(marsPos).over(Math.pow(sunPos.minus(marsPos).magnitude(), 3)).times(100);
         marsV = marsV.plus(marsA);
         marsPos = marsPos.plus(marsV);
         marsPoses.push(marsPos);
@@ -105,11 +105,11 @@ function main() {
         // marsVs.push(marsV);
 
 
-        let logPos = new Point(venusV.mag() *venusPos.mag(), 0, 0);
+        let logPos = new Point(venusV.magnitude() * venusPos.magnitude(), 0, 0);
         logPoses.push(logPos);
-        let logPos2 = new Point(earthV.mag() *earthPos.mag(), 20, 0);
+        let logPos2 = new Point(earthV.magnitude() * earthPos.magnitude(), 20, 0);
         logPoses2.push(logPos2);
-        let logPos3 = new Point(marsV.mag() *marsPos.mag(), 40, 0);
+        let logPos3 = new Point(marsV.magnitude() * marsPos.magnitude(), 40, 0);
         logPoses3.push(logPos3);
     }
 
@@ -171,6 +171,11 @@ function main() {
 
 
 
+    objs.push(new Complex(200, 100));
+    objs.push(new Complex(200, 100).over(new Complex(10, 10)));
+
+
+
     let frame = 0;
 
     setInterval(() => {
@@ -207,10 +212,41 @@ function main() {
     }, 10);
 }
 
-class Point2d {
+class Complex {
     constructor(x, y) {
         this.x = x;
         this.y = y;
+    }
+
+    magnitude() { return Math.hypot(this.x, this.y) }
+
+    unit() { return new Complex(this.x / this.magnitude(), this.y / this.magnitude()); }
+
+    conjugate() { return new Complex(this.x, -this.y); }
+
+    plus(complex) { return new Complex(this.x + complex.x, this.y + complex.y); }
+
+    minus(complex) { return new Complex(this.x - complex.x, this.y - complex.y); }
+
+    times(complex) { return new Complex(this.x * complex.x - this.y * complex.y, this.x * complex.y + this.y * complex.x); }
+
+    over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() / complex.magnitude(), 0)); }
+
+    copy() { return new Complex(this.x, this.y); }
+
+    draw(ra, rb, rc) {
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+
+        let complex = Complex.get2dPoint(new Point(this.x, this.y, 0), ra, rb, rc);
+
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
+        ctx.stroke();
     }
 
     static get2dPoint(point, ra, rb, rc) {
@@ -229,7 +265,7 @@ class Point2d {
         let calcX = (x2 / Math.max(y2 + 1000, 0)) * 1000 + canvas.width / 2;
         let calcY = -(z2 / Math.max(y2 + 1000, 0)) * 1000 + canvas.height / 2;
 
-        return new Point2d(calcX, calcY);
+        return new Complex(calcX, calcY);
     }
 }
 
@@ -240,35 +276,19 @@ class Point {
         this.z = z;
     }
 
+    magnitude() { return Math.hypot(this.x, this.y, this.z); }
 
-    copy() {
-        return new Point(this.x, this.y, this.z);
-    }
+    unit() { return this.over(this.magnitude()); }
 
-    mag() {
-        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-    }
+    conjugate() { return new Point(this.x, -this.y, -this.x); }
 
-    times(number) {
-        return new Point(this.x * number, this.y * number, this.z * number);
-    }
+    plus(point) { return new Point(this.x + point.x, this.y + point.y, this.z + point.z); }
 
-    divide(number) {
-        return new Point(this.x / number, this.y / number, this.z / number);
-    }
+    minus(point) { return new Point(this.x - point.x, this.y - point.y, this.z - point.z); }
 
-    unit() {
-        return this.divide(this.mag());
-    }
+    times(number) { return new Point(this.x * number, this.y * number, this.z * number); }
 
-    plus(point) {
-        return new Point(this.x + point.x, this.y + point.y, this.z + point.z);
-    }
-
-    minus(point) {
-        return new Point(this.x - point.x, this.y - point.y, this.z - point.z);
-    }
-
+    over(number) { return new Point(this.x / number, this.y / number, this.z / number); }
 
     timesPoint(pointA, pointB) {
 
@@ -333,7 +353,6 @@ class Point {
         let yy1 = this.y * Math.cos(-ra) + this.x * Math.sin(-ra);
         let zz1 = this.z;
 
-
         let xx2 = xx1 * Math.cos(-rb) - zz1 * Math.sin(-rb);
         let yy2 = yy1;
         let zz2 = zz1 * Math.cos(-rb) + xx1 * Math.sin(-rb);
@@ -342,11 +361,10 @@ class Point {
         let yy3 = yy2 * Math.cos(-rc) - zz2 * Math.sin(-rc);
         let zz3 = zz2 * Math.cos(-rc) + yy2 * Math.sin(-rc);
 
-
-
-        return new Point(xx3, yy3, zz3).divide(pointA.mag());
+        return new Point(xx3, yy3, zz3).over(pointA.mag());
     }
 
+    copy() { return new Point(this.x, this.y, this.z); }
 
     set(point) {
         this.x = point.x;
@@ -359,13 +377,13 @@ class Point {
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
 
-        let point2d = Point2d.get2dPoint(this, ra, rb, rc);
+        let complex = Complex.get2dPoint(this, ra, rb, rc);
 
         ctx.strokeStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
         ctx.beginPath();
-        ctx.arc(point2d.x, point2d.y, 5, 0, 2 * Math.PI);
+        ctx.arc(complex.x, complex.y, 5, 0, 2 * Math.PI);
         ctx.stroke();
     }
 }
@@ -390,20 +408,12 @@ class Line {
 
         for (let i = 0; i < this.points.length - 1; i++) {
 
-            let point2dA = Point2d.get2dPoint(this.points[i], ra, rb, rc);
-            let point2dB = Point2d.get2dPoint(this.points[i + 1], ra, rb, rc);
-
-            // ctx.beginPath();
-            // ctx.arc(point2dA.x, point2dA.y, 5, 0, 2 * Math.PI);
-            // ctx.stroke();
-
-            // ctx.beginPath();
-            // ctx.arc(point2dB.x, point2dB.y, 5, 0, 2 * Math.PI);
-            // ctx.stroke();
+            let complexA = Complex.get2dPoint(this.points[i], ra, rb, rc);
+            let complexB = Complex.get2dPoint(this.points[i + 1], ra, rb, rc);
 
             ctx.beginPath();
-            ctx.moveTo(point2dA.x, point2dA.y);
-            ctx.lineTo(point2dB.x, point2dB.y);
+            ctx.moveTo(complexA.x, complexA.y);
+            ctx.lineTo(complexB.x, complexB.y);
             ctx.stroke();
         }
     }
