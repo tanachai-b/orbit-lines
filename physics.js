@@ -58,7 +58,8 @@ class Complex {
         let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
         let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
-        let calcX = (radius / Math.max(y2 + 1000 * 1.001 ** camera.zoom, 0)) * 1000;
+        let depth = Math.max(y2 + 1000 * 1.001 ** camera.zoom, 0);
+        let calcX = (radius / Math.sqrt(depth ** 2 - radius ** 2)) * 1000;
 
         return calcX;
     }

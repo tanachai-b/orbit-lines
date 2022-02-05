@@ -142,7 +142,7 @@ function main() {
         0,
         earth,
         new Orbit(
-            0.0045,
+            0.005,
             0.05,
             Math.PI / 180 * 0,
             Math.PI / 180 * 30,
