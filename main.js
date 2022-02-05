@@ -138,7 +138,7 @@ function main() {
 
     let ship = new Ship(
         'Ship',
-        0.01,
+        0.06,
         0,
         earth,
         new Orbit(
