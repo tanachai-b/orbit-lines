@@ -136,6 +136,21 @@ function main() {
         Math.PI / 180 * 135.27
     );
 
+    let ship = new Ship(
+        'Ship',
+        0.01,
+        0,
+        earth,
+        new Orbit(
+            0.0045,
+            0.05,
+            Math.PI / 180 * 0,
+            Math.PI / 180 * 30,
+            Math.PI / 180 * -45,
+        ),
+        Math.PI / 180 * 90
+    );
+
     let celestials = [
         sun,
         mercury,
@@ -147,6 +162,7 @@ function main() {
         saturn,
         uranus,
         neptune,
+        ship,
     ];
 
 
@@ -164,10 +180,22 @@ function main() {
             case ']':
                 focus++;
                 break;
+            case ',':
+                timeSpeed--;
+                break;
+            case '.':
+                timeSpeed++;
+                break;
+                break;
+            case '/':
+                timeSpeed = 0;
+                break;
         }
 
         focus += celestials.length;
         focus %= celestials.length;
+
+        timeSpeed = Math.max(timeSpeed, 0);
     });
 
 
@@ -176,7 +204,7 @@ function main() {
     setInterval(() => {
         camera.position = celestials[focus].position;
         draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
-        celestials.forEach((celestial) => { celestial.updateVelocity(); });
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updatePosition(); });
     }, 1000 / 60);
 }

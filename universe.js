@@ -6,7 +6,7 @@ class Camera {
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = -7500;
+        this.zoom = -11200;
 
         Camera.addMouseListener(
             (event) => {
@@ -61,7 +61,7 @@ class Celestial {
         }
     }
 
-    updateVelocity() {
+    updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
         let relativePosition = this.position.minus(this.parent.position);
@@ -73,7 +73,7 @@ class Celestial {
         this.trueAnomaly = Math.atan2(position2.y, position2.x);
         let truePosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000 * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000000 * 10 ** timeSpeed * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
 
         this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
@@ -213,5 +213,76 @@ class Orbit {
             ctx.stroke();
             ctx.setLineDash([]);
         }
+    }
+}
+
+class Ship {
+    constructor(
+        label,
+        radius,
+        mass,
+        parent,
+        orbit,
+        trueAnomaly,
+    ) {
+        this.label = label;
+        this.radius = radius;
+        this.mass = mass;
+        this.parent = parent;
+        this.orbit = orbit;
+        this.trueAnomaly = trueAnomaly;
+
+        this.position = new Vector(0, 0, 0);
+        this.velocity = new Vector(0, 0, 0);
+        this.angularVelocity = 0;
+
+        if (this.parent != null) {
+            this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.parent.position);
+        }
+    }
+
+    updateVelocity(timeSpeed) {
+        if (this.parent == null) return;
+
+        let relativePosition = this.position.minus(this.parent.position);
+
+        let apoapsis = this.orbit.apoapsis;
+        let orbitDirection = this.orbit.getPosition(1).minus(apoapsis);
+
+        let position2 = relativePosition.overVector(apoapsis.unit(), orbitDirection);
+        this.trueAnomaly = Math.atan2(position2.y, position2.x);
+        let truePosition = this.orbit.getPosition(this.trueAnomaly);
+
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000000 * 10 ** timeSpeed * (2 / truePosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(truePosition).unit().times(orbitalSpeed);
+
+        this.angularVelocity = this.velocity.overVector(truePosition.unit(), this.velocity).y / truePosition.magnitude();
+    }
+
+    updatePosition() {
+        if (this.parent == null) return;
+
+        this.position = this.orbit.getPosition(this.trueAnomaly + this.angularVelocity).plus(this.parent.position);
+    }
+
+    draw(camera) {
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.lineWidth = 1;
+
+        let posProj = Complex.projectFrom3d(this.position, camera);
+        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 100, this.position, camera);
+
+        ctx.beginPath();
+        ctx.arc(posProj.x, posProj.y, radiusProj, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
+        ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+
+        if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
     }
 }
