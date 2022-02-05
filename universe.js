@@ -54,43 +54,39 @@ class Celestial {
 
         this.angularVelocity = 0;
 
-        this.relPosition = new Vector(0, 0, 0);
-        this.relVelocity = new Vector(0, 0, 0);
-
         this.position = new Vector(0, 0, 0);
         this.velocity = new Vector(0, 0, 0);
 
         if (this.parent != null) {
-            this.relPosition = this.orbit.getPosition(this.trueAnomaly);
+            let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-            let orbitalSpeed = Math.sqrt(this.parent.mass / 10000000000000 * (2 / this.relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-            this.relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(this.relPosition).unit().times(orbitalSpeed);
+            let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
 
-            this.angularVelocity = this.relVelocity.overVector(this.relPosition.unit(), this.relVelocity).y / this.relPosition.magnitude();
+            this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
 
-            this.position = this.relPosition.plus(this.parent.position);
-            this.velocity = this.relVelocity.plus(this.parent.velocity);
+            this.position = relPosition.plus(this.parent.position);
+            this.velocity = relVelocity.plus(this.parent.velocity);
         }
     }
 
     updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass / 10000000000000 * 10 ** timeSpeed * (2 / this.relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-        this.relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(this.relPosition).unit().times(orbitalSpeed);
+        let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-        this.angularVelocity = this.relVelocity.overVector(this.relPosition.unit(), this.relVelocity).y / this.relPosition.magnitude();
+        let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000000 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
+        this.velocity = relVelocity.plus(this.parent.velocity);
 
-        this.velocity = this.relVelocity.plus(this.parent.velocity);
+        this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
     }
 
     updatePosition() {
         if (this.parent == null) return;
 
         this.trueAnomaly += this.angularVelocity;
-        this.relPosition = this.orbit.getPosition(this.trueAnomaly);
-
-        this.position = this.relPosition.plus(this.parent.position);
+        this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.parent.position);
     }
 
     draw(camera) {
@@ -131,38 +127,30 @@ class Ship {
         this.orbit = orbit;
         this.trueAnomaly = trueAnomaly;
 
-        this.relPosition = new Vector(0, 0, 0);
-        this.relVelocity = new Vector(0, 0, 0);
-
         this.position = new Vector(0, 0, 0);
         this.velocity = new Vector(0, 0, 0);
 
         if (this.parent != null) {
-            this.relPosition = this.orbit.getPosition(this.trueAnomaly);
+            let relPosition = this.orbit.getPosition(this.trueAnomaly);
+            this.position = relPosition.plus(this.parent.position);
 
-            let orbitalSpeed = Math.sqrt(this.parent.mass / 10000000000000 * (2 / this.relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-            this.relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(this.relPosition).unit().times(orbitalSpeed);
-
-            this.position = this.relPosition.plus(this.parent.position);
-            this.velocity = this.relVelocity.plus(this.parent.velocity);
+            let orbitalSpeed = Math.sqrt(this.parent.mass / 100000000000000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed).plus(this.parent.velocity);
         }
     }
 
     updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
-        let acceleration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(this.parent.mass / 10000000000000 * 10 ** (timeSpeed/2));
-        this.relVelocity = this.relVelocity.plus(acceleration);
+        let acceleration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(this.parent.mass / 100000000000000 * 10 ** (timeSpeed / 2));
 
-        this.velocity = this.relVelocity.plus(this.parent.velocity);
+        this.velocity = this.velocity.plus(acceleration);
     }
 
     updatePosition(timeSpeed) {
         if (this.parent == null) return;
 
-        this.relPosition = this.relPosition.plus(this.relVelocity.times(10 ** (timeSpeed/2)));
-
-        this.position = this.relPosition.plus(this.parent.position);
+        this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
     }
 
     draw(camera) {

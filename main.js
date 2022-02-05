@@ -166,7 +166,7 @@ function main() {
     ];
 
 
-    let focus = 10;
+    let focus = 3;
     let timeSpeed = 0;
 
     /** @type {HTMLCanvasElement} */
