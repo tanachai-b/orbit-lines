@@ -166,7 +166,7 @@ function main() {
     ];
 
 
-    let focus = 3;
+    let focus = 10;
     let timeSpeed = 0;
 
     /** @type {HTMLCanvasElement} */
@@ -186,7 +186,6 @@ function main() {
             case '.':
                 timeSpeed++;
                 break;
-                break;
             case '/':
                 timeSpeed = 0;
                 break;
@@ -205,7 +204,7 @@ function main() {
         camera.position = celestials[focus].position;
         draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updatePosition(); });
+        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
     }, 1000 / 60);
 }
 
