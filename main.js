@@ -189,6 +189,12 @@ function main() {
             case '/':
                 timeSpeed = 0;
                 break;
+            case 'w':
+                ship.thrust(0.0000001);
+                break;
+            case 's':
+                ship.thrust(-0.0000001);
+                break;
         }
 
         focus += celestials.length;

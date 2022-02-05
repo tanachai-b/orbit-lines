@@ -139,6 +139,13 @@ class Ship {
         }
     }
 
+    thrust(thrust) {
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+        relVelocity = relVelocity.plus(relVelocity.unit().times(thrust));
+
+        this.velocity = relVelocity.plus(this.parent.velocity);
+    }
+
     updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
