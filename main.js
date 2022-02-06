@@ -145,7 +145,7 @@ function main() {
             8000,
             0.05,
             Math.PI / 180 * 15,
-            Math.PI / 180 * 5,
+            Math.PI / 180 * 1,
             Math.PI / 180 * -45
         ),
         Math.PI / 180 * 90
@@ -157,10 +157,10 @@ function main() {
         0,
         earth,
         new Orbit(
-            9000,
+            10000,
             0.01,
             Math.PI / 180 * -45,
-            Math.PI / 180 * 5,
+            Math.PI / 180 * 1,
             Math.PI / 180 * -120
         ),
         Math.PI / 180 * 30
@@ -233,15 +233,15 @@ function main() {
         if (keys.has('shift')) {
             if (keys.has('w')) ship.thrust(0.001, 0, 0);
             if (keys.has('s')) ship.thrust(-0.001, 0, 0);
-            if (keys.has('a')) ship.thrust(0, -0.001, 0);
-            if (keys.has('d')) ship.thrust(0, 0.001, 0);
+            if (keys.has('a')) ship.thrust(0, 0.001, 0);
+            if (keys.has('d')) ship.thrust(0, -0.001, 0);
             if (keys.has('r')) ship.thrust(0, 0, -0.001);
             if (keys.has('f')) ship.thrust(0, 0, 0.001);
         } else {
             if (keys.has('w')) ship.thrust(0.01, 0, 0);
             if (keys.has('s')) ship.thrust(-0.01, 0, 0);
-            if (keys.has('a')) ship.thrust(0, -0.01, 0);
-            if (keys.has('d')) ship.thrust(0, 0.01, 0);
+            if (keys.has('a')) ship.thrust(0, 0.01, 0);
+            if (keys.has('d')) ship.thrust(0, -0.01, 0);
             if (keys.has('r')) ship.thrust(0, 0, -0.01);
             if (keys.has('f')) ship.thrust(0, 0, 0.01);
         }

@@ -273,12 +273,12 @@ class Ship {
         // ctx.stroke();
     }
 
-    thrust(prograde, radialOut, normal) {
+    thrust(prograde, radialIn, normal) {
 
         let relPosition = this.position.minus(this.parent.position);
         let relVelocity = this.velocity.minus(this.parent.velocity);
 
-        let thrust = new Vector(radialOut, prograde, normal).timesVector(relPosition.unit(), relVelocity);
+        let thrust = new Vector(prograde,radialIn , normal).timesVector(relVelocity.unit(), relPosition.times(-1));
 
         this.velocity = this.velocity.plus(thrust);
     }
