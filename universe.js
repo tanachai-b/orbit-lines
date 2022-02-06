@@ -97,31 +97,21 @@ class Celestial {
         ctx.fillStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let posProj = Complex.projectFrom3d(this.position, camera);
-        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 100, this.position, camera);
 
-        ctx.beginPath();
-        ctx.arc(posProj.x, posProj.y, radiusProj, 0, 2 * Math.PI);
-        ctx.stroke();
+        let posProj = Complex.projectFrom3d(this.position, camera);
 
         ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
-        let circle = Complex.projectCircle(this.radius / 149598073 * 100, this.position, camera);
+        let circle = Complex.projectSphere(this.radius / 149598073 * 100, this.position, camera);
 
-        ctx.beginPath();
-        ctx.moveTo(circle[0].x, circle[0].y);
-        for (let i = 1; i < circle.length; i++) { ctx.lineTo(circle[i].x, circle[i].y); }
-        ctx.stroke();
-
-
-        // let equator = Complex.projectEquator(this.radius / 149598073 * 100, this.position, camera);
-
-        // ctx.beginPath();
-        // ctx.moveTo(equator[0].x, equator[0].y);
-        // for (let i = 1; i < equator.length; i++) { ctx.lineTo(equator[i].x, equator[i].y); }
-        // ctx.stroke();
+        for (let i = 1; i < circle.length - 1; i++) {
+            ctx.beginPath();
+            ctx.moveTo(circle[i].x, circle[i].y);
+            ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
+            ctx.stroke();
+        }
 
 
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
@@ -185,15 +175,22 @@ class Ship {
         ctx.fillStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
-        let posProj = Complex.projectFrom3d(this.position, camera);
-        let radiusProj = Complex.projectRadius(this.radius / 149598073 * 100, this.position, camera);
 
-        ctx.beginPath();
-        ctx.arc(posProj.x, posProj.y, radiusProj, 0, 2 * Math.PI);
-        ctx.stroke();
+        let posProj = Complex.projectFrom3d(this.position, camera);
 
         ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+
+
+        let circle = Complex.projectSphere(this.radius / 149598073 * 100, this.position, camera);
+
+        for (let i = 1; i < circle.length - 1; i++) {
+            ctx.beginPath();
+            ctx.moveTo(circle[i].x, circle[i].y);
+            ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
+            ctx.stroke();
+        }
+
 
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
     }
@@ -289,11 +286,12 @@ class Orbit {
         ctx.stroke();
 
         this.ascDescLine = [];
-        for (let i = 0; i <= 1; i++) {
-            let position = this.descending.minus(this.ascending).over(1).times(i).plus(this.ascending);
+        for (let i = 0; i <= 100; i++) {
+            let position = this.descending.minus(this.ascending).over(100).times(i).plus(this.ascending);
             this.ascDescLine.push(position);
         }
 
+        ctx.setLineDash([1, 10]);
         for (let i = 0; i < this.ascDescLine.length - 1; i++) {
             let start = Complex.projectFrom3d(this.ascDescLine[i].plus(position), camera);
             let end = Complex.projectFrom3d(this.ascDescLine[i + 1].plus(position), camera);
@@ -301,9 +299,8 @@ class Orbit {
             ctx.beginPath();
             ctx.moveTo(start.x, start.y);
             ctx.lineTo(end.x, end.y);
-            ctx.setLineDash([2, 5]);
             ctx.stroke();
-            ctx.setLineDash([]);
         }
+        ctx.setLineDash([]);
     }
 }

@@ -42,28 +42,7 @@ class Complex {
         return new Complex(calcX, calcY);
     }
 
-    static projectRadius(radius, point, camera) {
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
-
-        let x0 = point.x - camera.position.x;
-        let y0 = point.y - camera.position.y;
-        let z0 = point.z - camera.position.z;
-
-        let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
-        let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
-        let z1 = z0;
-
-        let x2 = x1;
-        let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
-        let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
-
-        let calcX = (radius / Math.max(y2 + 1000 * 1.001 ** camera.zoom, 0)) * 1000;
-
-        return calcX;
-    }
-
-    static projectCircle(radius, point, camera) {
+    static projectSphere(radius, point, camera) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
 
@@ -91,7 +70,7 @@ class Complex {
 
         let ress = [];
 
-        for (let i = 0; i <= Math.PI * 2; i += Math.PI / 180) {
+        for (let i = 0; i <= Math.PI * 2 + 1; i += Math.PI / 180) {
             let upp = newPoint.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(i), Math.sin(i)));
 
             let res = upp.timesVector(dir.unit(), dir);
@@ -103,47 +82,6 @@ class Complex {
 
         return ress;
     }
-
-    // static projectEquator(radius, point, camera) {
-    //     /** @type {HTMLCanvasElement} */
-    //     let canvas = document.getElementById('canvas');
-
-    //     let x0 = point.x - camera.position.x;
-    //     let y0 = point.y - camera.position.y;
-    //     let z0 = point.z - camera.position.z;
-
-    //     let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
-    //     let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
-    //     let z1 = z0;
-
-    //     let x2 = x1;
-    //     let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
-    //     let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
-
-
-    //     let dist = y2 + 1000 * 1.001 ** camera.zoom;
-    //     let dir = new Vector(dist, -x2, z2);
-    //     let hyp = dir.magnitude();
-
-    //     let newx = radius * Math.sqrt(hyp ** 2 - radius ** 2) / hyp
-    //     let newy = (hyp ** 2 - radius ** 2) / hyp
-    //     let newPoint = new Vector(newy, -newx, 0);
-
-
-    //     let ress = [];
-
-    //     for (let i = 0; i <= Math.PI * 2; i += Math.PI / 180) {
-    //         let upp = newPoint.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(i), Math.sin(i)));
-
-    //         let res = upp.timesVector(dir.unit(), dir);
-
-    //         let calcX = -res.y / Math.max(res.x, 0) * 1000 + canvas.width / 2;
-    //         let calcY = -res.z / Math.max(res.x, 0) * 1000 + canvas.height / 2;
-    //         ress.push(new Complex(calcX, calcY));
-    //     }
-
-    //     return ress;
-    // }
 }
 
 class Vector {
