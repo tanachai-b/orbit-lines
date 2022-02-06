@@ -211,13 +211,15 @@ class Ship {
 
         let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
         let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
-        let longAscending = Math.atan2(ascNode.y, ascNode.x);
+        let longAscending = Math.acos(ascNode.x);
+        if (ascNode.y < 0) longAscending = 2 * Math.PI - longAscending;
 
         let inclination = Math.acos(normal.z);
 
-        let eccenVector = new Vector(0, 0, angularMomentum * speed).timesVector(relVelocity.unit(), normal).over(this.parent.mass * 10000).minus(relPosition.unit());
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.parent.mass * 10000).minus(relPosition.unit());
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(-ascNode.y, ascNode.x, 0));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
+        if (normal.z < 0) argPeriapsis = 2 * Math.PI - argPeriapsis;
 
         this.orbit2 = new Orbit(
             semiMajorAxis,
@@ -263,7 +265,7 @@ class Ship {
         }
 
 
-        if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
+        // if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
 
 
 
@@ -271,14 +273,14 @@ class Ship {
 
 
 
-        let velProj = Complex.projectFrom3d(this.position.plus(this.velocity.minus(this.parent.velocity).times(200)), camera);
-        ctx.beginPath();
-        ctx.moveTo(posProj.x, posProj.y);
-        ctx.lineTo(velProj.x, velProj.y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(velProj.x, velProj.y, 2, 0, 2 * Math.PI);
-        ctx.stroke();
+        // let velProj = Complex.projectFrom3d(this.position.plus(this.velocity.minus(this.parent.velocity).times(200)), camera);
+        // ctx.beginPath();
+        // ctx.moveTo(posProj.x, posProj.y);
+        // ctx.lineTo(velProj.x, velProj.y);
+        // ctx.stroke();
+        // ctx.beginPath();
+        // ctx.arc(velProj.x, velProj.y, 2, 0, 2 * Math.PI);
+        // ctx.stroke();
     }
 }
 
