@@ -230,16 +230,6 @@ class Ship {
         );
     }
 
-    thrust(prograde, radialOut, normal) {
-
-        let relPosition = this.position.minus(this.parent.position);
-        let relVelocity = this.velocity.minus(this.parent.velocity);
-
-        let thrust = new Vector(radialOut, prograde, normal).timesVector(relPosition.unit(), relVelocity);
-
-        this.velocity = this.velocity.plus(thrust);
-    }
-
     draw(camera, isFocused) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -281,6 +271,16 @@ class Ship {
         // ctx.beginPath();
         // ctx.arc(velProj.x, velProj.y, 2, 0, 2 * Math.PI);
         // ctx.stroke();
+    }
+
+    thrust(prograde, radialOut, normal) {
+
+        let relPosition = this.position.minus(this.parent.position);
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+
+        let thrust = new Vector(radialOut, prograde, normal).timesVector(relPosition.unit(), relVelocity);
+
+        this.velocity = this.velocity.plus(thrust);
     }
 }
 

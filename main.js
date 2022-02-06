@@ -145,26 +145,26 @@ function main() {
             8000,
             0.05,
             Math.PI / 180 * 15,
-            Math.PI / 180 * 30,
+            Math.PI / 180 * 5,
             Math.PI / 180 * -45
         ),
         Math.PI / 180 * 90
     );
 
-    // let ship2 = new Celestial(
-    //     'Ship2',
-    //     0.01,
-    //     0,
-    //     earth,
-    //     new Orbit(
-    //         8000,
-    //         0.05,
-    //         Math.PI / 180 * 15,
-    //         Math.PI / 180 * 30,
-    //         Math.PI / 180 * -45,
-    //     ),
-    //     Math.PI / 180 * 90
-    // );
+    let iss = new Celestial(
+        'ISS',
+        0.01,
+        0,
+        earth,
+        new Orbit(
+            9000,
+            0.01,
+            Math.PI / 180 * -45,
+            Math.PI / 180 * 5,
+            Math.PI / 180 * -120
+        ),
+        Math.PI / 180 * 30
+    );
 
     let celestials = [
         sun,
@@ -172,7 +172,7 @@ function main() {
         venus,
         earth,
         ship,
-        // ship2,
+        iss,
         moon,
         mars,
         jupiter,
@@ -187,47 +187,18 @@ function main() {
     let camera = new Camera(ship);
     let focusIndex = 4;
 
+
     /** @type {HTMLCanvasElement} */
     let canvas = document.getElementById('canvas');
     canvas.focus();
     canvas.addEventListener('keypress', (event) => {
         switch (event.key) {
-            case '[':
-                focusIndex--;
-                break;
-            case ']':
-                focusIndex++;
-                break;
-            case '\\':
-                focusIndex = 4;
-                break;
-            case ',':
-                timeSpeed--;
-                break;
-            case '.':
-                timeSpeed++;
-                break;
-            case '/':
-                timeSpeed = 0;
-                break;
-            // case 'w':
-            //     ship.thrust(0.1, 0, 0);
-            //     break;
-            // case 's':
-            //     ship.thrust(-0.1, 0, 0);
-            //     break;
-            // case 'a':
-            //     ship.thrust(0, -0.1, 0);
-            //     break;
-            // case 'd':
-            //     ship.thrust(0, 0.1, 0);
-            //     break;
-            // case 'r':
-            //     ship.thrust(0, 0, 0.1);
-            //     break;
-            // case 'f':
-            //     ship.thrust(0, 0, -0.1);
-            //     break;
+            case '[': focusIndex--; break;
+            case ']': focusIndex++; break;
+            case '\\': focusIndex = 4; break;
+            case ',': timeSpeed--; break;
+            case '.': timeSpeed++; break;
+            case '/': timeSpeed = 0; break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
@@ -237,9 +208,10 @@ function main() {
         camera.changeFocus(celestials[focusIndex]);
     });
 
+
     let keys = new Set();
-    canvas.addEventListener('keydown', (event) => { keys.add(event.key); });
-    canvas.addEventListener('keyup', (event) => { keys.delete(event.key); });
+    canvas.addEventListener('keydown', (event) => { keys.add(event.key.toLowerCase()); });
+    canvas.addEventListener('keyup', (event) => { keys.delete(event.key.toLowerCase()); });
 
 
     setInterval(() => {
@@ -258,13 +230,21 @@ function main() {
 
         camera.update();
 
-
-        if (keys.has('w')) ship.thrust(0.01, 0, 0);
-        if (keys.has('s')) ship.thrust(-0.01, 0, 0);
-        if (keys.has('a')) ship.thrust(0, -0.01, 0);
-        if (keys.has('d')) ship.thrust(0, 0.01, 0);
-        if (keys.has('r')) ship.thrust(0, 0, -0.01);
-        if (keys.has('f')) ship.thrust(0, 0, 0.01);
+        if (keys.has('shift')) {
+            if (keys.has('w')) ship.thrust(0.001, 0, 0);
+            if (keys.has('s')) ship.thrust(-0.001, 0, 0);
+            if (keys.has('a')) ship.thrust(0, -0.001, 0);
+            if (keys.has('d')) ship.thrust(0, 0.001, 0);
+            if (keys.has('r')) ship.thrust(0, 0, -0.001);
+            if (keys.has('f')) ship.thrust(0, 0, 0.001);
+        } else {
+            if (keys.has('w')) ship.thrust(0.01, 0, 0);
+            if (keys.has('s')) ship.thrust(-0.01, 0, 0);
+            if (keys.has('a')) ship.thrust(0, -0.01, 0);
+            if (keys.has('d')) ship.thrust(0, 0.01, 0);
+            if (keys.has('r')) ship.thrust(0, 0, -0.01);
+            if (keys.has('f')) ship.thrust(0, 0, 0.01);
+        }
 
     }, 1000 / 60);
 }
