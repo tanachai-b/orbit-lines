@@ -108,7 +108,7 @@ class Celestial {
 
         let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
-        this.velocity = relVelocity.plus(this.parent.velocity);
+        this.velocity = relVelocity.plus(this.parent.velocity).over(10 ** (timeSpeed / 2));
 
         this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
     }
@@ -119,6 +119,8 @@ class Celestial {
         this.trueAnomaly += this.angularVelocity;
         this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.parent.position);
     }
+
+    updateOrbit() { }
 
     draw(camera, isFocused) {
         /** @type {HTMLCanvasElement} */
@@ -198,16 +200,16 @@ class Ship {
         if (this.parent == null) return;
 
         this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
+    }
 
-
-
-
-
+    updateOrbit(timeSpeed) {
+        // * 10 ** (timeSpeed)
 
         let dist = this.parent.position.minus(this.position).magnitude();
         let vel = this.velocity.minus(this.parent.velocity).magnitude();
-        let semi = 1 / (2 / dist - vel ** 2 / (this.parent.mass * 10000 * 10 ** (timeSpeed / 2)));
-        // console.log(semi);
+        let semi = 1 / (2 / dist - vel ** 2 / (this.parent.mass * 10000));
+
+        console.log(vel);
 
         this.orbit2 = new Orbit(semi, 0, 0, 0, 0);
     }
@@ -242,6 +244,17 @@ class Ship {
 
 
         if (this.orbit2 != null) { this.orbit2.draw(camera, this.parent.position, isFocused); }
+
+
+
+        let velProj = Complex.projectFrom3d(this.position.plus(this.velocity.minus(this.parent.velocity).times(200)), camera);
+        ctx.beginPath();
+        ctx.moveTo(posProj.x, posProj.y);
+        ctx.lineTo(velProj.x, velProj.y);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(velProj.x, velProj.y, 2, 0, 2 * Math.PI);
+        ctx.stroke();
     }
 }
 
