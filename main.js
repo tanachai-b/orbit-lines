@@ -156,18 +156,20 @@ function main() {
         mercury,
         venus,
         earth,
+        ship,
         moon,
         mars,
         jupiter,
         saturn,
         uranus,
         neptune,
-        ship,
     ];
 
 
-    let focus = 10;
     let timeSpeed = 0;
+
+    let focus = ship;
+    let focusIndex = 4;
 
     /** @type {HTMLCanvasElement} */
     let canvas = document.getElementById('canvas');
@@ -175,10 +177,10 @@ function main() {
     canvas.addEventListener('keypress', (event) => {
         switch (event.key) {
             case '[':
-                focus--;
+                focusIndex--;
                 break;
             case ']':
-                focus++;
+                focusIndex++;
                 break;
             case ',':
                 timeSpeed--;
@@ -197,8 +199,9 @@ function main() {
                 break;
         }
 
-        focus += celestials.length;
-        focus %= celestials.length;
+        focusIndex += celestials.length;
+        focusIndex %= celestials.length;
+        focus = celestials[focusIndex];
 
         timeSpeed = Math.max(timeSpeed, 0);
     });
@@ -207,18 +210,18 @@ function main() {
     let camera = new Camera();
 
     setInterval(() => {
-        camera.position = celestials[focus].position;
-        draw(() => { celestials.forEach((obj) => { obj.draw(camera); }); });
+        camera.position = focus.position;
+
+
+        /** @type {HTMLCanvasElement} */
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        celestials.forEach((celestial) => { celestial.draw(camera, focus.label == celestial.label); });
+
+
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
     }, 1000 / 60);
-}
-
-function draw(onDraw) {
-    /** @type {HTMLCanvasElement} */
-    let canvas = document.getElementById('canvas');
-    let ctx = canvas.getContext('2d');
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    onDraw();
 }
