@@ -6,7 +6,7 @@ class Camera {
         this.yaw = 0 - Math.PI / 6;
         this.pitch = 0 - Math.PI / 6;
         this.roll = 0;
-        this.zoom = 25;
+        this.zoom = 15;
 
         Camera.addMouseListener(
             (event) => {
