@@ -18,7 +18,6 @@ class Camera {
 
             }, (event) => {
                 this.zoom += Math.sign(event.deltaY);
-                console.log(this.zoom);
             },
         );
     }
@@ -168,6 +167,18 @@ class Ship {
         if (this.parent == null) return;
 
         this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
+
+
+
+
+
+
+        let dist = this.parent.position.minus(this.position).magnitude();
+        let vel = this.velocity.minus(this.parent.velocity).magnitude();
+        let semi = 1 / (2 / dist - vel ** 2 / (this.parent.mass * 10000 * 10 ** (timeSpeed / 2)));
+        // console.log(semi);
+
+        this.orbit2 = new Orbit(semi, 0, 0, 0, 0);
     }
 
     draw(camera, isFocused) {
@@ -199,11 +210,7 @@ class Ship {
 
 
 
-
-
-
-        let orbit2 = new Orbit(10000, 0, 0, 0, 0);
-        orbit2.draw(camera, this.parent.position, true);
+        if (this.orbit2 != null) { this.orbit2.draw(camera, this.parent.position, isFocused); }
     }
 }
 
