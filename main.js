@@ -182,6 +182,9 @@ function main() {
             case ']':
                 focusIndex++;
                 break;
+            case '\\':
+                focusIndex = 4;
+                break;
             case ',':
                 timeSpeed--;
                 break;

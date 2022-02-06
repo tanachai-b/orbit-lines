@@ -56,7 +56,7 @@ class Camera {
     }
 
     update() {
-        this.diffPosition = this.diffPosition.over(1.1);
+        this.diffPosition = this.diffPosition.times(9 / 10);
         this.position = this.focus.position.plus(this.diffPosition);
 
         this.yaw += (this.destYaw - this.yaw) / 10;
