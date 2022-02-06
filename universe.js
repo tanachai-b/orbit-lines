@@ -195,7 +195,7 @@ class Ship {
         this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
     }
 
-    updateOrbit(timeSpeed) {
+    updateOrbit() {
 
         let relPosition = this.position.minus(this.parent.position);
         let relVelocity = this.velocity.minus(this.parent.velocity);
@@ -215,13 +215,16 @@ class Ship {
 
         let inclination = Math.acos(normal.z);
 
+        let eccenVector = new Vector(0, 0, angularMomentum * speed).timesVector(relVelocity.unit(), normal).over(this.parent.mass * 10000).minus(relPosition.unit());
+        let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(-ascNode.y, ascNode.x, 0));
+        let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
         this.orbit2 = new Orbit(
             semiMajorAxis,
             eccentricity,
             longAscending,
             inclination,
-            Math.PI / 180 * 0
+            argPeriapsis
         );
     }
 

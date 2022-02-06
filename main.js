@@ -250,7 +250,7 @@ function main() {
 
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updateOrbit(timeSpeed); });
+        celestials.forEach((celestial) => { celestial.updateOrbit(); });
 
         camera.update();
 
