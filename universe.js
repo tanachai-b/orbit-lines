@@ -1,12 +1,20 @@
 'use strict';
 
 class Camera {
-    constructor() {
-        this.position = new Vector(0, 0, 0);
-        this.yaw = 0 - Math.PI / 6;
-        this.pitch = 0 - Math.PI / 6;
+    constructor(focus) {
+        this.position = focus.position;
+
+        this.yaw = -Math.PI / 6;
+        this.pitch = -Math.PI / 6;
         this.roll = 0;
+
         this.zoom = 15;
+
+
+        this.focus = focus;
+        this.diffPosition = new Vector(0, 0, 0);
+        this.destZoom = this.zoom;
+
 
         Camera.addMouseListener(
             (event) => {
@@ -17,7 +25,7 @@ class Camera {
                 this.pitch = Math.max(this.pitch, -Math.PI / 2);
 
             }, (event) => {
-                this.zoom += Math.sign(event.deltaY);
+                this.destZoom += Math.sign(event.deltaY);
             },
         );
     }
@@ -33,6 +41,18 @@ class Camera {
         canvas.addEventListener('mouseenter', (event) => { mButtons = event.buttons; });
         canvas.addEventListener('mousemove', (event) => { if (mButtons == 1) onMove(event); });
         canvas.addEventListener('wheel', (event) => { onWheel(event); });
+    }
+
+    changeFocus(focus) {
+        this.focus = focus;
+        this.diffPosition = this.position.minus(this.focus.position);
+    }
+
+    update() {
+        this.diffPosition = this.diffPosition.over(1.1);
+        this.position = this.focus.position.plus(this.diffPosition);
+
+        this.zoom += (this.destZoom - this.zoom) / 10;
     }
 }
 

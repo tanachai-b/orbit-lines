@@ -168,7 +168,7 @@ function main() {
 
     let timeSpeed = 0;
 
-    let focus = ship;
+    let camera = new Camera(ship);
     let focusIndex = 4;
 
     /** @type {HTMLCanvasElement} */
@@ -201,27 +201,26 @@ function main() {
 
         focusIndex += celestials.length;
         focusIndex %= celestials.length;
-        focus = celestials[focusIndex];
+        camera.changeFocus(celestials[focusIndex]);
 
         timeSpeed = Math.max(timeSpeed, 0);
     });
 
 
-    let camera = new Camera();
-
     setInterval(() => {
-        camera.position = focus.position;
-
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        celestials.forEach((celestial) => { celestial.draw(camera, focus.label == celestial.label); });
+        celestials.forEach((celestial) => { celestial.draw(camera, camera.focus.label == celestial.label); });
 
 
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
+
+        camera.update();
+
     }, 1000 / 60);
 }
