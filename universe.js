@@ -143,7 +143,8 @@ class Ship {
             this.position = relPosition.plus(this.parent.position);
 
             let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-            this.velocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed).plus(this.parent.velocity);
+            let orbitalDirection = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit();
+            this.velocity = orbitalDirection.times(orbitalSpeed).plus(this.parent.velocity);
         }
     }
 
@@ -157,7 +158,8 @@ class Ship {
     updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
-        let acceleration = this.parent.position.minus(this.position).over(this.parent.position.minus(this.position).magnitude() ** 3).times(this.parent.mass * 10000 * 10 ** (timeSpeed / 2));
+        let relPosition = this.parent.position.minus(this.position);
+        let acceleration = relPosition.over(relPosition.magnitude() ** 3).times(this.parent.mass * 10000 * 10 ** (timeSpeed / 2));
 
         this.velocity = this.velocity.plus(acceleration);
     }
@@ -183,7 +185,7 @@ class Ship {
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
-        let circle = Complex.projectSphere(this.radius , this.position, camera);
+        let circle = Complex.projectSphere(this.radius, this.position, camera);
 
         for (let i = 1; i < circle.length - 1; i++) {
             ctx.beginPath();
