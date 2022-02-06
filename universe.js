@@ -133,7 +133,7 @@ class Celestial {
 
         let posProj = Complex.projectFrom3d(this.position, camera);
 
-        ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
+        ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
@@ -211,7 +211,13 @@ class Ship {
 
         console.log(vel);
 
-        this.orbit2 = new Orbit(semi, 0, 0, 0, 0);
+        this.orbit2 = new Orbit(
+            semi,
+            0,
+            Math.PI / 180 * 15,
+            Math.PI / 180 * 30,
+            Math.PI / 180 * -45
+        );
     }
 
     draw(camera, isFocused) {
@@ -225,7 +231,7 @@ class Ship {
 
         let posProj = Complex.projectFrom3d(this.position, camera);
 
-        ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
+        ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
