@@ -107,6 +107,23 @@ class Celestial {
         ctx.strokeRect(posProj.x - 4, posProj.y - 4, 8, 8);
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
+
+        let circle = Complex.projectCircle(this.radius / 149598073 * 100, this.position, camera);
+
+        ctx.beginPath();
+        ctx.moveTo(circle[0].x, circle[0].y);
+        for (let i = 1; i < circle.length; i++) { ctx.lineTo(circle[i].x, circle[i].y); }
+        ctx.stroke();
+
+
+        // let equator = Complex.projectEquator(this.radius / 149598073 * 100, this.position, camera);
+
+        // ctx.beginPath();
+        // ctx.moveTo(equator[0].x, equator[0].y);
+        // for (let i = 1; i < equator.length; i++) { ctx.lineTo(equator[i].x, equator[i].y); }
+        // ctx.stroke();
+
+
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position); }
     }
 }
