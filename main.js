@@ -210,24 +210,24 @@ function main() {
             case '/':
                 timeSpeed = 0;
                 break;
-            case 'w':
-                ship.thrust(0.1, 0, 0);
-                break;
-            case 's':
-                ship.thrust(-0.1, 0, 0);
-                break;
-            case 'a':
-                ship.thrust(0, -0.1, 0);
-                break;
-            case 'd':
-                ship.thrust(0, 0.1, 0);
-                break;
-            case 'r':
-                ship.thrust(0, 0, 0.1);
-                break;
-            case 'f':
-                ship.thrust(0, 0, -0.1);
-                break;
+            // case 'w':
+            //     ship.thrust(0.1, 0, 0);
+            //     break;
+            // case 's':
+            //     ship.thrust(-0.1, 0, 0);
+            //     break;
+            // case 'a':
+            //     ship.thrust(0, -0.1, 0);
+            //     break;
+            // case 'd':
+            //     ship.thrust(0, 0.1, 0);
+            //     break;
+            // case 'r':
+            //     ship.thrust(0, 0, 0.1);
+            //     break;
+            // case 'f':
+            //     ship.thrust(0, 0, -0.1);
+            //     break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
@@ -236,6 +236,10 @@ function main() {
         focusIndex %= celestials.length;
         camera.changeFocus(celestials[focusIndex]);
     });
+
+    let keys = new Set();
+    canvas.addEventListener('keydown', (event) => { keys.add(event.key); });
+    canvas.addEventListener('keyup', (event) => { keys.delete(event.key); });
 
 
     setInterval(() => {
@@ -253,6 +257,14 @@ function main() {
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
 
         camera.update();
+
+
+        if (keys.has('w')) ship.thrust(0.01, 0, 0);
+        if (keys.has('s')) ship.thrust(-0.01, 0, 0);
+        if (keys.has('a')) ship.thrust(0, -0.01, 0);
+        if (keys.has('d')) ship.thrust(0, 0.01, 0);
+        if (keys.has('r')) ship.thrust(0, 0, -0.01);
+        if (keys.has('f')) ship.thrust(0, 0, 0.01);
 
     }, 1000 / 60);
 }
