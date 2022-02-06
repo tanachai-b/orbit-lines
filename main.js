@@ -4,13 +4,13 @@ function main() {
 
     let sun = new Celestial(
         'Sun',
-        695700,
+        100 * 695700 / 149598073,
         1988470
     );
 
     let mercury = new Celestial(
         'Mercury',
-        2439.4,
+        100 * 2439.4 / 149598073,
         0.330103,
         sun,
         new Orbit(
@@ -24,7 +24,7 @@ function main() {
     );
     let venus = new Celestial(
         'Venus',
-        6051.8,
+        100 * 6051.8 / 149598073,
         4.86731,
         sun,
         new Orbit(
@@ -38,7 +38,7 @@ function main() {
     );
     let earth = new Celestial(
         'Earth',
-        6371.0084,
+        100 * 6371.0084 / 149598073,
         5.97217,
         sun,
         new Orbit(
@@ -52,7 +52,7 @@ function main() {
     );
     let mars = new Celestial(
         'Mars',
-        3389.50,
+        100 * 3389.50 / 149598073,
         0.641691,
         sun,
         new Orbit(
@@ -66,7 +66,7 @@ function main() {
     );
     let jupiter = new Celestial(
         'Jupiter',
-        69911,
+        100 * 69911 / 149598073,
         1898.125,
         sun,
         new Orbit(
@@ -80,7 +80,7 @@ function main() {
     );
     let saturn = new Celestial(
         'Saturn',
-        58232,
+        100 * 58232 / 149598073,
         568.317,
         sun,
         new Orbit(
@@ -94,7 +94,7 @@ function main() {
     );
     let uranus = new Celestial(
         'Uranus',
-        25362,
+        100 * 25362 / 149598073,
         86.8099,
         sun,
         new Orbit(
@@ -108,7 +108,7 @@ function main() {
     );
     let neptune = new Celestial(
         'Neptune',
-        24622,
+        100 * 24622 / 149598073,
         102.4092,
         sun,
         new Orbit(
@@ -123,7 +123,7 @@ function main() {
 
     let moon = new Celestial(
         'Moon',
-        1737.4,
+        100 * 1737.4 / 149598073,
         0.0734767309,
         earth,
         new Orbit(
@@ -138,7 +138,7 @@ function main() {
 
     let ship = new Ship(
         'Ship',
-        0.06,
+        100 * 0.06 / 149598073,
         0,
         earth,
         new Orbit(

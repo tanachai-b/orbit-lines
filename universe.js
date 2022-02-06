@@ -104,7 +104,7 @@ class Celestial {
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
-        let circle = Complex.projectSphere(this.radius / 149598073 * 100, this.position, camera);
+        let circle = Complex.projectSphere(this.radius, this.position, camera);
 
         for (let i = 1; i < circle.length - 1; i++) {
             ctx.beginPath();
@@ -182,7 +182,7 @@ class Ship {
         ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
 
 
-        let circle = Complex.projectSphere(this.radius / 149598073 * 100, this.position, camera);
+        let circle = Complex.projectSphere(this.radius , this.position, camera);
 
         for (let i = 1; i < circle.length - 1; i++) {
             ctx.beginPath();
