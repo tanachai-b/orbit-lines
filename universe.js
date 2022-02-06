@@ -180,13 +180,6 @@ class Ship {
         }
     }
 
-    thrust(thrust) {
-        let relVelocity = this.velocity.minus(this.parent.velocity);
-        relVelocity = relVelocity.plus(relVelocity.unit().times(thrust));
-
-        this.velocity = relVelocity.plus(this.parent.velocity);
-    }
-
     updateVelocity(timeSpeed) {
         if (this.parent == null) return;
 
@@ -203,21 +196,37 @@ class Ship {
     }
 
     updateOrbit(timeSpeed) {
-        // * 10 ** (timeSpeed)
 
-        let dist = this.parent.position.minus(this.position).magnitude();
-        let vel = this.velocity.minus(this.parent.velocity).magnitude();
-        let semi = 1 / (2 / dist - vel ** 2 / (this.parent.mass * 10000));
+        let relPosition = this.position.minus(this.parent.position);
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+        let perpVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y;
 
-        console.log(vel);
+        let distance = relPosition.magnitude();
+        let speed = relVelocity.magnitude();
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.parent.mass * 10000));
+
+        let orbitalEnergy = -(this.parent.mass * 10000 / (2 * semiMajorAxis));
+        let angularMomentum = relPosition.magnitude() * perpVelocity;
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.parent.mass * 10000) ** 2));
+
+
+
+
 
         this.orbit2 = new Orbit(
-            semi,
-            0,
-            Math.PI / 180 * 15,
-            Math.PI / 180 * 30,
-            Math.PI / 180 * -45
+            semiMajorAxis,
+            eccentricity,
+            Math.PI / 180 * 0,
+            Math.PI / 180 * 0,
+            Math.PI / 180 * 0
         );
+    }
+
+    thrust(thrust) {
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+        relVelocity = relVelocity.plus(relVelocity.unit().times(thrust));
+
+        this.velocity = relVelocity.plus(this.parent.velocity);
     }
 
     draw(camera, isFocused) {

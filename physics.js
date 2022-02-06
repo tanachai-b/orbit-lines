@@ -18,7 +18,7 @@ class Complex {
 
     times(complex) { return new Complex(this.x * complex.x - this.y * complex.y, this.x * complex.y + this.y * complex.x); }
 
-    over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() / complex.magnitude(), 0)); }
+    over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() ** 2, 0)); }
 
     static projectFrom3d(point, camera) {
         /** @type {HTMLCanvasElement} */
