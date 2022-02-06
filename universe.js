@@ -2,6 +2,9 @@
 
 class Camera {
     constructor(focus) {
+        this.focus = focus;
+
+
         this.position = focus.position;
 
         this.yaw = -Math.PI / 6;
@@ -11,18 +14,22 @@ class Camera {
         this.zoom = 15;
 
 
-        this.focus = focus;
         this.diffPosition = new Vector(0, 0, 0);
+
+        this.destYaw = this.yaw;
+        this.destPitch = this.pitch;
+        this.destRoll = this.roll;
+
         this.destZoom = this.zoom;
 
 
         Camera.addMouseListener(
             (event) => {
-                this.yaw += event.movementX / 200;
-                this.pitch -= event.movementY / 200;
+                this.destYaw += event.movementX / 200;
+                this.destPitch -= event.movementY / 200;
 
-                this.pitch = Math.min(this.pitch, Math.PI / 2);
-                this.pitch = Math.max(this.pitch, -Math.PI / 2);
+                this.destPitch = Math.min(this.destPitch, Math.PI / 2);
+                this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
 
             }, (event) => {
                 this.destZoom += Math.sign(event.deltaY);
@@ -51,6 +58,10 @@ class Camera {
     update() {
         this.diffPosition = this.diffPosition.over(1.1);
         this.position = this.focus.position.plus(this.diffPosition);
+
+        this.yaw += (this.destYaw - this.yaw) / 10;
+        this.pitch += (this.destPitch - this.pitch) / 10;
+        this.roll += (this.destRoll - this.roll) / 10;
 
         this.zoom += (this.destZoom - this.zoom) / 10;
     }
