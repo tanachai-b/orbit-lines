@@ -210,13 +210,17 @@ class Ship {
         let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.parent.mass * 10000) ** 2));
 
 
-
+        let normal = new Vector(0,0,1).timesVector(relPosition.unit(),relVelocity);
+        let ascNode = new Vector(0,0,1).timesVector(new Vector(0,0,1),normal);
+        let longAscending = Math.atan2(ascNode.y,ascNode.x);
+        
+        // let inclination
 
 
         this.orbit2 = new Orbit(
             semiMajorAxis,
             eccentricity,
-            Math.PI / 180 * 0,
+            longAscending,
             Math.PI / 180 * 0,
             Math.PI / 180 * 0
         );
