@@ -193,6 +193,14 @@ class Ship {
 
 
         if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
+
+
+
+
+
+
+        let orbit2 = new Orbit(0.005, 0, 0, 0, 0);
+        orbit2.draw(camera, this.parent.position, true);
     }
 }
 

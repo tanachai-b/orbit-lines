@@ -144,7 +144,7 @@ function main() {
         new Orbit(
             0.005,
             0.05,
-            Math.PI / 180 * 0,
+            Math.PI / 180 * 15,
             Math.PI / 180 * 30,
             Math.PI / 180 * -45,
         ),
