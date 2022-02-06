@@ -211,10 +211,22 @@ function main() {
                 timeSpeed = 0;
                 break;
             case 'w':
-                ship.thrust(0.1);
+                ship.thrust(0.1, 0, 0);
                 break;
             case 's':
-                ship.thrust(-0.1);
+                ship.thrust(-0.1, 0, 0);
+                break;
+            case 'a':
+                ship.thrust(0, -0.1, 0);
+                break;
+            case 'd':
+                ship.thrust(0, 0.1, 0);
+                break;
+            case 'r':
+                ship.thrust(0, 0, 0.1);
+                break;
+            case 'f':
+                ship.thrust(0, 0, -0.1);
                 break;
         }
 
