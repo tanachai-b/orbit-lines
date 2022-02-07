@@ -196,20 +196,23 @@ function main() {
         neptune
     ];
 
-    let targets = [
-        iss,
-        moon
-    ];
-
-
 
     let timeSpeed = 0;
 
-    let focusIndex = 4;
+    let centers = [
+        earth,
+        ship
+    ];
+    let centerIndex = 1;
     let camera = new Camera(ship);
 
+    let targets = [
+        null,
+        iss,
+        moon
+    ];
     let targetIndex = 0;
-    let target = iss;
+    let target = null;
 
 
     /** @type {HTMLCanvasElement} */
@@ -218,23 +221,22 @@ function main() {
     canvas.addEventListener('keypress', (event) => {
 
         switch (event.key) {
-            // case '[': focusIndex--; break;
-            // case ']': focusIndex++; break;
-            // case '\\': focusIndex = 4; break;
-
             case ',': timeSpeed--; break;
             case '.': timeSpeed++; break;
             case '/': timeSpeed = 0; break;
 
+            case 'j': centerIndex++; break;
+
             case 'k': targetIndex--; break;
             case 'l': targetIndex++; break;
+            case ';': targetIndex = 0; break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
 
-        focusIndex += celestials.length;
-        focusIndex %= celestials.length;
-        camera.changeFocus(celestials[focusIndex]);
+        centerIndex += centers.length;
+        centerIndex %= centers.length;
+        camera.changeCenter(centers[centerIndex]);
 
         targetIndex += targets.length;
         targetIndex %= targets.length;
@@ -257,29 +259,26 @@ function main() {
         celestials.forEach((celestial) => {
             celestial.draw(
                 camera,
-                camera.focus.label == celestial.label || target.label == celestial.label
+                celestial.label == 'Ship',
+                celestial.label == target?.label
             );
         });
 
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun); });
+        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
+        celestials.forEach((celestial) => { celestial.updateOrbit(); });
+        celestials.forEach((celestial) => { celestial.calcTarget(target); });
 
-        for (let i = 0; i < 1 ** timeSpeed; i++) {
+        camera.update();
 
-            celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun); });
-            celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
-            celestials.forEach((celestial) => { celestial.updateOrbit(); });
-            celestials.forEach((celestial) => { celestial.calcTarget(target); });
+        let thrust = 0.01;
+        if (keys.has('shift')) thrust = 0.001;
 
-            camera.update();
-
-            let thrust = 0.01;
-            if (keys.has('shift')) thrust = 0.001;
-
-            if (keys.has('w')) ship.thrust(thrust, 0, 0);
-            if (keys.has('s')) ship.thrust(-thrust, 0, 0);
-            if (keys.has('a')) ship.thrust(0, thrust, 0);
-            if (keys.has('d')) ship.thrust(0, -thrust, 0);
-            if (keys.has('r')) ship.thrust(0, 0, thrust);
-            if (keys.has('f')) ship.thrust(0, 0, -thrust);
-        }
+        if (keys.has('w')) ship.thrust(thrust, 0, 0);
+        if (keys.has('s')) ship.thrust(-thrust, 0, 0);
+        if (keys.has('a')) ship.thrust(0, thrust, 0);
+        if (keys.has('d')) ship.thrust(0, -thrust, 0);
+        if (keys.has('r')) ship.thrust(0, 0, thrust);
+        if (keys.has('f')) ship.thrust(0, 0, -thrust);
     }, 1000 / 60);
 }

@@ -1,11 +1,11 @@
 'use strict';
 
 class Camera {
-    constructor(focus) {
-        this.focus = focus;
+    constructor(center) {
+        this.center = center;
 
 
-        this.position = focus.position;
+        this.position = center.position;
 
         this.yaw = -Math.PI / 6;
         this.pitch = -Math.PI / 6;
@@ -50,14 +50,14 @@ class Camera {
         canvas.addEventListener('wheel', (event) => { onWheel(event); });
     }
 
-    changeFocus(focus) {
-        this.focus = focus;
-        this.diffPosition = this.position.minus(this.focus.position);
+    changeCenter(center) {
+        this.center = center;
+        this.diffPosition = this.position.minus(this.center.position);
     }
 
     update() {
         this.diffPosition = this.diffPosition.times(9 / 10);
-        this.position = this.focus.position.plus(this.diffPosition);
+        this.position = this.center.position.plus(this.diffPosition);
 
         this.yaw += (this.destYaw - this.yaw) / 10;
         this.pitch += (this.destPitch - this.pitch) / 10;
@@ -123,7 +123,7 @@ class Celestial {
     updateOrbit() { }
     calcTarget(target) { }
 
-    draw(camera, isFocused) {
+    draw(camera, isShip, isTarget) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -148,7 +148,9 @@ class Celestial {
         }
 
 
-        if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
+        if (this.orbit != null && (isShip || isTarget)) {
+            this.orbit.draw(camera, this.parent.position, true);
+        }
     }
 }
 
@@ -242,7 +244,7 @@ class Ship {
 
     }
 
-    draw(camera, isFocused) {
+    draw(camera, isShip, isTarget) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -267,17 +269,9 @@ class Ship {
         }
 
 
-        if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
-
-
-        // let velProj = Complex.projectFrom3d(this.position.plus(this.velocity.minus(this.parent.velocity).times(200)), camera);
-        // ctx.beginPath();
-        // ctx.moveTo(posProj.x, posProj.y);
-        // ctx.lineTo(velProj.x, velProj.y);
-        // ctx.stroke();
-        // ctx.beginPath();
-        // ctx.arc(velProj.x, velProj.y, 2, 0, 2 * Math.PI);
-        // ctx.stroke();
+        if (this.orbit != null && (isShip || isTarget)) {
+            this.orbit.draw(camera, this.parent.position, true);
+        }
     }
 
     thrust(prograde, radialIn, normal) {
@@ -341,7 +335,7 @@ class Orbit {
         return distance * Math.cos(trueAnomaly) <= maxRight;
     }
 
-    draw(camera, position, isFocused) {
+    draw(camera, position, isDrawNodes) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -365,7 +359,7 @@ class Orbit {
             ctx.stroke();
         }
 
-        if (isFocused) {
+        if (isDrawNodes) {
 
             let periProj = Complex.projectFrom3d(this.periapsis.plus(position), camera);
             ctx.beginPath();
