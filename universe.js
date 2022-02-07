@@ -187,6 +187,17 @@ class Ship {
         let acceleration = relPosition.over(relPosition.magnitude() ** 3).times(this.parent.mass * 10000 * 10 ** (timeSpeed / 2));
 
         this.velocity = this.velocity.plus(acceleration);
+
+
+
+
+
+
+
+
+
+        // let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        // let relVelocity = this.orbit2.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
     }
 
     updatePosition(timeSpeed) {
@@ -217,11 +228,14 @@ class Ship {
         let inclination = Math.acos(normal.z);
 
         let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.parent.mass * 10000).minus(relPosition.unit());
-        let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(-ascNode.y, ascNode.x, 0));
+        let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
-        if (normal.z < 0) argPeriapsis = 2 * Math.PI - argPeriapsis;
 
-        this.orbit2 = new Orbit(
+        let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
+        this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
+
+
+        this.orbit = new Orbit(
             semiMajorAxis,
             eccentricity,
             longAscending,
@@ -255,12 +269,7 @@ class Ship {
         }
 
 
-        // if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
-
-
-
-        if (this.orbit2 != null) { this.orbit2.draw(camera, this.parent.position, isFocused); }
-
+        if (this.orbit != null) { this.orbit.draw(camera, this.parent.position, isFocused); }
 
 
         // let velProj = Complex.projectFrom3d(this.position.plus(this.velocity.minus(this.parent.velocity).times(200)), camera);
@@ -278,7 +287,7 @@ class Ship {
         let relPosition = this.position.minus(this.parent.position);
         let relVelocity = this.velocity.minus(this.parent.velocity);
 
-        let thrust = new Vector(prograde,radialIn , normal).timesVector(relVelocity.unit(), relPosition.times(-1));
+        let thrust = new Vector(prograde, radialIn, normal).timesVector(relVelocity.unit(), relPosition.times(-1));
 
         this.velocity = this.velocity.plus(thrust);
     }
