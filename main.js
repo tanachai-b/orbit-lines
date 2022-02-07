@@ -145,7 +145,7 @@ function main() {
             8000,
             0.05,
             Math.PI / 180 * 15,
-            Math.PI / 180 * 1,
+            Math.PI / 180 * 10,
             Math.PI / 180 * -45
         ),
         Math.PI / 180 * 90
@@ -175,7 +175,7 @@ function main() {
             10000,
             0.01,
             Math.PI / 180 * -45,
-            Math.PI / 180 * 1,
+            Math.PI / 180 * 10,
             Math.PI / 180 * -120
         ),
         Math.PI / 180 * 30
@@ -211,8 +211,8 @@ function main() {
         iss,
         moon
     ];
-    let targetIndex = 0;
-    let target = null;
+    let targetIndex = 1;
+    let target = iss;
 
 
     /** @type {HTMLCanvasElement} */
@@ -264,7 +264,8 @@ function main() {
             );
         });
 
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun); });
+        // for (let i = 0; i < 10 ** timeSpeed;i++) {
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
         celestials.forEach((celestial) => { celestial.calcTarget(target); });
@@ -280,5 +281,6 @@ function main() {
         if (keys.has('d')) ship.thrust(0, -thrust, 0);
         if (keys.has('r')) ship.thrust(0, 0, thrust);
         if (keys.has('f')) ship.thrust(0, 0, -thrust);
+        // }
     }, 1000 / 60);
 }

@@ -183,7 +183,7 @@ class Ship {
         }
     }
 
-    updateVelocity(timeSpeed, sun) {
+    updateVelocity(timeSpeed, sun, moon) {
         if (this.parent == null) return;
 
         let relPosition = this.parent.position.minus(this.position);
@@ -192,6 +192,10 @@ class Ship {
         let sunDist = sun.position.minus(this.position);
         let sunGrav = sunDist.over(sunDist.magnitude() ** 3).times(sun.mass * 10000 * 10 ** (timeSpeed / 2));
         acceleration = acceleration.plus(sunGrav);
+
+        let moonDist = moon.position.minus(this.position);
+        let moonGrav = moonDist.over(moonDist.magnitude() ** 3).times(moon.mass * 10000 * 10 ** (timeSpeed / 2));
+        acceleration = acceleration.plus(moonGrav);
 
         this.velocity = this.velocity.plus(acceleration);
     }
@@ -228,7 +232,7 @@ class Ship {
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
         let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
-        // this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
+        this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
 
 
         this.orbit = new Orbit(
