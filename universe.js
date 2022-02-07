@@ -121,6 +121,7 @@ class Celestial {
     }
 
     updateOrbit() { }
+    calcTarget(target) { }
 
     draw(camera, isFocused) {
         /** @type {HTMLCanvasElement} */
@@ -225,7 +226,7 @@ class Ship {
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
         let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
-        this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
+        // this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
 
 
         this.orbit = new Orbit(
@@ -235,6 +236,10 @@ class Ship {
             inclination,
             argPeriapsis
         );
+    }
+
+    calcTarget(target) {
+
     }
 
     draw(camera, isFocused) {
