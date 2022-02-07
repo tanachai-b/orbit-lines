@@ -175,7 +175,7 @@ function main() {
             10000,
             0.01,
             Math.PI / 180 * -45,
-            Math.PI / 180 * 10,
+            Math.PI / 180 * 45,
             Math.PI / 180 * -120
         ),
         Math.PI / 180 * 30
@@ -211,8 +211,8 @@ function main() {
         iss,
         moon
     ];
-    let targetIndex = 1;
-    let target = iss;
+    let targetIndex = 0;
+    ship.setTarget(null);
 
 
     /** @type {HTMLCanvasElement} */
@@ -240,7 +240,7 @@ function main() {
 
         targetIndex += targets.length;
         targetIndex %= targets.length;
-        target = targets[targetIndex];
+        ship.setTarget(targets[targetIndex]);
     });
 
 
@@ -260,7 +260,7 @@ function main() {
             celestial.draw(
                 camera,
                 celestial.label == 'Ship',
-                celestial.label == target?.label
+                celestial.label == ship.target?.label
             );
         });
 
@@ -268,7 +268,7 @@ function main() {
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
-        celestials.forEach((celestial) => { celestial.calcTarget(target); });
+        celestials.forEach((celestial) => { celestial.calcTarget(); });
 
         camera.update();
 

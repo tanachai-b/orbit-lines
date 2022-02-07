@@ -149,7 +149,7 @@ class Celestial {
 
 
         if (this.orbit != null && (isShip || isTarget)) {
-            this.orbit.draw(camera, this.parent.position, true);
+            this.orbit.draw(camera, true, this.parent.position);
         }
     }
 }
@@ -181,6 +181,12 @@ class Ship {
             let orbitalDirection = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit();
             this.velocity = orbitalDirection.times(orbitalSpeed).plus(this.parent.velocity);
         }
+
+        this.target = null;
+    }
+
+    setTarget(target) {
+        this.target = target;
     }
 
     updateVelocity(timeSpeed, sun, moon) {
@@ -207,6 +213,7 @@ class Ship {
     }
 
     updateOrbit() {
+        if (this.parent == null) return;
 
         let relPosition = this.position.minus(this.parent.position);
         let relVelocity = this.velocity.minus(this.parent.velocity);
@@ -245,7 +252,64 @@ class Ship {
     }
 
     calcTarget(target) {
+        if (this.target == null) return;
 
+
+        let relPosition = this.position.minus(this.parent.position);
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+
+
+        let yawDiff = -this.target.orbit.longAscending;
+        let rollDiff = -this.target.orbit.inclination;
+
+        let yaw = new Vector(Math.cos(yawDiff), Math.sin(yawDiff), 0);
+        let roll = new Vector(0, Math.cos(rollDiff), Math.sin(rollDiff));
+
+        relPosition = relPosition.timesVector(yaw, new Vector(-yaw.y, yaw.x, 0));
+        relVelocity = relVelocity.timesVector(yaw, new Vector(-yaw.y, yaw.x, 0));
+
+        relPosition = relPosition.timesVector(new Vector(1, 0, 0), roll);
+        relVelocity = relVelocity.timesVector(new Vector(1, 0, 0), roll);
+
+
+        this.relOrbYaw = new Vector(Math.cos(yawDiff), -Math.sin(yawDiff), 0);
+        this.relOrbRoll = new Vector(0, Math.cos(rollDiff), -Math.sin(rollDiff));
+        this.relOrbRoll = this.relOrbRoll.timesVector(this.relOrbYaw, new Vector(-this.relOrbYaw.y, this.relOrbYaw.x, 0));
+
+
+
+        let perpenVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y;
+
+        let distance = relPosition.magnitude();
+        let speed = relVelocity.magnitude();
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.parent.mass * 10000));
+
+        let orbitalEnergy = -(this.parent.mass * 10000 / (2 * semiMajorAxis));
+        let angularMomentum = relPosition.magnitude() * perpenVelocity;
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.parent.mass * 10000) ** 2));
+
+        let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
+        let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
+        let longAscending = Math.acos(ascNode.x);
+        if (ascNode.y < 0) longAscending = 2 * Math.PI - longAscending;
+
+        let inclination = Math.acos(normal.z);
+
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.parent.mass * 10000).minus(relPosition.unit());
+        let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
+        let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
+
+        let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
+        // this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
+
+
+        this.orbit2 = new Orbit(
+            semiMajorAxis,
+            eccentricity,
+            longAscending,
+            inclination,
+            argPeriapsis
+        );
     }
 
     draw(camera, isShip, isTarget) {
@@ -273,8 +337,12 @@ class Ship {
         }
 
 
-        if (this.orbit != null && (isShip || isTarget)) {
-            this.orbit.draw(camera, this.parent.position, true);
+        if (this.orbit != null && (isShip || isTarget) && this.target == null) {
+            this.orbit.draw(camera, true, this.parent.position);
+        }
+
+        if (this.orbit2 != null && (isShip || isTarget) && this.target != null) {
+            this.orbit2.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
         }
     }
 
@@ -339,7 +407,7 @@ class Orbit {
         return distance * Math.cos(trueAnomaly) <= maxRight;
     }
 
-    draw(camera, position, isDrawNodes) {
+    draw(camera, isDrawNodes, translation, yawPitch, roll) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -348,14 +416,18 @@ class Orbit {
         ctx.lineWidth = 1;
 
 
+        if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
+        if (roll == null) { roll = new Vector(0, 1, 0); }
+
+
         this.positions = [];
         for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
             this.getPosition(i, (position) => { this.positions.push(position); });
         }
 
         for (let i = 0; i < this.positions.length - 1; i++) {
-            let aProj = Complex.projectFrom3d(this.positions[i].plus(position), camera);
-            let bProj = Complex.projectFrom3d(this.positions[i + 1].plus(position), camera);
+            let aProj = Complex.projectFrom3d(this.positions[i].timesVector(yawPitch, roll).plus(translation), camera);
+            let bProj = Complex.projectFrom3d(this.positions[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
 
             ctx.beginPath();
             ctx.moveTo(aProj.x, aProj.y);
@@ -365,7 +437,7 @@ class Orbit {
 
         if (isDrawNodes) {
 
-            let periProj = Complex.projectFrom3d(this.periapsis.plus(position), camera);
+            let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
             ctx.beginPath();
             ctx.moveTo(periProj.x - 4, periProj.y);
             ctx.lineTo(periProj.x, periProj.y + 4);
@@ -376,7 +448,7 @@ class Orbit {
             ctx.fill();
 
             if (this.isLeftOfPeri(Math.PI)) {
-                let apoProj = Complex.projectFrom3d(this.apoapsis.plus(position), camera);
+                let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
                 ctx.beginPath();
                 ctx.moveTo(apoProj.x - 4, apoProj.y);
                 ctx.lineTo(apoProj.x, apoProj.y + 4);
@@ -387,7 +459,7 @@ class Orbit {
             }
 
             if (this.isLeftOfPeri(-this.argPeriapsis)) {
-                let ascProj = Complex.projectFrom3d(this.ascending.plus(position), camera);
+                let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
                 ctx.beginPath();
                 ctx.moveTo(ascProj.x, ascProj.y - 4);
                 ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
@@ -398,7 +470,7 @@ class Orbit {
             }
 
             if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
-                let descProj = Complex.projectFrom3d(this.descending.plus(position), camera);
+                let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
                 ctx.beginPath();
                 ctx.moveTo(descProj.x, descProj.y + 4);
                 ctx.lineTo(descProj.x + 3, descProj.y - 2);
@@ -421,8 +493,8 @@ class Orbit {
 
             ctx.setLineDash([1, 10]);
             for (let i = 0; i < this.ascDescLine.length - 1; i++) {
-                let start = Complex.projectFrom3d(this.ascDescLine[i].plus(position), camera);
-                let end = Complex.projectFrom3d(this.ascDescLine[i + 1].plus(position), camera);
+                let start = Complex.projectFrom3d(this.ascDescLine[i].timesVector(yawPitch, roll).plus(translation), camera);
+                let end = Complex.projectFrom3d(this.ascDescLine[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
 
                 ctx.beginPath();
                 ctx.moveTo(start.x, start.y);
