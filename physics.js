@@ -70,7 +70,7 @@ class Complex {
 
         let ress = [];
 
-        for (let i = 0; i <= Math.PI * 2 + 1; i += Math.PI / 180) {
+        for (let i = 0; i <= Math.PI * 2; i += Math.PI / 180) {
             let upp = newPoint.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(i), Math.sin(i)));
 
             let res = upp.timesVector(dir.unit(), dir);

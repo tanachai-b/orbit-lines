@@ -172,10 +172,10 @@ function main() {
         0,
         earth,
         new Orbit(
-            10000,
+            20000,
             0.01,
             Math.PI / 180 * -45,
-            Math.PI / 180 * 45,
+            Math.PI / 180 * 10,
             Math.PI / 180 * -120
         ),
         Math.PI / 180 * 30
@@ -269,6 +269,7 @@ function main() {
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
         celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
+        celestials.forEach((celestial) => { celestial.updateRelativeTrajectory(); });
 
         camera.update();
 

@@ -122,6 +122,7 @@ class Celestial {
 
     updateOrbit() { }
     updateRelativeOrbit() { }
+    updateRelativeTrajectory() { }
 
     draw(camera, isShip, isTarget) {
         /** @type {HTMLCanvasElement} */
@@ -140,7 +141,7 @@ class Celestial {
 
         let circle = Complex.projectSphere(this.radius, this.position, camera);
 
-        for (let i = 1; i < circle.length - 1; i++) {
+        for (let i = 0; i < circle.length - 1; i++) {
             ctx.beginPath();
             ctx.moveTo(circle[i].x, circle[i].y);
             ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
@@ -184,6 +185,8 @@ class Ship {
 
         this.target = null;
         this.relativeOrbit = null;
+
+        this.traj = [];
     }
 
     setTarget(target) {
@@ -313,6 +316,25 @@ class Ship {
         );
     }
 
+    updateRelativeTrajectory() {
+        if (this.target == null) return;
+
+        let shipOrbit = this.orbit;
+        let targetOrbit = this.target.orbit;
+
+        let shipPeriod = 2 * Math.PI * Math.sqrt(shipOrbit.semiMajorAxis ** 3 / this.parent.mass);
+        let targetPeriod = 2 * Math.PI * Math.sqrt(targetOrbit.semiMajorAxis ** 3 / this.parent.mass);
+
+        let velocityRatio = shipPeriod / targetPeriod;
+
+        this.traj = [];
+        for (let i = 0; i < Math.PI * 2; i += Math.PI / 180) {
+
+            let diffPos = shipOrbit.getPosition(this.trueAnomaly + i).minus(targetOrbit.getPosition(this.target.trueAnomaly + i * velocityRatio));
+            this.traj.push(diffPos);
+        }
+    }
+
     draw(camera, isShip, isTarget) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -330,7 +352,7 @@ class Ship {
 
         let circle = Complex.projectSphere(this.radius, this.position, camera);
 
-        for (let i = 1; i < circle.length - 1; i++) {
+        for (let i = 0; i < circle.length - 1; i++) {
             ctx.beginPath();
             ctx.moveTo(circle[i].x, circle[i].y);
             ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
@@ -345,6 +367,32 @@ class Ship {
         if (this.relativeOrbit != null && (isShip || isTarget) && this.target != null) {
             this.relativeOrbit.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        if (this.target != null) {
+            for (let i = 0; i < this.traj.length - 1; i++) {
+
+                let trajProj1 = Complex.projectFrom3d(this.traj[i].plus(this.target.position), camera);
+                let trajProj2 = Complex.projectFrom3d(this.traj[i + 1].plus(this.target.position), camera);
+
+                ctx.beginPath();
+                ctx.moveTo(trajProj1.x, trajProj1.y);
+                ctx.lineTo(trajProj2.x, trajProj2.y);
+                ctx.stroke();
+            }
+        }
+
     }
 
     thrust(prograde, radialIn, normal) {
