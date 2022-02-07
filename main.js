@@ -214,6 +214,8 @@ function main() {
     let targetIndex = 0;
     ship.setTarget(null);
 
+    let turnOnRelTraj = false;
+
 
     /** @type {HTMLCanvasElement} */
     let canvas = document.getElementById('canvas');
@@ -225,7 +227,10 @@ function main() {
             case '.': timeSpeed++; break;
             case '/': timeSpeed = 0; break;
 
-            case 'j': centerIndex++; break;
+            case '\\': centerIndex++; break;
+
+            case 'j': turnOnRelTraj = !turnOnRelTraj; break;
+
 
             case 'k': targetIndex--; break;
             case 'l': targetIndex++; break;
@@ -260,7 +265,8 @@ function main() {
             celestial.draw(
                 camera,
                 celestial.label == 'Ship',
-                celestial.label == ship.target?.label
+                celestial.label == ship.target?.label,
+                turnOnRelTraj,
             );
         });
 
