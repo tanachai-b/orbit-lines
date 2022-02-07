@@ -108,7 +108,7 @@ class Celestial {
 
         let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
-        this.velocity = relVelocity.plus(this.parent.velocity).over(10 ** (timeSpeed / 2));
+        this.velocity = relVelocity.over(10 ** (timeSpeed / 2)).plus(this.parent.velocity);
 
         this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
     }

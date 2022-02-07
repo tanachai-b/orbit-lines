@@ -136,36 +136,6 @@ function main() {
         Math.PI / 180 * 135.27
     );
 
-    let ship = new Ship(
-        'Ship',
-        0.01,
-        0,
-        earth,
-        new Orbit(
-            8000,
-            0.05,
-            Math.PI / 180 * 15,
-            Math.PI / 180 * 10,
-            Math.PI / 180 * -45
-        ),
-        Math.PI / 180 * 90
-    );
-
-    // let ship = new Celestial(
-    //     'Ship',
-    //     0.01,
-    //     0,
-    //     earth,
-    //     new Orbit(
-    //         200000,
-    //         0.95,
-    //         Math.PI / 180 * 15,
-    //         Math.PI / 180 * 1,
-    //         Math.PI / 180 * -45
-    //     ),
-    //     Math.PI / 180 * 90
-    // );
-
     let iss = new Celestial(
         'ISS',
         0.01,
@@ -181,13 +151,28 @@ function main() {
         Math.PI / 180 * 30
     );
 
+    let ship = new Ship(
+        'Ship',
+        0.01,
+        0,
+        earth,
+        new Orbit(
+            8000,
+            0.05,
+            Math.PI / 180 * 15,
+            Math.PI / 180 * 10,
+            Math.PI / 180 * -45
+        ),
+        Math.PI / 180 * 90
+    );
+
     let celestials = [
         sun,
         mercury,
         venus,
         earth,
-        ship,
         iss,
+        ship,
         moon,
         mars,
         jupiter,
@@ -215,12 +200,12 @@ function main() {
     ship.setFrame(earth);
 
     let targets = [
-        null,
+        earth,
         iss,
         moon
     ];
     let targetIndex = 0;
-    ship.setTarget(null);
+    ship.setTarget(earth);
 
     let turnOnRelTraj = false;
 
@@ -287,7 +272,7 @@ function main() {
         });
 
         // for (let i = 0; i < 10 ** timeSpeed;i++) {
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth ,moon); });
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth, moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
         celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
