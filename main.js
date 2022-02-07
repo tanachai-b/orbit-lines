@@ -268,7 +268,7 @@ function main() {
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
-        celestials.forEach((celestial) => { celestial.calcTarget(); });
+        celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
 
         camera.update();
 

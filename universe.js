@@ -121,7 +121,7 @@ class Celestial {
     }
 
     updateOrbit() { }
-    calcTarget(target) { }
+    updateRelativeOrbit() { }
 
     draw(camera, isShip, isTarget) {
         /** @type {HTMLCanvasElement} */
@@ -149,7 +149,7 @@ class Celestial {
 
 
         if (this.orbit != null && (isShip || isTarget)) {
-            this.orbit.draw(camera, true, this.parent.position);
+            this.orbit.draw(camera, false, this.parent.position);
         }
     }
 }
@@ -183,6 +183,7 @@ class Ship {
         }
 
         this.target = null;
+        this.relativeOrbit = null;
     }
 
     setTarget(target) {
@@ -251,7 +252,7 @@ class Ship {
         );
     }
 
-    calcTarget(target) {
+    updateRelativeOrbit() {
         if (this.target == null) return;
 
 
@@ -299,11 +300,11 @@ class Ship {
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
-        let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
+        // let posOnEccenVector = relPosition.overVector(eccenVector.unit(), new Vector(0, 0, 1).timesVector(normal, eccenVector));
         // this.trueAnomaly = Math.atan2(posOnEccenVector.y, posOnEccenVector.x);
 
 
-        this.orbit2 = new Orbit(
+        this.relativeOrbit = new Orbit(
             semiMajorAxis,
             eccentricity,
             longAscending,
@@ -341,8 +342,8 @@ class Ship {
             this.orbit.draw(camera, true, this.parent.position);
         }
 
-        if (this.orbit2 != null && (isShip || isTarget) && this.target != null) {
-            this.orbit2.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
+        if (this.relativeOrbit != null && (isShip || isTarget) && this.target != null) {
+            this.relativeOrbit.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
         }
     }
 
@@ -435,50 +436,51 @@ class Orbit {
             ctx.stroke();
         }
 
-        if (isDrawNodes) {
 
-            let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
+        let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
+        ctx.beginPath();
+        ctx.moveTo(periProj.x - 4, periProj.y);
+        ctx.lineTo(periProj.x, periProj.y + 4);
+        ctx.lineTo(periProj.x + 4, periProj.y);
+        ctx.lineTo(periProj.x, periProj.y - 4);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+
+        if (this.isLeftOfPeri(Math.PI)) {
+            let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
             ctx.beginPath();
-            ctx.moveTo(periProj.x - 4, periProj.y);
-            ctx.lineTo(periProj.x, periProj.y + 4);
-            ctx.lineTo(periProj.x + 4, periProj.y);
-            ctx.lineTo(periProj.x, periProj.y - 4);
+            ctx.moveTo(apoProj.x - 4, apoProj.y);
+            ctx.lineTo(apoProj.x, apoProj.y + 4);
+            ctx.lineTo(apoProj.x + 4, apoProj.y);
+            ctx.lineTo(apoProj.x, apoProj.y - 4);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        if (this.isLeftOfPeri(-this.argPeriapsis)) {
+            let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
+            ctx.beginPath();
+            ctx.moveTo(ascProj.x, ascProj.y - 4);
+            ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
+            ctx.lineTo(ascProj.x - 3, ascProj.y + 2);
             ctx.closePath();
             ctx.stroke();
             ctx.fill();
+        }
 
-            if (this.isLeftOfPeri(Math.PI)) {
-                let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
-                ctx.beginPath();
-                ctx.moveTo(apoProj.x - 4, apoProj.y);
-                ctx.lineTo(apoProj.x, apoProj.y + 4);
-                ctx.lineTo(apoProj.x + 4, apoProj.y);
-                ctx.lineTo(apoProj.x, apoProj.y - 4);
-                ctx.closePath();
-                ctx.stroke();
-            }
+        if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
+            let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
+            ctx.beginPath();
+            ctx.moveTo(descProj.x, descProj.y + 4);
+            ctx.lineTo(descProj.x + 3, descProj.y - 2);
+            ctx.lineTo(descProj.x - 3, descProj.y - 2);
+            ctx.closePath();
+            ctx.stroke();
+        }
 
-            if (this.isLeftOfPeri(-this.argPeriapsis)) {
-                let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
-                ctx.beginPath();
-                ctx.moveTo(ascProj.x, ascProj.y - 4);
-                ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
-                ctx.lineTo(ascProj.x - 3, ascProj.y + 2);
-                ctx.closePath();
-                ctx.stroke();
-                ctx.fill();
-            }
 
-            if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
-                let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
-                ctx.beginPath();
-                ctx.moveTo(descProj.x, descProj.y + 4);
-                ctx.lineTo(descProj.x + 3, descProj.y - 2);
-                ctx.lineTo(descProj.x - 3, descProj.y - 2);
-                ctx.closePath();
-                ctx.stroke();
-            }
-
+        if (isDrawNodes) {
 
             let lineStart = this.ascending;
             let lineEnd = this.descending;
