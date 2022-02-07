@@ -189,19 +189,19 @@ class Ship {
         this.traj = [];
     }
 
-    setTarget(target) {
-        this.target = target;
-    }
+    setFrame(frame) { this.parent = frame; }
+    setTarget(target) { this.target = target; }
 
-    updateVelocity(timeSpeed, sun, moon) {
+    updateVelocity(timeSpeed, sun, earth, moon) {
         if (this.parent == null) return;
-
-        let relPosition = this.parent.position.minus(this.position);
-        let acceleration = relPosition.over(relPosition.magnitude() ** 3).times(this.parent.mass * 10000 * 10 ** (timeSpeed / 2));
 
         let sunDist = sun.position.minus(this.position);
         let sunGrav = sunDist.over(sunDist.magnitude() ** 3).times(sun.mass * 10000 * 10 ** (timeSpeed / 2));
-        acceleration = acceleration.plus(sunGrav);
+        let acceleration = sunGrav;
+
+        let earthDist = earth.position.minus(this.position);
+        let earthGrav = earthDist.over(earthDist.magnitude() ** 3).times(earth.mass * 10000 * 10 ** (timeSpeed / 2));
+        acceleration = acceleration.plus(earthGrav);
 
         let moonDist = moon.position.minus(this.position);
         let moonGrav = moonDist.over(moonDist.magnitude() ** 3).times(moon.mass * 10000 * 10 ** (timeSpeed / 2));

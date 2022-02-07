@@ -206,6 +206,14 @@ function main() {
     let centerIndex = 1;
     let camera = new Camera(ship);
 
+    let frames = [
+        sun,
+        earth,
+        moon
+    ];
+    let frameIndex = 1;
+    ship.setFrame(earth);
+
     let targets = [
         null,
         iss,
@@ -232,6 +240,10 @@ function main() {
             case 'j': turnOnRelTraj = !turnOnRelTraj; break;
 
 
+            case 'i': frameIndex--; break;
+            case 'o': frameIndex++; break;
+            case 'p': frameIndex = 0; break;
+
             case 'k': targetIndex--; break;
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
@@ -242,6 +254,10 @@ function main() {
         centerIndex += centers.length;
         centerIndex %= centers.length;
         camera.changeCenter(centers[centerIndex]);
+
+        frameIndex += frames.length;
+        frameIndex %= frames.length;
+        ship.setFrame(frames[frameIndex]);
 
         targetIndex += targets.length;
         targetIndex %= targets.length;
@@ -271,7 +287,7 @@ function main() {
         });
 
         // for (let i = 0; i < 10 ** timeSpeed;i++) {
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, moon); });
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth ,moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
         celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
