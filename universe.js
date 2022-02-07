@@ -180,24 +180,17 @@ class Ship {
         }
     }
 
-    updateVelocity(timeSpeed) {
+    updateVelocity(timeSpeed, sun) {
         if (this.parent == null) return;
 
         let relPosition = this.parent.position.minus(this.position);
         let acceleration = relPosition.over(relPosition.magnitude() ** 3).times(this.parent.mass * 10000 * 10 ** (timeSpeed / 2));
 
+        let sunDist = sun.position.minus(this.position);
+        let sunGrav = sunDist.over(sunDist.magnitude() ** 3).times(sun.mass * 10000 * 10 ** (timeSpeed / 2));
+        acceleration = acceleration.plus(sunGrav);
+
         this.velocity = this.velocity.plus(acceleration);
-
-
-
-
-
-
-
-
-
-        // let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
-        // let relVelocity = this.orbit2.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
     }
 
     updatePosition(timeSpeed) {

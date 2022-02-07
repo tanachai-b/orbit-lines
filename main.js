@@ -151,6 +151,21 @@ function main() {
         Math.PI / 180 * 90
     );
 
+    // let ship = new Celestial(
+    //     'Ship',
+    //     0.01,
+    //     0,
+    //     earth,
+    //     new Orbit(
+    //         200000,
+    //         0.95,
+    //         Math.PI / 180 * 15,
+    //         Math.PI / 180 * 1,
+    //         Math.PI / 180 * -45
+    //     ),
+    //     Math.PI / 180 * 90
+    // );
+
     let iss = new Celestial(
         'ISS',
         0.01,
@@ -224,27 +239,29 @@ function main() {
         celestials.forEach((celestial) => { celestial.draw(camera, camera.focus.label == celestial.label); });
 
 
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updateOrbit(); });
+        for (let i = 0; i < 1 ** timeSpeed; i++) {
 
-        camera.update();
+            celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun); });
+            celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
+            celestials.forEach((celestial) => { celestial.updateOrbit(); });
 
-        if (keys.has('shift')) {
-            if (keys.has('w')) ship.thrust(0.001, 0, 0);
-            if (keys.has('s')) ship.thrust(-0.001, 0, 0);
-            if (keys.has('a')) ship.thrust(0, 0.001, 0);
-            if (keys.has('d')) ship.thrust(0, -0.001, 0);
-            if (keys.has('r')) ship.thrust(0, 0, -0.001);
-            if (keys.has('f')) ship.thrust(0, 0, 0.001);
-        } else {
-            if (keys.has('w')) ship.thrust(0.01, 0, 0);
-            if (keys.has('s')) ship.thrust(-0.01, 0, 0);
-            if (keys.has('a')) ship.thrust(0, 0.01, 0);
-            if (keys.has('d')) ship.thrust(0, -0.01, 0);
-            if (keys.has('r')) ship.thrust(0, 0, -0.01);
-            if (keys.has('f')) ship.thrust(0, 0, 0.01);
+            camera.update();
+
+            if (keys.has('shift')) {
+                if (keys.has('w')) ship.thrust(0.001, 0, 0);
+                if (keys.has('s')) ship.thrust(-0.001, 0, 0);
+                if (keys.has('a')) ship.thrust(0, 0.001, 0);
+                if (keys.has('d')) ship.thrust(0, -0.001, 0);
+                if (keys.has('r')) ship.thrust(0, 0, -0.001);
+                if (keys.has('f')) ship.thrust(0, 0, 0.001);
+            } else {
+                if (keys.has('w')) ship.thrust(0.01, 0, 0);
+                if (keys.has('s')) ship.thrust(-0.01, 0, 0);
+                if (keys.has('a')) ship.thrust(0, 0.01, 0);
+                if (keys.has('d')) ship.thrust(0, -0.01, 0);
+                if (keys.has('r')) ship.thrust(0, 0, -0.01);
+                if (keys.has('f')) ship.thrust(0, 0, 0.01);
+            }
         }
-
     }, 1000 / 60);
 }
