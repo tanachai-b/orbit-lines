@@ -202,19 +202,15 @@ class Ship {
         this.velocity = this.velocity.plus(thrust);
     }
 
-    updateVelocity(timeSpeed, sun, earth, moon) {
+    updateVelocity(timeSpeed, celestials) {
 
-        let sunDist = sun.position.minus(this.position);
-        let sunGrav = sunDist.over(sunDist.magnitude() ** 3).times(sun.mass * 10000 * 10 ** (timeSpeed / 2));
-        let acceleration = sunGrav;
+        let acceleration = new Vector(0, 0, 0);
 
-        let earthDist = earth.position.minus(this.position);
-        let earthGrav = earthDist.over(earthDist.magnitude() ** 3).times(earth.mass * 10000 * 10 ** (timeSpeed / 2));
-        acceleration = acceleration.plus(earthGrav);
-
-        let moonDist = moon.position.minus(this.position);
-        let moonGrav = moonDist.over(moonDist.magnitude() ** 3).times(moon.mass * 10000 * 10 ** (timeSpeed / 2));
-        acceleration = acceleration.plus(moonGrav);
+        celestials.forEach((celestial) => {
+            let distance = celestial.position.minus(this.position);
+            let gravity = distance.over(distance.magnitude() ** 3).times(celestial.mass * 10000 * 10 ** (timeSpeed / 2));
+            acceleration = acceleration.plus(gravity);
+        });
 
         this.velocity = this.velocity.plus(acceleration);
     }

@@ -258,7 +258,7 @@ function main() {
         if (holdedKeys.has('f')) ship.thrust(0, 0, -thrust);
 
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
-        ship.updateVelocity(timeSpeed, sun, earth, moon);
+        ship.updateVelocity(timeSpeed, celestials);
 
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         ship.updatePosition(timeSpeed);
