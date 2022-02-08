@@ -292,11 +292,11 @@ function main() {
         label.push('       Camera Focus [n]       : ' + (centerTarget ? 'Target' : 'Ship'));
         label.push('');
         label.push('');
-        label.push('                            Orbit');
+        label.push('                        Ship\'s Orbit');
         label.push('                     -------------------');
         label.push('                      Primary : ' + ship.primary.label);
-        label.push('                       Radius : ' + round(ship.primary.radius, 2) + ' km');
-        label.push('                         Mass : ' + round(ship.primary.mass, 4) + ' x 10^24');
+        label.push('             Primary\'s Radius : ' + round(ship.primary.radius, 2) + ' km');
+        label.push('               Primary\'s Mass : ' + round(ship.primary.mass, 4) + ' x 10^24');
         label.push('');
         label.push('              Semi Major Axis : ' + (ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'));
         label.push('                 Eccentricity : ' + round(ship.orbit.eccentricity, 4));
@@ -312,8 +312,12 @@ function main() {
         label.push('                     Apoapsis : ' + round(ship.orbit.apoapsis.magnitude(), 2) + ' km');
         label.push('');
         label.push('');
-        label.push('                       Target : ' + ship.target.label);
+        label.push('                      Relative to Target');
         label.push('                     -------------------');
+        label.push('                       Target : ' + ship.target.label);
+        label.push('              Target\'s Radius : ' + round(ship.target.radius, 2) + ' km');
+        label.push('                Target\'s Mass : ' + round(ship.target.mass, 4) + ' x 10^24');
+        label.push('');
         label.push('         Relative Inclination : ' + round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°');
         label.push('');
         label.push('                     Distance : ' + round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km');
@@ -321,6 +325,8 @@ function main() {
         label.push('');
         label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'));
         label.push('               Approach Speed : ' + ((ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
+        label.push('');
+        label.push('');
         label.push('');
         label.push('');
         label.push('           Prograde [w]');
