@@ -14,7 +14,7 @@ class Camera {
         this.zoom = 15;
 
 
-        this.diffPosition = new Vector(0, 0, 0);
+        this.animatePosition = new Vector(0, 0, 0);
 
         this.destYaw = this.yaw;
         this.destPitch = this.pitch;
@@ -52,12 +52,12 @@ class Camera {
 
     changeCenter(center) {
         this.center = center;
-        this.diffPosition = this.position.minus(this.center.position);
+        this.animatePosition = this.position.minus(this.center.position);
     }
 
     update() {
-        this.diffPosition = this.diffPosition.times(9 / 10);
-        this.position = this.center.position.plus(this.diffPosition);
+        this.animatePosition = this.animatePosition.times(9 / 10);
+        this.position = this.center.position.plus(this.animatePosition);
 
         this.yaw += (this.destYaw - this.yaw) / 10;
         this.pitch += (this.destPitch - this.pitch) / 10;
@@ -99,6 +99,8 @@ class Celestial {
             this.position = relPosition.plus(this.parent.position);
             this.velocity = relVelocity.plus(this.parent.velocity);
         }
+
+        this.satellites = [this];
     }
 
     updateVelocity(timeSpeed) {
@@ -195,7 +197,6 @@ class Ship {
     setTarget(target) { this.target = target; }
 
     updateVelocity(timeSpeed, sun, earth, moon) {
-        if (this.parent == null) return;
 
         let sunDist = sun.position.minus(this.position);
         let sunGrav = sunDist.over(sunDist.magnitude() ** 3).times(sun.mass * 10000 * 10 ** (timeSpeed / 2));
@@ -213,13 +214,10 @@ class Ship {
     }
 
     updatePosition(timeSpeed) {
-        if (this.parent == null) return;
-
         this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
     }
 
     updateOrbit() {
-        if (this.parent == null) return;
 
         let relPosition = this.position.minus(this.parent.position);
         let relVelocity = this.velocity.minus(this.parent.velocity);
@@ -258,7 +256,7 @@ class Ship {
     }
 
     updateRelativeOrbit() {
-        if (this.target == null) return;
+        if (this.parent.orbit == null) return;
 
 
         let relPosition = this.position.minus(this.parent.position);
@@ -319,7 +317,7 @@ class Ship {
     }
 
     updateRelativeTrajectory() {
-        if (this.target == null) return;
+        if (this.parent.orbit == null) return;
 
         let shipOrbit = this.orbit;
         let targetOrbit = this.target.orbit;
@@ -395,16 +393,14 @@ class Ship {
         }
 
 
-        if (this.orbit != null && (isShip || isTarget) && this.target == null) {
+        if (this.parent.orbit == null) {
             this.orbit.draw(camera, true, this.parent.position);
-        }
-
-        if (this.relativeOrbit != null && (isShip || isTarget) && this.target != null) {
+        } else if (this.relativeOrbit != null) {
             this.relativeOrbit.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
         }
 
 
-        if (this.target != null && turnOnRelTraj) {
+        if (turnOnRelTraj) {
             for (let i = 0; i < this.relativeTrajectory.length - 1; i++) {
 
                 let traj1 = this.relativeTrajectory[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));

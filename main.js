@@ -155,9 +155,9 @@ function main() {
         'Ship',
         0.01,
         0,
-        earth,
+        sun,
         new Orbit(
-            8000,
+            800000000,
             0.05,
             Math.PI / 180 * 15,
             Math.PI / 180 * 10,
@@ -171,15 +171,18 @@ function main() {
         mercury,
         venus,
         earth,
-        iss,
-        ship,
-        moon,
         mars,
         jupiter,
         saturn,
         uranus,
-        neptune
+        neptune,
+        moon,
+        iss,
+        ship
     ];
+
+    sun.satellites.push(mercury, venus, earth, mars, jupiter, saturn, uranus, neptune);
+    earth.satellites.push(iss, moon);
 
 
     let timeSpeed = 0;
@@ -217,23 +220,32 @@ function main() {
             case '.': timeSpeed++; break;
             case '/': timeSpeed = 0; break;
 
-            case 'i': frameIndex--; break;
-            case 'o': frameIndex++; break;
-            case 'p': frameIndex = 1; break;
+            case 'i':
+                if (ship.parent.parent != null) {
+                    for (let i = 0; i < ship.parent.parent.satellites.length; i++) {
+                        if (ship.parent.label == ship.parent.parent.satellites[i].label) { targetIndex = i; }
+                    }
+                    ship.setFrame(ship.parent.parent);
+                    targets = ship.parent.satellites;
+                }
+                break;
+            case 'k':
+                ship.setFrame(ship.target);
+                targets = ship.parent.satellites;
+                break;
 
-            case 'k': targetIndex--; break;
+            case 'j': targetIndex--; break;
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
 
-            case 'j': turnOnRelTraj = !turnOnRelTraj; break;
-            case 'u': centerTarget = !centerTarget; break;
+            case 'y': centerTarget = !centerTarget; break;
+            case 'h':
+                turnOnRelTraj = !turnOnRelTraj;
+                console.log(ship.relativeTrajectory);
+                break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
-
-        frameIndex += frames.length;
-        frameIndex %= frames.length;
-        ship.setFrame(frames[frameIndex]);
 
         targetIndex += targets.length;
         targetIndex %= targets.length;
@@ -286,7 +298,6 @@ function main() {
         ctx.font = '12px monospace';
 
         let label = [];
-        let value = [];
         label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
         label.push('');
         label.push('    Reference Frame [i][o][p] : ' + ship.parent.label);
