@@ -132,9 +132,14 @@ class Celestial {
 
 
         let posProj = Complex.projectFrom3d(this.position, camera);
-
         ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
-        ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+
+        if (this.primary != null) {
+            let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
+            if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
+        } else {
+            ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+        }
 
 
         let circle = Complex.projectSphere(this.radius, this.position, camera);
@@ -388,9 +393,10 @@ class Ship {
 
 
         let posProj = Complex.projectFrom3d(this.position, camera);
-
         ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
-        ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+
+        let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
+        if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
 
 
         let circle = Complex.projectSphere(this.radius, this.position, camera);
