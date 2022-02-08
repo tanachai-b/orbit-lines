@@ -185,8 +185,11 @@ class Ship {
         this.relativeOrbit = null;
         this.approachTrajectory = [];
 
-        this.closestApproach = Number.MAX_SAFE_INTEGER;
+        this.closestApproach = new Vector(0, 0, 0);
         this.approachSpeed = 0;
+
+        this.closestShip = new Vector(0, 0, 0);
+        this.closestTarget = new Vector(0, 0, 0);
     }
 
     setFrame(frame) { this.primary = frame; }
@@ -364,6 +367,9 @@ class Ship {
                 closestDistance = diffPos.magnitude();
                 this.closestApproach = diffPos;
                 this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000) ** 0.5;
+
+                this.closestShip = shipPosition;
+                this.closestTarget = targetPosition;
             }
 
 
@@ -404,27 +410,43 @@ class Ship {
         }
 
 
-        if (this.target.orbit != null && this.approachTrajectory != null && enableApproachTrajectory) {
-            for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
+        if (this.target.orbit != null && this.approachTrajectory != null) {
 
-                let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-                let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+            if (enableApproachTrajectory) {
 
-                let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
-                let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);
+                for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
 
+                    let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+                    let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+
+                    let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
+                    let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);
+
+                    ctx.beginPath();
+                    ctx.moveTo(trajProj1.x, trajProj1.y);
+                    ctx.lineTo(trajProj2.x, trajProj2.y);
+                    ctx.stroke();
+                }
+
+                let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+                let closestProj = Complex.projectFrom3d(closest.plus(this.target.position), camera);
                 ctx.beginPath();
-                ctx.moveTo(trajProj1.x, trajProj1.y);
-                ctx.lineTo(trajProj2.x, trajProj2.y);
+                ctx.strokeRect(closestProj.x - 2, closestProj.y - 2, 4, 4);
                 ctx.stroke();
             }
 
-            let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-            let closestProj = Complex.projectFrom3d(closest.plus(this.target.position), camera);
+            if (this.primary.label != this.target.label) {
 
-            ctx.beginPath();
-            ctx.arc(closestProj.x, closestProj.y, 4, 0, 2 * Math.PI);
-            ctx.stroke();
+                let closestShipProj = Complex.projectFrom3d(this.closestShip.plus(this.primary.position), camera);
+                ctx.beginPath();
+                ctx.strokeRect(closestShipProj.x - 2, closestShipProj.y - 2, 4, 4);
+                ctx.stroke();
+
+                let closestTargetProj = Complex.projectFrom3d(this.closestTarget.plus(this.primary.position), camera);
+                ctx.beginPath();
+                ctx.strokeRect(closestTargetProj.x - 2, closestTargetProj.y - 2, 4, 4);
+                ctx.stroke();
+            }
         }
     }
 }
