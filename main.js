@@ -187,23 +187,13 @@ function main() {
 
     let timeSpeed = 0;
 
-    let frames = [
-        sun,
-        earth,
-        moon
-    ];
-    let frameIndex = 1;
-    ship.setFrame(earth);
+    ship.setFrame(sun);
 
-    let targets = [
-        earth,
-        iss,
-        moon
-    ];
-    let targetIndex = 0;
-    ship.setTarget(earth);
+    let targets = sun.satellites;
+    let targetIndex = 5;
+    ship.setTarget(jupiter);
 
-    let turnOnRelTraj = false;
+    let enableRelTraj = false;
     let centerTarget = false;
 
 
@@ -240,7 +230,7 @@ function main() {
 
             case 'y': centerTarget = !centerTarget; break;
             case 'h':
-                turnOnRelTraj = !turnOnRelTraj;
+                enableRelTraj = !enableRelTraj;
                 console.log(ship.relativeTrajectory);
                 break;
         }
@@ -270,9 +260,8 @@ function main() {
         celestials.forEach((celestial) => {
             celestial.draw(
                 camera,
-                celestial.label == 'Ship',
                 celestial.label == ship.target?.label,
-                turnOnRelTraj,
+                enableRelTraj,
             );
         });
 
@@ -303,7 +292,7 @@ function main() {
         label.push('    Reference Frame [i][o][p] : ' + ship.parent.label);
         label.push('             Target [k][l][;] : ' + ship.target.label);
         label.push('       Camera Focus [u]       : ' + (centerTarget ? 'Target' : 'Ship'));
-        label.push('Approach Trajectory [j]       : ' + (turnOnRelTraj ? 'On' : 'Off'));
+        label.push('Approach Trajectory [j]       : ' + (enableRelTraj ? 'On' : 'Off'));
         label.push('');
         label.push('');
         label.push('                            Orbit');

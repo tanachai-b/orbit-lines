@@ -126,7 +126,7 @@ class Celestial {
     updateRelativeOrbit() { }
     updateRelativeTrajectory() { }
 
-    draw(camera, isShip, isTarget) {
+    draw(camera, isTarget) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -151,7 +151,7 @@ class Celestial {
         }
 
 
-        if (this.orbit != null && (isShip || isTarget)) {
+        if (isTarget && this.orbit != null) {
             this.orbit.draw(camera, false, this.parent.position);
         }
     }
@@ -256,7 +256,7 @@ class Ship {
     }
 
     updateRelativeOrbit() {
-        if (this.parent.orbit == null) return;
+        if (this.target.orbit == null) return;
 
 
         let relPosition = this.position.minus(this.parent.position);
@@ -317,7 +317,8 @@ class Ship {
     }
 
     updateRelativeTrajectory() {
-        if (this.parent.orbit == null) return;
+        if (this.target.orbit == null) return;
+
 
         let shipOrbit = this.orbit;
         let targetOrbit = this.target.orbit;
@@ -368,7 +369,7 @@ class Ship {
         }
     }
 
-    draw(camera, isShip, isTarget, turnOnRelTraj) {
+    draw(camera, isTarget, enableRelTraj) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -393,14 +394,14 @@ class Ship {
         }
 
 
-        if (this.parent.orbit == null) {
-            this.orbit.draw(camera, true, this.parent.position);
-        } else if (this.relativeOrbit != null) {
+        if (this.target.orbit != null && this.relativeOrbit != null) {
             this.relativeOrbit.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
+        } else {
+            this.orbit.draw(camera, true, this.parent.position);
         }
 
 
-        if (turnOnRelTraj) {
+        if (this.target.orbit != null && this.relativeTrajectory != null && enableRelTraj) {
             for (let i = 0; i < this.relativeTrajectory.length - 1; i++) {
 
                 let traj1 = this.relativeTrajectory[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
