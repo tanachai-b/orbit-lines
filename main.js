@@ -283,62 +283,80 @@ function main() {
         ctx.fillStyle = '#FFFFFF';
         ctx.font = '12px monospace';
 
-        let label = [];
-        label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
-        label.push('');
-        label.push('    Reference Frame [i][k]    : ' + ship.primary.label);
-        label.push('             Target [j][l][;] : ' + ship.target.label);
-        label.push('Approach Trajectory [h]       : ' + (enableApproachTrajectory ? 'On' : 'Off'));
-        label.push('       Camera Focus [n]       : ' + (centerTarget ? 'Target' : 'Ship'));
-        label.push('');
-        label.push('');
-        label.push('                        Ship\'s Orbit');
-        label.push('                     -------------------');
-        label.push('                      Primary : ' + ship.primary.label);
-        label.push('             Primary\'s Radius : ' + round(ship.primary.radius, 2) + ' km');
-        label.push('               Primary\'s Mass : ' + round(ship.primary.mass, 4) + ' x 10^24');
-        label.push('');
-        label.push('              Semi Major Axis : ' + (ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'));
-        label.push('                 Eccentricity : ' + round(ship.orbit.eccentricity, 4));
-        label.push('  Longitude of Ascending Node : ' + round(ship.orbit.longAscending / Math.PI * 180, 2) + '°');
-        label.push('                  Inclination : ' + round(ship.orbit.inclination / Math.PI * 180, 2) + '°');
-        label.push('        Argument of Periapsis : ' + round(ship.orbit.argPeriapsis / Math.PI * 180, 2) + '°');
-        label.push('');
-        label.push('                 True Anomaly : ' + round(ship.trueAnomaly / Math.PI * 180, 2) + '°');
-        label.push('                     Distance : ' + round(ship.position.minus(ship.primary.position).magnitude(), 2) + ' km');
-        label.push('                Orbital Speed : ' + round(ship.velocity.minus(ship.primary.velocity).magnitude() * 60, 2) + ' km/s');
-        label.push('');
-        label.push('                    Periapsis : ' + round(ship.orbit.periapsis.magnitude(), 2) + ' km');
-        label.push('                     Apoapsis : ' + round(ship.orbit.apoapsis.magnitude(), 2) + ' km');
-        label.push('');
-        label.push('');
-        label.push('                      Relative to Target');
-        label.push('                     -------------------');
-        label.push('                       Target : ' + ship.target.label);
-        label.push('              Target\'s Radius : ' + round(ship.target.radius, 2) + ' km');
-        label.push('                Target\'s Mass : ' + round(ship.target.mass, 4) + ' x 10^24');
-        label.push('');
-        label.push('         Relative Inclination : ' + ((ship.target.orbit != null) ? (round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°') : 'n/a'));
-        label.push('');
-        label.push('                     Distance : ' + ((ship.target.label != ship.primary.label) ? ( round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km') : 'n/a'));
-        label.push('               Relative Speed : ' + ((ship.target.label != ship.primary.label) ? ( round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s') : 'n/a'));
-        label.push('');
-        label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'));
-        label.push('               Approach Speed : ' + ((ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
-        label.push('');
-        label.push('');
-        label.push('');
-        label.push('');
-        label.push('           Prograde [w]');
-        label.push('         Retrograde [s]');
-        label.push('          Radial In [a]');
-        label.push('         Radial Out [d]');
-        label.push('             Normal [r]');
-        label.push('        Anti Normal [f]');
+        let leftHUD = [];
+        leftHUD.push(`         Time Speed [,][.][/] : x${Math.floor(10 ** (timeSpeed / 2))}`);
+        leftHUD.push('');
+        leftHUD.push(`    Reference Frame [i][k]    : ${ship.primary.label}`);
+        leftHUD.push(`             Target [j][l][;] : ${ship.target.label}`);
+        leftHUD.push('');
+        leftHUD.push('');
+        leftHUD.push('                        Ship\'s Orbit');
+        leftHUD.push('                     -------------------');
+        leftHUD.push(`                      Primary : ${ship.primary.label}`);
+        leftHUD.push(`             Primary\'s Radius : ${round(ship.primary.radius, 2)} km`);
+        leftHUD.push(`               Primary\'s Mass : ${round(ship.primary.mass, 4)} x 10^24`);
+        leftHUD.push('');
+        leftHUD.push(`              Semi Major Axis : ${ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'}`);
+        leftHUD.push(`                 Eccentricity : ${round(ship.orbit.eccentricity, 4)}`);
+        leftHUD.push(`  Longitude of Ascending Node : ${round(ship.orbit.longAscending / Math.PI * 180, 2)}°`);
+        leftHUD.push(`                  Inclination : ${round(ship.orbit.inclination / Math.PI * 180, 2)}°`);
+        leftHUD.push(`        Argument of Periapsis : ${round(ship.orbit.argPeriapsis / Math.PI * 180, 2)}°`);
+        leftHUD.push('');
+        leftHUD.push(`                 True Anomaly : ${round(ship.trueAnomaly / Math.PI * 180, 2)}°`);
+        leftHUD.push(`                     Distance : ${round(ship.position.minus(ship.primary.position).magnitude(), 2)} km`);
+        leftHUD.push(`                Orbital Speed : ${round(ship.velocity.minus(ship.primary.velocity).magnitude() * 60, 2)} km/s`);
+        leftHUD.push('');
+        leftHUD.push(`                    Periapsis : ${round(ship.orbit.periapsis.magnitude(), 2)} km`);
+        leftHUD.push(`                     Apoapsis : ${round(ship.orbit.apoapsis.magnitude(), 2)} km`);
+        leftHUD.push('');
+        leftHUD.push('');
+        leftHUD.push('                      Relative to Target');
+        leftHUD.push('                     -------------------');
+        leftHUD.push(`                       Target : ${ship.target.label}`);
+        leftHUD.push(`              Target\'s Radius : ${round(ship.target.radius, 2)} km`);
+        leftHUD.push(`                Target\'s Mass : ${round(ship.target.mass, 4)} x 10^24`);
+        leftHUD.push('');
+        leftHUD.push(`         Relative Inclination : ${(ship.target.orbit != null) ? (round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°') : 'n/a'}`);
+        leftHUD.push('');
+        leftHUD.push(`                     Distance : ${(ship.target.label != ship.primary.label) ? (round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km') : 'n/a'}`);
+        leftHUD.push(`               Relative Speed : ${(ship.target.label != ship.primary.label) ? (round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s') : 'n/a'}`);
+        leftHUD.push('');
+        leftHUD.push(`             Closest Approach : ${(ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'}`);
+        leftHUD.push(`               Approach Speed : ${(ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'}`);
+        leftHUD.push('');
+        leftHUD.push('');
+        leftHUD.push('');
+        leftHUD.push('');
+        leftHUD.push(`      Approach Trajectory [h] : ${enableApproachTrajectory ? 'On' : 'Off'}`);
+        leftHUD.push(`             Camera Focus [n] : ${centerTarget ? 'Target' : 'Ship'}`);
+        leftHUD.push('');
+        leftHUD.push('                 Prograde [w]');
+        leftHUD.push('               Retrograde [s]');
+        leftHUD.push('                Radial In [a]');
+        leftHUD.push('               Radial Out [d]');
+        leftHUD.push('                   Normal [r]');
+        leftHUD.push('              Anti Normal [f]');
+        for (let i = 0; i < leftHUD.length; i++) { ctx.fillText(leftHUD[i], 10, 20 + 15 * i) }
 
-        for (let i = 0; i < label.length; i++) { ctx.fillText(label[i], 5, 15 + 15 * i) }
+        let rightHUD = [];
+        rightHUD.push(`                      ${getChevronText('Sun')}`);
+        rightHUD.push(`                        ${getChevronText('Mercury')}`);
+        rightHUD.push(`                        ${getChevronText('Venus')}`);
+        rightHUD.push(`                        ${getChevronText('Earth')}`);
+        rightHUD.push(`                          ${getChevronText('ISS')}`);
+        rightHUD.push(`                          ${getChevronText('Moon')}`);
+        rightHUD.push(`                        ${getChevronText('Mars')}`);
+        rightHUD.push(`                        ${getChevronText('Jupiter')}`);
+        rightHUD.push(`                        ${getChevronText('Saturn')}`);
+        rightHUD.push(`                        ${getChevronText('Uranus')}`);
+        rightHUD.push(`                        ${getChevronText('Neptune')}`);
+        for (let i = 0; i < rightHUD.length; i++) { ctx.fillText(rightHUD[i], 1600, 20 + 15 * i) }
 
     }, 1000 / 60);
+
+    function getChevronText(blody) {
+        return `${(ship.primary.label == blody) ? '>>' : (ship.target.label == blody) ? ' >' : '  '} ${blody}`;
+    }
 }
 
 function round(number, digit) {
