@@ -318,10 +318,10 @@ function main() {
         label.push('              Target\'s Radius : ' + round(ship.target.radius, 2) + ' km');
         label.push('                Target\'s Mass : ' + round(ship.target.mass, 4) + ' x 10^24');
         label.push('');
-        label.push('         Relative Inclination : ' + round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°');
+        label.push('         Relative Inclination : ' + ((ship.target.orbit != null) ? (round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°') : 'n/a'));
         label.push('');
-        label.push('                     Distance : ' + round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km');
-        label.push('               Relative Speed : ' + round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s');
+        label.push('                     Distance : ' + ((ship.target.label != ship.primary.label) ? ( round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km') : 'n/a'));
+        label.push('               Relative Speed : ' + ((ship.target.label != ship.primary.label) ? ( round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s') : 'n/a'));
         label.push('');
         label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'));
         label.push('               Approach Speed : ' + ((ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
