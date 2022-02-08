@@ -344,11 +344,11 @@ class Ship {
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
 
 
-            let shipSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) / 10 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
+            let shipSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
             let shipVelocity = shipOrbit.getPosition(shipAnomaly + 0.000001).minus(shipPosition).unit().times(shipSpeed);
             let shipAngular = shipVelocity.overVector(shipPosition.unit(), shipVelocity).y / shipPosition.magnitude();
 
-            let targetSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) / 10 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
+            let targetSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
 

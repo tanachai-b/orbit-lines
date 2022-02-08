@@ -155,9 +155,9 @@ function main() {
         'Ship',
         0.01,
         0,
-        sun,
+        earth,
         new Orbit(
-            800000000,
+            8000,
             0.05,
             Math.PI / 180 * 15,
             Math.PI / 180 * 10,
@@ -187,11 +187,11 @@ function main() {
 
     let timeSpeed = 0;
 
-    ship.setFrame(sun);
+    ship.setFrame(earth);
 
-    let targets = sun.satellites;
-    let targetIndex = 5;
-    ship.setTarget(jupiter);
+    let targets = earth.satellites;
+    let targetIndex = 0;
+    ship.setTarget(earth);
 
     let enableRelTraj = false;
     let centerTarget = false;
@@ -229,10 +229,7 @@ function main() {
             case ';': targetIndex = 0; break;
 
             case 'y': centerTarget = !centerTarget; break;
-            case 'h':
-                enableRelTraj = !enableRelTraj;
-                console.log(ship.relativeTrajectory);
-                break;
+            case 'h': enableRelTraj = !enableRelTraj; break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
