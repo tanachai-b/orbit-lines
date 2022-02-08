@@ -185,8 +185,10 @@ class Ship {
 
         this.target = null;
         this.relativeOrbit = null;
+        this.relativeTrajectory = [];
 
-        this.traj = [];
+        this.closestApproach = Number.MAX_SAFE_INTEGER;
+        this.approachSpeed = 0;
     }
 
     setFrame(frame) { this.parent = frame; }
@@ -326,15 +328,17 @@ class Ship {
         let targetPeriod = 2 * Math.PI * Math.sqrt(targetOrbit.semiMajorAxis ** 3 / this.parent.mass);
 
 
-        this.traj = [];
+        this.relativeTrajectory = [];
 
         let shipAnomaly = this.trueAnomaly;
         let targetAnomaly = this.target.trueAnomaly;
 
+        this.closestApproach = Number.MAX_SAFE_INTEGER;
+
         while (
             shipAnomaly <= this.trueAnomaly + 2 * Math.PI &&
             targetAnomaly <= this.target.trueAnomaly + 2 * Math.PI &&
-            this.traj.length < 1000
+            this.relativeTrajectory.length < 1000
         ) {
 
             let shipPosition = shipOrbit.getPosition(shipAnomaly);
@@ -352,7 +356,13 @@ class Ship {
 
             let diffPos = shipPosition.minus(targetPosition)
             diffPos = diffPos.overVector(targetPosition.unit(), targetVelocity);
-            this.traj.push(diffPos);
+            this.relativeTrajectory.push(diffPos);
+
+
+            if (diffPos.magnitude() < this.closestApproach) {
+                this.closestApproach = diffPos.magnitude();
+                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude();
+            }
 
 
             shipAnomaly += shipAngular;
@@ -395,10 +405,10 @@ class Ship {
 
 
         if (this.target != null && turnOnRelTraj) {
-            for (let i = 0; i < this.traj.length - 1; i++) {
+            for (let i = 0; i < this.relativeTrajectory.length - 1; i++) {
 
-                let traj1 = this.traj[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
-                let traj2 = this.traj[i + 1].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
+                let traj1 = this.relativeTrajectory[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
+                let traj2 = this.relativeTrajectory[i + 1].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
 
                 let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
                 let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);

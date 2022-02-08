@@ -184,13 +184,6 @@ function main() {
 
     let timeSpeed = 0;
 
-    let centers = [
-        earth,
-        ship
-    ];
-    let centerIndex = 1;
-    let camera = new Camera(ship);
-
     let frames = [
         sun,
         earth,
@@ -208,6 +201,10 @@ function main() {
     ship.setTarget(earth);
 
     let turnOnRelTraj = false;
+    let centerTarget = false;
+
+
+    let camera = new Camera(ship);
 
 
     /** @type {HTMLCanvasElement} */
@@ -220,25 +217,19 @@ function main() {
             case '.': timeSpeed++; break;
             case '/': timeSpeed = 0; break;
 
-            case '\\': centerIndex++; break;
-
-            case 'j': turnOnRelTraj = !turnOnRelTraj; break;
-
-
             case 'i': frameIndex--; break;
             case 'o': frameIndex++; break;
-            case 'p': frameIndex = 0; break;
+            case 'p': frameIndex = 1; break;
 
             case 'k': targetIndex--; break;
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
+
+            case 'j': turnOnRelTraj = !turnOnRelTraj; break;
+            case 'u': centerTarget = !centerTarget; break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
-
-        centerIndex += centers.length;
-        centerIndex %= centers.length;
-        camera.changeCenter(centers[centerIndex]);
 
         frameIndex += frames.length;
         frameIndex %= frames.length;
@@ -247,12 +238,14 @@ function main() {
         targetIndex += targets.length;
         targetIndex %= targets.length;
         ship.setTarget(targets[targetIndex]);
+
+        camera.changeCenter(centerTarget ? ship.target : ship);
     });
 
 
-    let keys = new Set();
-    canvas.addEventListener('keydown', (event) => { keys.add(event.key.toLowerCase()); });
-    canvas.addEventListener('keyup', (event) => { keys.delete(event.key.toLowerCase()); });
+    let holdedKeys = new Set();
+    canvas.addEventListener('keydown', (event) => { holdedKeys.add(event.key.toLowerCase()); });
+    canvas.addEventListener('keyup', (event) => { holdedKeys.delete(event.key.toLowerCase()); });
 
 
     setInterval(() => {
@@ -271,7 +264,6 @@ function main() {
             );
         });
 
-        // for (let i = 0; i < 10 ** timeSpeed;i++) {
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth, moon); });
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
@@ -281,14 +273,69 @@ function main() {
         camera.update();
 
         let thrust = 0.01;
-        if (keys.has('shift')) thrust = 0.001;
+        if (holdedKeys.has('shift')) thrust = 0.001;
+        if (holdedKeys.has('w')) ship.thrust(thrust, 0, 0);
+        if (holdedKeys.has('s')) ship.thrust(-thrust, 0, 0);
+        if (holdedKeys.has('a')) ship.thrust(0, thrust, 0);
+        if (holdedKeys.has('d')) ship.thrust(0, -thrust, 0);
+        if (holdedKeys.has('r')) ship.thrust(0, 0, thrust);
+        if (holdedKeys.has('f')) ship.thrust(0, 0, -thrust);
 
-        if (keys.has('w')) ship.thrust(thrust, 0, 0);
-        if (keys.has('s')) ship.thrust(-thrust, 0, 0);
-        if (keys.has('a')) ship.thrust(0, thrust, 0);
-        if (keys.has('d')) ship.thrust(0, -thrust, 0);
-        if (keys.has('r')) ship.thrust(0, 0, thrust);
-        if (keys.has('f')) ship.thrust(0, 0, -thrust);
-        // }
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '12px monospace';
+
+        let label = [];
+        let value = [];
+        label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
+        label.push('');
+        label.push('    Reference Frame [i][o][p] : ' + ship.parent.label);
+        label.push('             Target [k][l][;] : ' + ship.target.label);
+        label.push('       Camera Focus [u]       : ' + (centerTarget ? 'Target' : 'Ship'));
+        label.push('Approach Trajectory [j]       : ' + (turnOnRelTraj ? 'On' : 'Off'));
+        label.push('');
+        label.push('');
+        label.push('                            Orbit');
+        label.push('                     -------------------');
+        label.push('                      Primary : ' + ship.parent.label);
+        label.push('');
+        label.push('              Semi Major Axis : ' + (ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'));
+        label.push('                 Eccentricity : ' + round(ship.orbit.eccentricity, 4));
+        label.push('  Longitude of Ascending Node : ' + round(ship.orbit.longAscending / Math.PI * 180, 2) + '°');
+        label.push('                  Inclination : ' + round(ship.orbit.inclination / Math.PI * 180, 2) + '°');
+        label.push('        Argument of Periapsis : ' + round(ship.orbit.argPeriapsis / Math.PI * 180, 2) + '°');
+        label.push('');
+        label.push('                 True Anomaly : ' + round(ship.trueAnomaly / Math.PI * 180, 2) + '°');
+        label.push('                     Distance : ' + round(ship.position.minus(ship.parent.position).magnitude(), 2) + ' km');
+        label.push('                Orbital Speed : ' + round(ship.velocity.minus(ship.parent.velocity).magnitude() * 60, 2) + ' km/s');
+        label.push('');
+        label.push('                    Periapsis : ' + round(ship.orbit.periapsis.magnitude(), 2) + ' km');
+        label.push('                     Apoapsis : ' + round(ship.orbit.apoapsis.magnitude(), 2) + ' km');
+        label.push('');
+        label.push('');
+        label.push('                       Target : ' + ship.target.label);
+        label.push('                     -------------------');
+        label.push('         Relative Inclination : ' + round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°');
+        label.push('');
+        label.push('                     Distance : ' + round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km');
+        label.push('               Relative Speed : ' + round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s');
+        label.push('');
+        label.push('             Closest Approach : ' + ((ship.target.label != ship.parent.label) ? (round(ship.closestApproach, 2) + ' km') : 'n/a'));
+        label.push('               Approach Speed : ' + ((ship.target.label != ship.parent.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
+        label.push('');
+        label.push('');
+        label.push('           Prograde [w]');
+        label.push('         Retrograde [s]');
+        label.push('          Radial In [a]');
+        label.push('         Radial Out [d]');
+        label.push('             Normal [r]');
+        label.push('        Anti Normal [f]');
+
+        for (let i = 0; i < label.length; i++) { ctx.fillText(label[i], 5, 15 + 15 * i) }
+
     }, 1000 / 60);
+}
+
+function round(number, digit) {
+    return (Math.round(number * 10 ** digit) / 10 ** digit).toLocaleString('en-US', { maximumFractionDigits: 9 });
 }
