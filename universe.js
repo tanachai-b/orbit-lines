@@ -331,13 +331,10 @@ class Ship {
         let shipAnomaly = this.trueAnomaly;
         let targetAnomaly = this.target.trueAnomaly;
 
-        while (shipAnomaly <= 2 * Math.PI && this.traj.length < 1000) {
+        while (shipAnomaly <= this.trueAnomaly + 2 * Math.PI && this.traj.length < 1000) {
 
             let shipPosition = shipOrbit.getPosition(shipAnomaly);
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
-
-            let diffPos = shipPosition.minus(targetPosition);
-            this.traj.push(diffPos);
 
 
             let shipSpeed = Math.sqrt(this.parent.mass * 10000 * shipPeriod / 10 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
@@ -347,6 +344,11 @@ class Ship {
             let targetSpeed = Math.sqrt(this.parent.mass * 10000 * shipPeriod / 10 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
+
+
+            let diffPos = shipPosition.minus(targetPosition)
+            diffPos = diffPos.overVector(targetPosition.unit(), targetVelocity);
+            this.traj.push(diffPos);
 
 
             shipAnomaly += shipAngular;
@@ -388,22 +390,14 @@ class Ship {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
         if (this.target != null && turnOnRelTraj) {
             for (let i = 0; i < this.traj.length - 1; i++) {
 
-                let trajProj1 = Complex.projectFrom3d(this.traj[i].plus(this.target.position), camera);
-                let trajProj2 = Complex.projectFrom3d(this.traj[i + 1].plus(this.target.position), camera);
+                let traj1 = this.traj[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
+                let traj2 = this.traj[i + 1].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
+
+                let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
+                let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);
 
                 ctx.beginPath();
                 ctx.moveTo(trajProj1.x, trajProj1.y);
