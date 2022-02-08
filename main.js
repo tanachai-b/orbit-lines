@@ -249,6 +249,23 @@ function main() {
 
     setInterval(() => {
 
+        camera.update();
+
+        let thrust = 0.01;
+        if (holdedKeys.has('shift')) thrust = 0.001;
+        if (holdedKeys.has('w')) ship.thrust(thrust, 0, 0);
+        if (holdedKeys.has('s')) ship.thrust(-thrust, 0, 0);
+        if (holdedKeys.has('a')) ship.thrust(0, thrust, 0);
+        if (holdedKeys.has('d')) ship.thrust(0, -thrust, 0);
+        if (holdedKeys.has('r')) ship.thrust(0, 0, thrust);
+        if (holdedKeys.has('f')) ship.thrust(0, 0, -thrust);
+
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth, moon); });
+        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
+        celestials.forEach((celestial) => { celestial.updateOrbit(); });
+        celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
+        celestials.forEach((celestial) => { celestial.updateRelativeTrajectory(); });
+
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -262,22 +279,6 @@ function main() {
             );
         });
 
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth, moon); });
-        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updateOrbit(); });
-        celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
-        celestials.forEach((celestial) => { celestial.updateRelativeTrajectory(); });
-
-        camera.update();
-
-        let thrust = 0.01;
-        if (holdedKeys.has('shift')) thrust = 0.001;
-        if (holdedKeys.has('w')) ship.thrust(thrust, 0, 0);
-        if (holdedKeys.has('s')) ship.thrust(-thrust, 0, 0);
-        if (holdedKeys.has('a')) ship.thrust(0, thrust, 0);
-        if (holdedKeys.has('d')) ship.thrust(0, -thrust, 0);
-        if (holdedKeys.has('r')) ship.thrust(0, 0, thrust);
-        if (holdedKeys.has('f')) ship.thrust(0, 0, -thrust);
 
 
         ctx.fillStyle = '#FFFFFF';

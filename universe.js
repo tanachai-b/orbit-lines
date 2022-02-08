@@ -196,6 +196,16 @@ class Ship {
     setFrame(frame) { this.parent = frame; }
     setTarget(target) { this.target = target; }
 
+    thrust(prograde, radialIn, normal) {
+
+        let relPosition = this.position.minus(this.parent.position);
+        let relVelocity = this.velocity.minus(this.parent.velocity);
+
+        let thrust = new Vector(prograde, radialIn, normal).timesVector(relVelocity.unit(), relPosition.times(-1));
+
+        this.velocity = this.velocity.plus(thrust);
+    }
+
     updateVelocity(timeSpeed, sun, earth, moon) {
 
         let sunDist = sun.position.minus(this.position);
@@ -417,16 +427,6 @@ class Ship {
             }
         }
 
-    }
-
-    thrust(prograde, radialIn, normal) {
-
-        let relPosition = this.position.minus(this.parent.position);
-        let relVelocity = this.velocity.minus(this.parent.velocity);
-
-        let thrust = new Vector(prograde, radialIn, normal).timesVector(relVelocity.unit(), relPosition.times(-1));
-
-        this.velocity = this.velocity.plus(thrust);
     }
 }
 
