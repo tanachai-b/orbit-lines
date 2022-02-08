@@ -360,7 +360,7 @@ class Ship {
 
             if (diffPos.magnitude() < this.closestApproach) {
                 this.closestApproach = diffPos.magnitude();
-                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude();
+                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000) ** 0.5;
             }
 
 
@@ -509,29 +509,28 @@ class Orbit {
         }
 
 
-        let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
-        ctx.beginPath();
-        ctx.moveTo(periProj.x - 4, periProj.y);
-        ctx.lineTo(periProj.x, periProj.y + 4);
-        ctx.lineTo(periProj.x + 4, periProj.y);
-        ctx.lineTo(periProj.x, periProj.y - 4);
-        ctx.closePath();
-        ctx.stroke();
-        ctx.fill();
+        if (isDrawNodes) {
 
-        if (this.isLeftOfPeri(Math.PI)) {
-            let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
+            let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
             ctx.beginPath();
-            ctx.moveTo(apoProj.x - 4, apoProj.y);
-            ctx.lineTo(apoProj.x, apoProj.y + 4);
-            ctx.lineTo(apoProj.x + 4, apoProj.y);
-            ctx.lineTo(apoProj.x, apoProj.y - 4);
+            ctx.moveTo(periProj.x - 4, periProj.y);
+            ctx.lineTo(periProj.x, periProj.y + 4);
+            ctx.lineTo(periProj.x + 4, periProj.y);
+            ctx.lineTo(periProj.x, periProj.y - 4);
             ctx.closePath();
             ctx.stroke();
-        }
+            ctx.fill();
 
-
-        if (isDrawNodes) {
+            if (this.isLeftOfPeri(Math.PI)) {
+                let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
+                ctx.beginPath();
+                ctx.moveTo(apoProj.x - 4, apoProj.y);
+                ctx.lineTo(apoProj.x, apoProj.y + 4);
+                ctx.lineTo(apoProj.x + 4, apoProj.y);
+                ctx.lineTo(apoProj.x, apoProj.y - 4);
+                ctx.closePath();
+                ctx.stroke();
+            }
 
             if (this.isLeftOfPeri(-this.argPeriapsis)) {
                 let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);

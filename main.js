@@ -228,8 +228,8 @@ function main() {
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
 
-            case 'y': centerTarget = !centerTarget; break;
             case 'h': enableRelTraj = !enableRelTraj; break;
+            case 'n': centerTarget = !centerTarget; break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
@@ -286,10 +286,10 @@ function main() {
         let label = [];
         label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
         label.push('');
-        label.push('    Reference Frame [i][o][p] : ' + ship.parent.label);
-        label.push('             Target [k][l][;] : ' + ship.target.label);
-        label.push('       Camera Focus [u]       : ' + (centerTarget ? 'Target' : 'Ship'));
-        label.push('Approach Trajectory [j]       : ' + (enableRelTraj ? 'On' : 'Off'));
+        label.push('    Reference Frame [i][k]    : ' + ship.parent.label);
+        label.push('             Target [j][l]    : ' + ship.target.label);
+        label.push('Approach Trajectory [h]       : ' + (enableRelTraj ? 'On' : 'Off'));
+        label.push('       Camera Focus [n]       : ' + (centerTarget ? 'Target' : 'Ship'));
         label.push('');
         label.push('');
         label.push('                            Orbit');
