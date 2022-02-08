@@ -342,7 +342,7 @@ class Ship {
         let shipAnomaly = this.trueAnomaly;
         let targetAnomaly = this.target.trueAnomaly;
 
-        this.closestApproach = Number.MAX_SAFE_INTEGER;
+        let closestDistance = Number.MAX_SAFE_INTEGER;
 
         while (
             shipAnomaly <= this.trueAnomaly + 2 * Math.PI &&
@@ -368,8 +368,9 @@ class Ship {
             this.approachTrajectory.push(diffPos);
 
 
-            if (diffPos.magnitude() < this.closestApproach) {
-                this.closestApproach = diffPos.magnitude();
+            if (diffPos.magnitude() < closestDistance) {
+                closestDistance = diffPos.magnitude();
+                this.closestApproach = diffPos;
                 this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000) ** 0.5;
             }
 
@@ -425,8 +426,14 @@ class Ship {
                 ctx.lineTo(trajProj2.x, trajProj2.y);
                 ctx.stroke();
             }
-        }
 
+            let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+            let closestProj = Complex.projectFrom3d(closest.plus(this.target.position), camera);
+
+            ctx.beginPath();
+            ctx.arc(closestProj.x, closestProj.y, 4, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
     }
 }
 

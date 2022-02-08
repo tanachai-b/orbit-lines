@@ -138,7 +138,7 @@ function main() {
 
     let iss = new Celestial(
         'ISS',
-        0,
+        0.01,
         0,
         earth,
         new Orbit(
@@ -153,7 +153,7 @@ function main() {
 
     let ship = new Ship(
         'Ship',
-        0,
+        0.01,
         0,
         earth,
         new Orbit(
@@ -319,7 +319,7 @@ function main() {
         label.push('                     Distance : ' + round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km');
         label.push('               Relative Speed : ' + round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s');
         label.push('');
-        label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach, 2) + ' km') : 'n/a'));
+        label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'));
         label.push('               Approach Speed : ' + ((ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
         label.push('');
         label.push('');
