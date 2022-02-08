@@ -138,7 +138,7 @@ function main() {
 
     let iss = new Celestial(
         'ISS',
-        0.01,
+        0,
         0,
         earth,
         new Orbit(
@@ -153,7 +153,7 @@ function main() {
 
     let ship = new Ship(
         'Ship',
-        0.01,
+        0,
         0,
         earth,
         new Orbit(
@@ -287,7 +287,7 @@ function main() {
         label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
         label.push('');
         label.push('    Reference Frame [i][k]    : ' + ship.parent.label);
-        label.push('             Target [j][l]    : ' + ship.target.label);
+        label.push('             Target [j][l][;] : ' + ship.target.label);
         label.push('Approach Trajectory [h]       : ' + (enableRelTraj ? 'On' : 'Off'));
         label.push('       Camera Focus [n]       : ' + (centerTarget ? 'Target' : 'Ship'));
         label.push('');
@@ -295,6 +295,8 @@ function main() {
         label.push('                            Orbit');
         label.push('                     -------------------');
         label.push('                      Primary : ' + ship.parent.label);
+        label.push('                       Radius : ' + round(ship.parent.radius, 2) + ' km');
+        label.push('                         Mass : ' + round(ship.parent.mass, 4) + ' x 10^24');
         label.push('');
         label.push('              Semi Major Axis : ' + (ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'));
         label.push('                 Eccentricity : ' + round(ship.orbit.eccentricity, 4));
