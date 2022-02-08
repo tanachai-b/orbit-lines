@@ -72,14 +72,14 @@ class Celestial {
         label,
         radius,
         mass,
-        parent,
+        primary,
         orbit,
         trueAnomaly,
     ) {
         this.label = label;
         this.radius = radius;
         this.mass = mass;
-        this.parent = parent;
+        this.primary = primary;
         this.orbit = orbit;
         this.trueAnomaly = trueAnomaly;
 
@@ -88,43 +88,43 @@ class Celestial {
         this.position = new Vector(0, 0, 0);
         this.velocity = new Vector(0, 0, 0);
 
-        if (this.parent != null) {
+        if (this.primary != null) {
             let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-            let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
             let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
 
             this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
 
-            this.position = relPosition.plus(this.parent.position);
-            this.velocity = relVelocity.plus(this.parent.velocity);
+            this.position = relPosition.plus(this.primary.position);
+            this.velocity = relVelocity.plus(this.primary.velocity);
         }
 
         this.satellites = [this];
     }
 
     updateVelocity(timeSpeed) {
-        if (this.parent == null) return;
+        if (this.primary == null) return;
 
         let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
-        this.velocity = relVelocity.over(10 ** (timeSpeed / 2)).plus(this.parent.velocity);
+        this.velocity = relVelocity.over(10 ** (timeSpeed / 2)).plus(this.primary.velocity);
 
         this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
     }
 
     updatePosition() {
-        if (this.parent == null) return;
+        if (this.primary == null) return;
 
         this.trueAnomaly += this.angularVelocity;
-        this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.parent.position);
+        this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.primary.position);
     }
 
     updateOrbit() { }
     updateRelativeOrbit() { }
-    updateRelativeTrajectory() { }
+    updateApproachTrajectory() { }
 
     draw(camera, isTarget) {
         /** @type {HTMLCanvasElement} */
@@ -152,7 +152,7 @@ class Celestial {
 
 
         if (isTarget && this.orbit != null) {
-            this.orbit.draw(camera, false, this.parent.position);
+            this.orbit.draw(camera, false, this.primary.position);
         }
     }
 }
@@ -162,44 +162,44 @@ class Ship {
         label,
         radius,
         mass,
-        parent,
+        primary,
         orbit,
         trueAnomaly,
     ) {
         this.label = label;
         this.radius = radius;
         this.mass = mass;
-        this.parent = parent;
+        this.primary = primary;
         this.orbit = orbit;
         this.trueAnomaly = trueAnomaly;
 
         this.position = new Vector(0, 0, 0);
         this.velocity = new Vector(0, 0, 0);
 
-        if (this.parent != null) {
+        if (this.primary != null) {
             let relPosition = this.orbit.getPosition(this.trueAnomaly);
-            this.position = relPosition.plus(this.parent.position);
+            this.position = relPosition.plus(this.primary.position);
 
-            let orbitalSpeed = Math.sqrt(this.parent.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
             let orbitalDirection = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit();
-            this.velocity = orbitalDirection.times(orbitalSpeed).plus(this.parent.velocity);
+            this.velocity = orbitalDirection.times(orbitalSpeed).plus(this.primary.velocity);
         }
 
         this.target = null;
         this.relativeOrbit = null;
-        this.relativeTrajectory = [];
+        this.approachTrajectory = [];
 
         this.closestApproach = Number.MAX_SAFE_INTEGER;
         this.approachSpeed = 0;
     }
 
-    setFrame(frame) { this.parent = frame; }
+    setFrame(frame) { this.primary = frame; }
     setTarget(target) { this.target = target; }
 
     thrust(prograde, radialIn, normal) {
 
-        let relPosition = this.position.minus(this.parent.position);
-        let relVelocity = this.velocity.minus(this.parent.velocity);
+        let relPosition = this.position.minus(this.primary.position);
+        let relVelocity = this.velocity.minus(this.primary.velocity);
 
         let thrust = new Vector(prograde, radialIn, normal).timesVector(relVelocity.unit(), relPosition.times(-1));
 
@@ -229,17 +229,17 @@ class Ship {
 
     updateOrbit() {
 
-        let relPosition = this.position.minus(this.parent.position);
-        let relVelocity = this.velocity.minus(this.parent.velocity);
+        let relPosition = this.position.minus(this.primary.position);
+        let relVelocity = this.velocity.minus(this.primary.velocity);
         let perpenVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y;
 
         let distance = relPosition.magnitude();
         let speed = relVelocity.magnitude();
-        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.parent.mass * 10000));
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 10000));
 
-        let orbitalEnergy = -(this.parent.mass * 10000 / (2 * semiMajorAxis));
+        let orbitalEnergy = -(this.primary.mass * 10000 / (2 * semiMajorAxis));
         let angularMomentum = relPosition.magnitude() * perpenVelocity;
-        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.parent.mass * 10000) ** 2));
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 10000) ** 2));
 
         let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
         let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
@@ -248,7 +248,7 @@ class Ship {
 
         let inclination = Math.acos(normal.z);
 
-        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.parent.mass * 10000).minus(relPosition.unit());
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 10000).minus(relPosition.unit());
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
@@ -269,8 +269,8 @@ class Ship {
         if (this.target.orbit == null) return;
 
 
-        let relPosition = this.position.minus(this.parent.position);
-        let relVelocity = this.velocity.minus(this.parent.velocity);
+        let relPosition = this.position.minus(this.primary.position);
+        let relVelocity = this.velocity.minus(this.primary.velocity);
 
 
         let yawDiff = -this.target.orbit.longAscending;
@@ -296,11 +296,11 @@ class Ship {
 
         let distance = relPosition.magnitude();
         let speed = relVelocity.magnitude();
-        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.parent.mass * 10000));
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 10000));
 
-        let orbitalEnergy = -(this.parent.mass * 10000 / (2 * semiMajorAxis));
+        let orbitalEnergy = -(this.primary.mass * 10000 / (2 * semiMajorAxis));
         let angularMomentum = relPosition.magnitude() * perpenVelocity;
-        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.parent.mass * 10000) ** 2));
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 10000) ** 2));
 
         let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
         let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
@@ -309,7 +309,7 @@ class Ship {
 
         let inclination = Math.acos(normal.z);
 
-        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.parent.mass * 10000).minus(relPosition.unit());
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 10000).minus(relPosition.unit());
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
@@ -326,18 +326,18 @@ class Ship {
         );
     }
 
-    updateRelativeTrajectory() {
+    updateApproachTrajectory() {
         if (this.target.orbit == null) return;
 
 
         let shipOrbit = this.orbit;
         let targetOrbit = this.target.orbit;
 
-        let shipPeriod = 2 * Math.PI * Math.sqrt(shipOrbit.semiMajorAxis ** 3 / this.parent.mass);
-        let targetPeriod = 2 * Math.PI * Math.sqrt(targetOrbit.semiMajorAxis ** 3 / this.parent.mass);
+        let shipPeriod = 2 * Math.PI * Math.sqrt(shipOrbit.semiMajorAxis ** 3 / this.primary.mass);
+        let targetPeriod = 2 * Math.PI * Math.sqrt(targetOrbit.semiMajorAxis ** 3 / this.primary.mass);
 
 
-        this.relativeTrajectory = [];
+        this.approachTrajectory = [];
 
         let shipAnomaly = this.trueAnomaly;
         let targetAnomaly = this.target.trueAnomaly;
@@ -347,25 +347,25 @@ class Ship {
         while (
             shipAnomaly <= this.trueAnomaly + 2 * Math.PI &&
             targetAnomaly <= this.target.trueAnomaly + 2 * Math.PI &&
-            this.relativeTrajectory.length < 1000
+            this.approachTrajectory.length < 1000
         ) {
 
             let shipPosition = shipOrbit.getPosition(shipAnomaly);
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
 
 
-            let shipSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
+            let shipSpeed = Math.sqrt(this.primary.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
             let shipVelocity = shipOrbit.getPosition(shipAnomaly + 0.000001).minus(shipPosition).unit().times(shipSpeed);
             let shipAngular = shipVelocity.overVector(shipPosition.unit(), shipVelocity).y / shipPosition.magnitude();
 
-            let targetSpeed = Math.sqrt(this.parent.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
+            let targetSpeed = Math.sqrt(this.primary.mass * 10000 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
 
 
             let diffPos = shipPosition.minus(targetPosition)
             diffPos = diffPos.overVector(targetPosition.unit(), targetVelocity);
-            this.relativeTrajectory.push(diffPos);
+            this.approachTrajectory.push(diffPos);
 
 
             if (diffPos.magnitude() < this.closestApproach) {
@@ -379,7 +379,7 @@ class Ship {
         }
     }
 
-    draw(camera, isTarget, enableRelTraj) {
+    draw(camera, isTarget, enableApproachTrajectory) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -405,17 +405,17 @@ class Ship {
 
 
         if (this.target.orbit != null && this.relativeOrbit != null) {
-            this.relativeOrbit.draw(camera, true, this.parent.position, this.relOrbYaw, this.relOrbRoll);
+            this.relativeOrbit.draw(camera, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
         } else {
-            this.orbit.draw(camera, true, this.parent.position);
+            this.orbit.draw(camera, true, this.primary.position);
         }
 
 
-        if (this.target.orbit != null && this.relativeTrajectory != null && enableRelTraj) {
-            for (let i = 0; i < this.relativeTrajectory.length - 1; i++) {
+        if (this.target.orbit != null && this.approachTrajectory != null && enableApproachTrajectory) {
+            for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
 
-                let traj1 = this.relativeTrajectory[i].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
-                let traj2 = this.relativeTrajectory[i + 1].timesVector(this.target.position.minus(this.parent.position).unit(), this.target.velocity.minus(this.parent.velocity));
+                let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+                let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
 
                 let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
                 let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);

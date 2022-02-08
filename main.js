@@ -193,7 +193,7 @@ function main() {
     let targetIndex = 0;
     ship.setTarget(earth);
 
-    let enableRelTraj = false;
+    let enableApproachTrajectory = false;
     let centerTarget = false;
 
 
@@ -211,24 +211,24 @@ function main() {
             case '/': timeSpeed = 0; break;
 
             case 'i':
-                if (ship.parent.parent != null) {
-                    for (let i = 0; i < ship.parent.parent.satellites.length; i++) {
-                        if (ship.parent.label == ship.parent.parent.satellites[i].label) { targetIndex = i; }
+                if (ship.primary.primary != null) {
+                    for (let i = 0; i < ship.primary.primary.satellites.length; i++) {
+                        if (ship.primary.label == ship.primary.primary.satellites[i].label) { targetIndex = i; }
                     }
-                    ship.setFrame(ship.parent.parent);
-                    targets = ship.parent.satellites;
+                    ship.setFrame(ship.primary.primary);
+                    targets = ship.primary.satellites;
                 }
                 break;
             case 'k':
                 ship.setFrame(ship.target);
-                targets = ship.parent.satellites;
+                targets = ship.primary.satellites;
                 break;
 
             case 'j': targetIndex--; break;
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
 
-            case 'h': enableRelTraj = !enableRelTraj; break;
+            case 'h': enableApproachTrajectory = !enableApproachTrajectory; break;
             case 'n': centerTarget = !centerTarget; break;
         }
 
@@ -262,7 +262,7 @@ function main() {
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
         celestials.forEach((celestial) => { celestial.updateOrbit(); });
         celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
-        celestials.forEach((celestial) => { celestial.updateRelativeTrajectory(); });
+        celestials.forEach((celestial) => { celestial.updateApproachTrajectory(); });
 
         camera.update();
 
@@ -275,7 +275,7 @@ function main() {
             celestial.draw(
                 camera,
                 celestial.label == ship.target?.label,
-                enableRelTraj,
+                enableApproachTrajectory,
             );
         });
 
@@ -286,17 +286,17 @@ function main() {
         let label = [];
         label.push('         Time Speed [,][.][/] : ' + 'x' + Math.floor(10 ** (timeSpeed / 2)));
         label.push('');
-        label.push('    Reference Frame [i][k]    : ' + ship.parent.label);
+        label.push('    Reference Frame [i][k]    : ' + ship.primary.label);
         label.push('             Target [j][l][;] : ' + ship.target.label);
-        label.push('Approach Trajectory [h]       : ' + (enableRelTraj ? 'On' : 'Off'));
+        label.push('Approach Trajectory [h]       : ' + (enableApproachTrajectory ? 'On' : 'Off'));
         label.push('       Camera Focus [n]       : ' + (centerTarget ? 'Target' : 'Ship'));
         label.push('');
         label.push('');
         label.push('                            Orbit');
         label.push('                     -------------------');
-        label.push('                      Primary : ' + ship.parent.label);
-        label.push('                       Radius : ' + round(ship.parent.radius, 2) + ' km');
-        label.push('                         Mass : ' + round(ship.parent.mass, 4) + ' x 10^24');
+        label.push('                      Primary : ' + ship.primary.label);
+        label.push('                       Radius : ' + round(ship.primary.radius, 2) + ' km');
+        label.push('                         Mass : ' + round(ship.primary.mass, 4) + ' x 10^24');
         label.push('');
         label.push('              Semi Major Axis : ' + (ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'));
         label.push('                 Eccentricity : ' + round(ship.orbit.eccentricity, 4));
@@ -305,8 +305,8 @@ function main() {
         label.push('        Argument of Periapsis : ' + round(ship.orbit.argPeriapsis / Math.PI * 180, 2) + '°');
         label.push('');
         label.push('                 True Anomaly : ' + round(ship.trueAnomaly / Math.PI * 180, 2) + '°');
-        label.push('                     Distance : ' + round(ship.position.minus(ship.parent.position).magnitude(), 2) + ' km');
-        label.push('                Orbital Speed : ' + round(ship.velocity.minus(ship.parent.velocity).magnitude() * 60, 2) + ' km/s');
+        label.push('                     Distance : ' + round(ship.position.minus(ship.primary.position).magnitude(), 2) + ' km');
+        label.push('                Orbital Speed : ' + round(ship.velocity.minus(ship.primary.velocity).magnitude() * 60, 2) + ' km/s');
         label.push('');
         label.push('                    Periapsis : ' + round(ship.orbit.periapsis.magnitude(), 2) + ' km');
         label.push('                     Apoapsis : ' + round(ship.orbit.apoapsis.magnitude(), 2) + ' km');
@@ -319,8 +319,8 @@ function main() {
         label.push('                     Distance : ' + round(ship.target.position.minus(ship.position).magnitude(), 2) + ' km');
         label.push('               Relative Speed : ' + round(ship.target.velocity.minus(ship.velocity).magnitude() * 60, 2) + ' km/s');
         label.push('');
-        label.push('             Closest Approach : ' + ((ship.target.label != ship.parent.label) ? (round(ship.closestApproach, 2) + ' km') : 'n/a'));
-        label.push('               Approach Speed : ' + ((ship.target.label != ship.parent.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
+        label.push('             Closest Approach : ' + ((ship.target.label != ship.primary.label) ? (round(ship.closestApproach, 2) + ' km') : 'n/a'));
+        label.push('               Approach Speed : ' + ((ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'));
         label.push('');
         label.push('');
         label.push('           Prograde [w]');
