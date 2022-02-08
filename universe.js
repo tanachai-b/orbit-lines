@@ -122,10 +122,6 @@ class Celestial {
         this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.primary.position);
     }
 
-    updateOrbit() { }
-    updateRelativeOrbit() { }
-    updateApproachTrajectory() { }
-
     draw(camera, isTarget) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
@@ -380,7 +376,7 @@ class Ship {
         }
     }
 
-    draw(camera, isTarget, enableApproachTrajectory) {
+    draw(camera, enableApproachTrajectory) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');

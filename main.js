@@ -177,8 +177,7 @@ function main() {
         uranus,
         neptune,
         moon,
-        iss,
-        ship
+        iss
     ];
 
     sun.satellites.push(mercury, venus, earth, mars, jupiter, saturn, uranus, neptune);
@@ -258,25 +257,25 @@ function main() {
         if (holdedKeys.has('r')) ship.thrust(0, 0, thrust);
         if (holdedKeys.has('f')) ship.thrust(0, 0, -thrust);
 
-        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed, sun, earth, moon); });
+        celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
+        ship.updateVelocity(timeSpeed, sun, earth, moon);
+
         celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
-        celestials.forEach((celestial) => { celestial.updateOrbit(); });
-        celestials.forEach((celestial) => { celestial.updateRelativeOrbit(); });
-        celestials.forEach((celestial) => { celestial.updateApproachTrajectory(); });
+        ship.updatePosition(timeSpeed);
+        ship.updateOrbit();
+        ship.updateRelativeOrbit();
+        ship.updateApproachTrajectory();
 
         camera.update();
 
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ship.draw(camera, enableApproachTrajectory);
         celestials.forEach((celestial) => {
-            celestial.draw(
-                camera,
-                celestial.label == ship.target?.label,
-                enableApproachTrajectory,
-            );
+            celestial.draw(camera, celestial.label == ship.target.label);
         });
 
 
