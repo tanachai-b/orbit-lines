@@ -135,20 +135,19 @@ function main() {
         ),
         Math.PI / 180 * 135.27
     );
-
     let iss = new Celestial(
         'ISS',
         0.01,
         0,
         earth,
         new Orbit(
-            9000,
-            0.01,
-            Math.PI / 180 * -45,
-            Math.PI / 180 * 10,
-            Math.PI / 180 * -120
+            7000,
+            0.0005712,
+            Math.PI / 180 * 251.0393,
+            Math.PI / 180 * 51.6418,
+            Math.PI / 180 * 111.8962
         ),
-        Math.PI / 180 * 30
+        Math.PI / 180 * 350.5311
     );
 
     let ship = new Ship(
@@ -165,6 +164,7 @@ function main() {
         ),
         Math.PI / 180 * 90
     );
+
 
     let celestials = [
         sun,
