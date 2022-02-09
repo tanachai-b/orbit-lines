@@ -246,6 +246,8 @@ function main() {
     canvas.addEventListener('keyup', (event) => { holdedKeys.delete(event.key.toLowerCase()); });
 
 
+    let timeElapsed = 0;
+
     setInterval(() => {
 
         let thrust = 0.0001;
@@ -283,6 +285,9 @@ function main() {
         ctx.font = '12px monospace';
 
         let leftHUD = [];
+        leftHUD.push(`               Time Elapsed : ${round((timeElapsed) / 60, 0)} s`);
+        leftHUD.push('');
+        leftHUD.push('');
         leftHUD.push(`       Time Speed [,][.][/] : x${Math.floor(10 ** (timeSpeed / 2))}`);
         leftHUD.push('');
         leftHUD.push(`  Reference Frame [i][k]    : ${ship.primary.label}`);
@@ -352,6 +357,9 @@ function main() {
         rightHUD.push(`                        ${getChevronText('Uranus')}`);
         rightHUD.push(`                        ${getChevronText('Neptune')}`);
         for (let i = 0; i < rightHUD.length; i++) { ctx.fillText(rightHUD[i], 1600, 20 + 15 * i) }
+
+
+        timeElapsed += 10 ** (timeSpeed / 2);
 
     }, 1000 / 60);
 
