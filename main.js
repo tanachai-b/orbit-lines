@@ -285,7 +285,7 @@ function main() {
         ctx.font = '12px monospace';
 
         let leftHUD = [];
-        leftHUD.push(`               Time Elapsed : ${round((timeElapsed) / 60, 0)} s`);
+        leftHUD.push(`               Time Elapsed : ${time(timeElapsed)}`);
         leftHUD.push('');
         leftHUD.push('');
         leftHUD.push(`       Time Speed [,][.][/] : x 10^${timeSpeed / 2}`);
@@ -306,7 +306,7 @@ function main() {
         leftHUD.push(`                Inclination : ${round(ship.orbit.inclination / Math.PI * 180, 2)}°`);
         leftHUD.push(`      Argument of Periapsis : ${round(ship.orbit.argPeriapsis / Math.PI * 180, 2)}°`);
         leftHUD.push('');
-        leftHUD.push(`             Orbital Period : ${round(ship.period, 2)} s`);
+        leftHUD.push(`             Orbital Period : ${time(ship.period)}`);
         leftHUD.push(`                  Periapsis : ${round(ship.orbit.periapsis.magnitude(), 2)} km`);
         leftHUD.push(`                   Apoapsis : ${round(ship.orbit.apoapsis.magnitude(), 2)} km`);
         leftHUD.push('');
@@ -328,7 +328,7 @@ function main() {
         leftHUD.push('');
         leftHUD.push(`           Closest Approach : ${(ship.target.label != ship.primary.label) ? (round(ship.closestApproach.magnitude(), 2) + ' km') : 'n/a'}`);
         leftHUD.push(`             Approach Speed : ${(ship.target.label != ship.primary.label) ? (round(ship.approachSpeed * 60, 2) + ' km/s') : 'n/a'}`);
-        leftHUD.push(` Estimated Time to Approach : ${(ship.target.label != ship.primary.label) ? (round(ship.approachTime, 2) + ' s') : 'n/a'}`);
+        leftHUD.push(` Estimated Time to Approach : ${(ship.target.label != ship.primary.label) ? (time(ship.approachTime)) : 'n/a'}`);
         leftHUD.push('');
         leftHUD.push('');
         leftHUD.push('');
@@ -359,7 +359,7 @@ function main() {
         for (let i = 0; i < rightHUD.length; i++) { ctx.fillText(rightHUD[i], 1600, 20 + 15 * i) }
 
 
-        timeElapsed += 10 ** (timeSpeed / 2);
+        timeElapsed += (1 / 60) * 10 ** (timeSpeed / 2);
 
     }, 1000 / 60);
 
@@ -370,4 +370,28 @@ function main() {
 
 function round(number, digit) {
     return (Math.round(number * 10 ** digit) / 10 ** digit).toLocaleString('en-US', { maximumFractionDigits: 9 });
+}
+
+function time(time) {
+
+    let second = 1;
+    let minute = second * 60;
+    let hour = minute * 60;
+    let day = hour * 24;
+    let year = day * 365;
+
+    let years = `${Math.floor(time / year)}`.padStart(0);
+    let days = `${Math.floor((time % year) / day)}`.padStart(3);
+    let hours = `${Math.floor((time % day) / hour)}`.padStart(2);
+    let minutes = `${Math.floor((time % hour) / minute)}`.padStart(2);
+    let seconds = `${Math.floor((time % minute) / second)}`.padStart(2);
+
+    let result = '';
+    if (years > 0) result += `${years}y `;
+    if (days > 0) result += `${days}d `;
+    if (hours > 0) result += `${hours}h `;
+    if (minutes > 0) result += `${minutes}m `;
+    if (true) result += `${seconds}s `;
+
+    return result.trim();
 }
