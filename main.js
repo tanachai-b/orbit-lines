@@ -288,7 +288,7 @@ function main() {
         leftHUD.push(`               Time Elapsed : ${round((timeElapsed) / 60, 0)} s`);
         leftHUD.push('');
         leftHUD.push('');
-        leftHUD.push(`       Time Speed [,][.][/] : x${Math.floor(10 ** (timeSpeed / 2))}`);
+        leftHUD.push(`       Time Speed [,][.][/] : x 10^${timeSpeed / 2}`);
         leftHUD.push('');
         leftHUD.push(`  Reference Frame [i][k]    : ${ship.primary.label}`);
         leftHUD.push(`           Target [j][l][;] : ${ship.target.label}`);
