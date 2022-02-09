@@ -192,6 +192,7 @@ class Ship {
 
         this.closestApproach = new Vector(0, 0, 0);
         this.approachSpeed = 0;
+        this.approachTime = 0;
 
         this.closestShip = new Vector(0, 0, 0);
         this.closestTarget = new Vector(0, 0, 0);
@@ -375,8 +376,10 @@ class Ship {
 
             if (diffPos.magnitude() < closestDistance) {
                 closestDistance = diffPos.magnitude();
+
                 this.closestApproach = diffPos;
                 this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6) ** 0.5;
+                this.approachTime = (this.approachTrajectory.length - 1) / 60 * Math.min(shipPeriod, targetPeriod) * 10 ** (17.6 / 2);
 
                 this.closestShip = shipPosition;
                 this.closestTarget = targetPosition;
