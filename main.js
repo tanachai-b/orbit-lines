@@ -248,8 +248,8 @@ function main() {
 
     setInterval(() => {
 
-        let thrust = 0.01;
-        if (holdedKeys.has('shift')) thrust = 0.001;
+        let thrust = 0.0001;
+        if (holdedKeys.has('shift')) thrust *= 0.1;
         if (holdedKeys.has('w')) ship.thrust(thrust, 0, 0);
         if (holdedKeys.has('s')) ship.thrust(-thrust, 0, 0);
         if (holdedKeys.has('a')) ship.thrust(0, thrust, 0);
@@ -301,12 +301,12 @@ function main() {
         leftHUD.push(`                  Inclination : ${round(ship.orbit.inclination / Math.PI * 180, 2)}°`);
         leftHUD.push(`        Argument of Periapsis : ${round(ship.orbit.argPeriapsis / Math.PI * 180, 2)}°`);
         leftHUD.push('');
+        leftHUD.push(`                    Periapsis : ${round(ship.orbit.periapsis.magnitude(), 2)} km`);
+        leftHUD.push(`                     Apoapsis : ${round(ship.orbit.apoapsis.magnitude(), 2)} km`);
+        leftHUD.push('');
         leftHUD.push(`                 True Anomaly : ${round(ship.trueAnomaly / Math.PI * 180, 2)}°`);
         leftHUD.push(`                     Distance : ${round(ship.position.minus(ship.primary.position).magnitude(), 2)} km`);
         leftHUD.push(`                Orbital Speed : ${round(ship.velocity.minus(ship.primary.velocity).magnitude() * 60, 2)} km/s`);
-        leftHUD.push('');
-        leftHUD.push(`                    Periapsis : ${round(ship.orbit.periapsis.magnitude(), 2)} km`);
-        leftHUD.push(`                     Apoapsis : ${round(ship.orbit.apoapsis.magnitude(), 2)} km`);
         leftHUD.push('');
         leftHUD.push('');
         leftHUD.push('                      Relative to Target');
