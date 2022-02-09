@@ -34,7 +34,7 @@ function main() {
             Math.PI / 180 * 3.39467605,
             Math.PI / 180 * 54.92262463
         ),
-        Math.PI / 180 * 181.97909950
+        Math.PI / 180 * (181.97909950 + 210)
     );
     let earth = new Celestial(
         'Earth',
@@ -62,7 +62,7 @@ function main() {
             Math.PI / 180 * 1.84969142,
             Math.PI / 180 * -73.5031685
         ),
-        Math.PI / 180 * -4.55343205
+        Math.PI / 180 * (-4.55343205 + 90)
     );
     let jupiter = new Celestial(
         'Jupiter',
@@ -76,7 +76,7 @@ function main() {
             Math.PI / 180 * 1.30439695,
             Math.PI / 180 * -85.74542926
         ),
-        Math.PI / 180 * 34.39644051
+        Math.PI / 180 * (34.39644051 + 90)
     );
     let saturn = new Celestial(
         'Saturn',
