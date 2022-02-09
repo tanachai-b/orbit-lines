@@ -354,11 +354,11 @@ class Ship {
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
 
 
-            let shipSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
+            let shipSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
             let shipVelocity = shipOrbit.getPosition(shipAnomaly + 0.000001).minus(shipPosition).unit().times(shipSpeed);
             let shipAngular = shipVelocity.overVector(shipPosition.unit(), shipVelocity).y / shipPosition.magnitude();
 
-            let targetSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
+            let targetSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
 
@@ -371,7 +371,7 @@ class Ship {
             if (diffPos.magnitude() < closestDistance) {
                 closestDistance = diffPos.magnitude();
                 this.closestApproach = diffPos;
-                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000) ** 0.5;
+                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6) ** 0.5;
 
                 this.closestShip = shipPosition;
                 this.closestTarget = targetPosition;
