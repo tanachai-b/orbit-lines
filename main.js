@@ -138,10 +138,10 @@ function main() {
     let iss = new Celestial(
         'ISS',
         0.01,
-        420000,
+        417289,
         earth,
         new Orbit(
-            7000,
+            6738,
             0.0005712,
             Math.PI / 180 * 251.0393,
             Math.PI / 180 * 51.6418,
@@ -152,7 +152,7 @@ function main() {
 
     let ship = new Ship(
         'Ship',
-        0.01,
+        0.005,
         7120,
         earth,
         new Orbit(
@@ -301,6 +301,7 @@ function main() {
         leftHUD.push(`                  Inclination : ${round(ship.orbit.inclination / Math.PI * 180, 2)}°`);
         leftHUD.push(`        Argument of Periapsis : ${round(ship.orbit.argPeriapsis / Math.PI * 180, 2)}°`);
         leftHUD.push('');
+        leftHUD.push(`               Orbital Period : ${round(ship.period, 2)} s`);
         leftHUD.push(`                    Periapsis : ${round(ship.orbit.periapsis.magnitude(), 2)} km`);
         leftHUD.push(`                     Apoapsis : ${round(ship.orbit.apoapsis.magnitude(), 2)} km`);
         leftHUD.push('');

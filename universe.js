@@ -195,6 +195,8 @@ class Ship {
 
         this.closestShip = new Vector(0, 0, 0);
         this.closestTarget = new Vector(0, 0, 0);
+
+        this.period = 0;
     }
 
     setFrame(frame) { this.primary = frame; }
@@ -263,6 +265,9 @@ class Ship {
             inclination,
             argPeriapsis
         );
+
+
+        this.period = 2 * Math.PI * Math.sqrt(semiMajorAxis ** 3 / (this.primary.mass * 6.6743015 * 10 ** -20));
     }
 
     updateRelativeOrbit() {
