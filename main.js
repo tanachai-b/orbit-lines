@@ -5,13 +5,13 @@ function main() {
     let sun = new Celestial(
         'Sun',
         695700,
-        1988470
+        1988470 * 10 ** 24
     );
 
     let mercury = new Celestial(
         'Mercury',
         2439.4,
-        0.330103,
+        0.330103 * 10 ** 24,
         sun,
         new Orbit(
             0.38709927 * 149598073,
@@ -25,7 +25,7 @@ function main() {
     let venus = new Celestial(
         'Venus',
         6051.8,
-        4.86731,
+        4.86731 * 10 ** 24,
         sun,
         new Orbit(
             0.72333566 * 149598073,
@@ -39,7 +39,7 @@ function main() {
     let earth = new Celestial(
         'Earth',
         6371.0084,
-        5.97217,
+        5.97217 * 10 ** 24,
         sun,
         new Orbit(
             1.00000261 * 149598073,
@@ -53,7 +53,7 @@ function main() {
     let mars = new Celestial(
         'Mars',
         3389.50,
-        0.641691,
+        0.641691 * 10 ** 24,
         sun,
         new Orbit(
             1.52371034 * 149598073,
@@ -67,7 +67,7 @@ function main() {
     let jupiter = new Celestial(
         'Jupiter',
         69911,
-        1898.125,
+        1898.125 * 10 ** 24,
         sun,
         new Orbit(
             5.20288700 * 149598073,
@@ -81,7 +81,7 @@ function main() {
     let saturn = new Celestial(
         'Saturn',
         58232,
-        568.317,
+        568.317 * 10 ** 24,
         sun,
         new Orbit(
             9.53667594 * 149598073,
@@ -95,7 +95,7 @@ function main() {
     let uranus = new Celestial(
         'Uranus',
         25362,
-        86.8099,
+        86.8099 * 10 ** 24,
         sun,
         new Orbit(
             19.18916464 * 149598073,
@@ -109,7 +109,7 @@ function main() {
     let neptune = new Celestial(
         'Neptune',
         24622,
-        102.4092,
+        102.4092 * 10 ** 24,
         sun,
         new Orbit(
             30.06992276 * 149598073,
@@ -124,7 +124,7 @@ function main() {
     let moon = new Celestial(
         'Moon',
         1737.4,
-        0.0734767309,
+        0.0734767309 * 10 ** 24,
         earth,
         new Orbit(
             0.00256955529 * 149598073,
@@ -138,7 +138,7 @@ function main() {
     let iss = new Celestial(
         'ISS',
         0.01,
-        0,
+        420000,
         earth,
         new Orbit(
             7000,
@@ -153,7 +153,7 @@ function main() {
     let ship = new Ship(
         'Ship',
         0.01,
-        0,
+        7120,
         earth,
         new Orbit(
             8000,
@@ -293,7 +293,7 @@ function main() {
         leftHUD.push('                     -------------------');
         leftHUD.push(`                      Primary : ${ship.primary.label}`);
         leftHUD.push(`             Primary\'s Radius : ${round(ship.primary.radius, 2)} km`);
-        leftHUD.push(`               Primary\'s Mass : ${round(ship.primary.mass, 4)} x 10^24`);
+        leftHUD.push(`               Primary\'s Mass : ${round(ship.primary.mass / 10 ** 24, 4)} x 10^24 kg`);
         leftHUD.push('');
         leftHUD.push(`              Semi Major Axis : ${ship.orbit.semiMajorAxis > 0 ? (round(ship.orbit.semiMajorAxis, 2) + ' km') : '∞'}`);
         leftHUD.push(`                 Eccentricity : ${round(ship.orbit.eccentricity, 4)}`);
@@ -313,7 +313,7 @@ function main() {
         leftHUD.push('                     -------------------');
         leftHUD.push(`                       Target : ${ship.target.label}`);
         leftHUD.push(`              Target\'s Radius : ${round(ship.target.radius, 2)} km`);
-        leftHUD.push(`                Target\'s Mass : ${round(ship.target.mass, 4)} x 10^24`);
+        leftHUD.push(`                Target\'s Mass : ${round(ship.target.mass / 10 ** 24, 4)} x 10^24 kg`);
         leftHUD.push('');
         leftHUD.push(`         Relative Inclination : ${(ship.target.orbit != null) ? (round(ship.relativeOrbit.inclination / Math.PI * 180, 2) + '°') : 'n/a'}`);
         leftHUD.push('');

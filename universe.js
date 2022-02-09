@@ -91,7 +91,7 @@ class Celestial {
         if (this.primary != null) {
             let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-            let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            let orbitalSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
             let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
 
             this.angularVelocity = relVelocity.overVector(relPosition.unit(), relVelocity).y / relPosition.magnitude();
@@ -108,7 +108,7 @@ class Celestial {
 
         let relPosition = this.orbit.getPosition(this.trueAnomaly);
 
-        let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+        let orbitalSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * 10 ** timeSpeed * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
         let relVelocity = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit().times(orbitalSpeed);
         this.velocity = relVelocity.over(10 ** (timeSpeed / 2)).plus(this.primary.velocity);
 
@@ -181,7 +181,7 @@ class Ship {
             let relPosition = this.orbit.getPosition(this.trueAnomaly);
             this.position = relPosition.plus(this.primary.position);
 
-            let orbitalSpeed = Math.sqrt(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
+            let orbitalSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * (2 / relPosition.magnitude() - 1 / this.orbit.semiMajorAxis));
             let orbitalDirection = this.orbit.getPosition(this.trueAnomaly + 0.000001).minus(relPosition).unit();
             this.velocity = orbitalDirection.times(orbitalSpeed).plus(this.primary.velocity);
         }
@@ -216,7 +216,7 @@ class Ship {
 
         celestials.forEach((celestial) => {
             let distance = celestial.position.minus(this.position);
-            let gravity = distance.over(distance.magnitude() ** 3).times(celestial.mass * 10000 * 6.6743015 / 60 ** 2 * 10 ** (timeSpeed / 2));
+            let gravity = distance.over(distance.magnitude() ** 3).times(celestial.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * 10 ** (timeSpeed / 2));
             acceleration = acceleration.plus(gravity);
         });
 
@@ -235,11 +235,11 @@ class Ship {
 
         let distance = relPosition.magnitude();
         let speed = relVelocity.magnitude();
-        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 10000 * 6.6743015 / 60 ** 2));
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2));
 
-        let orbitalEnergy = -(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 / (2 * semiMajorAxis));
+        let orbitalEnergy = -(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 / (2 * semiMajorAxis));
         let angularMomentum = relPosition.magnitude() * perpenVelocity;
-        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 10000 * 6.6743015 / 60 ** 2) ** 2));
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2) ** 2));
 
         let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
         let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
@@ -248,7 +248,7 @@ class Ship {
 
         let inclination = Math.acos(normal.z);
 
-        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 10000 * 6.6743015 / 60 ** 2).minus(relPosition.unit());
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2).minus(relPosition.unit());
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
@@ -296,11 +296,11 @@ class Ship {
 
         let distance = relPosition.magnitude();
         let speed = relVelocity.magnitude();
-        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 10000 * 6.6743015 / 60 ** 2));
+        let semiMajorAxis = 1 / (2 / distance - speed ** 2 / (this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2));
 
-        let orbitalEnergy = -(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 / (2 * semiMajorAxis));
+        let orbitalEnergy = -(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 / (2 * semiMajorAxis));
         let angularMomentum = relPosition.magnitude() * perpenVelocity;
-        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 10000 * 6.6743015 / 60 ** 2) ** 2));
+        let eccentricity = Math.sqrt(1 + (2 * orbitalEnergy * angularMomentum ** 2 / (this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2) ** 2));
 
         let normal = new Vector(0, 0, 1).timesVector(relPosition.unit(), relVelocity);
         let ascNode = new Vector(0, 0, 1).timesVector(new Vector(0, 0, 1), normal);
@@ -309,7 +309,7 @@ class Ship {
 
         let inclination = Math.acos(normal.z);
 
-        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 10000 * 6.6743015 / 60 ** 2).minus(relPosition.unit());
+        let eccenVector = new Vector(0, 0, angularMomentum).timesVector(relVelocity, normal).over(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2).minus(relPosition.unit());
         let eccenOnAscNode = eccenVector.overVector(ascNode, new Vector(0, 0, 1).timesVector(normal, ascNode));
         let argPeriapsis = Math.atan2(eccenOnAscNode.y, eccenOnAscNode.x);
 
@@ -354,11 +354,11 @@ class Ship {
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
 
 
-            let shipSpeed = Math.sqrt(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
+            let shipSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
             let shipVelocity = shipOrbit.getPosition(shipAnomaly + 0.000001).minus(shipPosition).unit().times(shipSpeed);
             let shipAngular = shipVelocity.overVector(shipPosition.unit(), shipVelocity).y / shipPosition.magnitude();
 
-            let targetSpeed = Math.sqrt(this.primary.mass * 10000 * 6.6743015 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
+            let targetSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 / 1000000000 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
 
