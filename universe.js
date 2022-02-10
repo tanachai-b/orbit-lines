@@ -613,6 +613,34 @@ class Orbit {
 
     draw(ctx, cameras, isDrawNodes, translation, yawPitch, roll) {
 
+        if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
+        if (roll == null) { roll = new Vector(0, 1, 0); }
+
+
+        this.positions = [];
+        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
+            this.getPosition(i, (position) => { this.positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
+        }
+
+
+        let periapsis1 = this.periapsis.timesVector(yawPitch, roll).plus(translation);
+        let apoapsis1 = this.apoapsis.timesVector(yawPitch, roll).plus(translation);
+        let ascending1 = this.ascending.timesVector(yawPitch, roll).plus(translation);
+        let descending1 = this.descending.timesVector(yawPitch, roll).plus(translation);
+
+
+        let lineStart = this.ascending;
+        let lineEnd = this.descending;
+        if (!this.isLeftOfPeri(-this.argPeriapsis)) lineStart = new Vector(0, 0, 0);
+        if (!this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) lineEnd = new Vector(0, 0, 0);
+
+        this.ascDescLine = [];
+        for (let i = 0; i <= 100; i++) {
+            let position = lineEnd.minus(lineStart).over(100).times(i).plus(lineStart);
+            this.ascDescLine.push(position.timesVector(yawPitch, roll).plus(translation));
+        }
+
+
         cameras.forEach((camera) => {
 
             ctx.save();
@@ -621,18 +649,9 @@ class Orbit {
             ctx.clip();
 
 
-            if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
-            if (roll == null) { roll = new Vector(0, 1, 0); }
-
-
-            this.positions = [];
-            for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
-                this.getPosition(i, (position) => { this.positions.push(position); });
-            }
-
             for (let i = 0; i < this.positions.length - 1; i++) {
-                let aProj = Complex.projectFrom3d(this.positions[i].timesVector(yawPitch, roll).plus(translation), camera);
-                let bProj = Complex.projectFrom3d(this.positions[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
+                let aProj = Complex.projectFrom3d(this.positions[i], camera);
+                let bProj = Complex.projectFrom3d(this.positions[i + 1], camera);
 
                 ctx.beginPath();
                 ctx.moveTo(aProj.x, aProj.y);
@@ -643,7 +662,7 @@ class Orbit {
 
             if (isDrawNodes) {
 
-                let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
+                let periProj = Complex.projectFrom3d(periapsis1, camera);
                 ctx.beginPath();
                 ctx.moveTo(periProj.x - 4, periProj.y);
                 ctx.lineTo(periProj.x, periProj.y + 4);
@@ -654,7 +673,7 @@ class Orbit {
                 ctx.fill();
 
                 if (this.isLeftOfPeri(Math.PI)) {
-                    let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
+                    let apoProj = Complex.projectFrom3d(apoapsis1, camera);
                     ctx.beginPath();
                     ctx.moveTo(apoProj.x - 4, apoProj.y);
                     ctx.lineTo(apoProj.x, apoProj.y + 4);
@@ -665,7 +684,7 @@ class Orbit {
                 }
 
                 if (this.isLeftOfPeri(-this.argPeriapsis)) {
-                    let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
+                    let ascProj = Complex.projectFrom3d(ascending1, camera);
                     ctx.beginPath();
                     ctx.moveTo(ascProj.x, ascProj.y - 4);
                     ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
@@ -676,7 +695,7 @@ class Orbit {
                 }
 
                 if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
-                    let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
+                    let descProj = Complex.projectFrom3d(descending1, camera);
                     ctx.beginPath();
                     ctx.moveTo(descProj.x, descProj.y + 4);
                     ctx.lineTo(descProj.x + 3, descProj.y - 2);
@@ -686,21 +705,10 @@ class Orbit {
                 }
 
 
-                let lineStart = this.ascending;
-                let lineEnd = this.descending;
-                if (!this.isLeftOfPeri(-this.argPeriapsis)) lineStart = new Vector(0, 0, 0);
-                if (!this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) lineEnd = new Vector(0, 0, 0);
-
-                this.ascDescLine = [];
-                for (let i = 0; i <= 100; i++) {
-                    let position = lineEnd.minus(lineStart).over(100).times(i).plus(lineStart);
-                    this.ascDescLine.push(position);
-                }
-
                 ctx.setLineDash([1, 10]);
                 for (let i = 0; i < this.ascDescLine.length - 1; i++) {
-                    let start = Complex.projectFrom3d(this.ascDescLine[i].timesVector(yawPitch, roll).plus(translation), camera);
-                    let end = Complex.projectFrom3d(this.ascDescLine[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
+                    let start = Complex.projectFrom3d(this.ascDescLine[i], camera);
+                    let end = Complex.projectFrom3d(this.ascDescLine[i + 1], camera);
 
                     ctx.beginPath();
                     ctx.moveTo(start.x, start.y);
