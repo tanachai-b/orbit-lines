@@ -199,21 +199,26 @@ function main() {
     /** @type {HTMLCanvasElement} */
     let canvas = document.getElementById('canvas');
 
-    let camera1 = new Camera(
+    let topCam = new Camera(
         ship.primary,
         0, -Math.PI / 2, 0,
         0, 0, canvas.width / 2, canvas.height / 2
     );
-    let camera2 = new Camera(
-        ship.primary,
-        -Math.PI / 2, 0, 0,
-        canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
-    );
-    let camera3 = new Camera(
+    let frontCam = new Camera(
         ship.primary,
         0, 0, 0,
         0, canvas.height / 2, canvas.width / 2, canvas.height / 2
     );
+    let rightCam = new Camera(
+        ship.primary,
+        -Math.PI / 2, 0, 0,
+        canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
+    );
+    // let fullScreenCam = new Camera(
+    //     ship.primary,
+    //     0, 0, 0,
+    //     0, 0, canvas.width, canvas.height
+    // );
 
 
     canvas.focus();
@@ -252,9 +257,10 @@ function main() {
         targetIndex %= targets.length;
         ship.setTarget(targets[targetIndex]);
 
-        camera1.changeCenter(centerTarget ? ship.target : ship.primary);
-        camera2.changeCenter(centerTarget ? ship.target : ship.primary);
-        camera3.changeCenter(centerTarget ? ship.target : ship.primary);
+        topCam.changeCenter(centerTarget ? ship.target : ship.primary);
+        frontCam.changeCenter(centerTarget ? ship.target : ship.primary);
+        rightCam.changeCenter(centerTarget ? ship.target : ship.primary);
+        // fullScreenCam.changeCenter(centerTarget ? ship.target : ship.primary);
     });
 
 
@@ -285,18 +291,19 @@ function main() {
         ship.updateRelativeOrbit();
         ship.updateApproachTrajectory();
 
-        camera1.update();
-        camera2.update();
-        camera3.update();
+        topCam.update();
+        frontCam.update();
+        rightCam.update();
+        // fullScreenCam.update();
 
 
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ship.draw([camera1, camera2, camera3], enableApproachTrajectory);
+        ship.draw([topCam, frontCam, rightCam], enableApproachTrajectory);
         celestials.forEach((celestial) => {
             celestial.draw(
-                [camera1, camera2, camera3],
+                [topCam, frontCam, rightCam],
                 celestial.label == ship.target.label,
                 celestial.label == ship.primary.label
             );
