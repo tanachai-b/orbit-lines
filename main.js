@@ -220,6 +220,11 @@ function main() {
     //     0, 0, canvas.width, canvas.height
     // );
 
+    topCam.autoZoom(ship, true);
+    frontCam.autoZoom(ship, true);
+    rightCam.autoZoom(ship, true);
+
+    let isRequiredAutoZoom = false;
 
     canvas.focus();
     canvas.addEventListener('keypress', (event) => {
@@ -247,8 +252,10 @@ function main() {
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
 
-            case 'h': enableApproachTrajectory = !enableApproachTrajectory; break;
-            case 'n': centerTarget = !centerTarget; break;
+            case 'h':
+                enableApproachTrajectory = !enableApproachTrajectory;
+                centerTarget = !centerTarget;
+                break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
@@ -261,6 +268,8 @@ function main() {
         frontCam.changeCenter(centerTarget ? ship.target : ship.primary);
         rightCam.changeCenter(centerTarget ? ship.target : ship.primary);
         // fullScreenCam.changeCenter(centerTarget ? ship.target : ship.primary);
+
+        isRequiredAutoZoom = true;
     });
 
 
@@ -290,6 +299,15 @@ function main() {
         ship.updateOrbit();
         ship.updateRelativeOrbit();
         ship.updateApproachTrajectory();
+
+
+        if (isRequiredAutoZoom) {
+            isRequiredAutoZoom = false;
+
+            topCam.autoZoom(ship, false, enableApproachTrajectory);
+            frontCam.autoZoom(ship, false, enableApproachTrajectory);
+            rightCam.autoZoom(ship, false, enableApproachTrajectory);
+        }
 
         topCam.update();
         frontCam.update();
@@ -374,7 +392,7 @@ function main() {
         leftHUD.push('');
         leftHUD.push('');
         leftHUD.push(`    Approach Trajectory [h] : ${enableApproachTrajectory ? 'On' : 'Off'}`);
-        leftHUD.push(`           Camera Focus [n] : ${centerTarget ? 'Target' : 'Ship'}`);
+        leftHUD.push(`           Camera Focus [h] : ${centerTarget ? 'Target' : 'Ship'}`);
         leftHUD.push('');
         leftHUD.push('               Prograde [w]');
         leftHUD.push('             Retrograde [s]');
