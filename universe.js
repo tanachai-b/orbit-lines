@@ -122,7 +122,7 @@ class Celestial {
         this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.primary.position);
     }
 
-    draw(camera, isTarget) {
+    draw(camera, isTarget, isShipPrimary) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -130,6 +130,14 @@ class Celestial {
         ctx.fillStyle = '#FFFFFF';
         ctx.lineWidth = 1;
 
+
+        if (isTarget && !isShipPrimary) {
+            ctx.strokeStyle = '#FF8800';
+            ctx.fillStyle = '#FF8800';
+        } else {
+            ctx.strokeStyle = '#888888';
+            ctx.fillStyle = '#888888';
+        }
 
         let posProj = Complex.projectFrom3d(this.position, camera);
         ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
@@ -153,8 +161,11 @@ class Celestial {
 
 
         if (isTarget && this.orbit != null) {
-            this.orbit.draw(camera, false, this.primary.position);
+            this.orbit.draw(ctx, camera, false, this.primary.position);
         }
+
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.fillStyle = '#FFFFFF';
     }
 }
 
@@ -400,6 +411,9 @@ class Ship {
         ctx.lineWidth = 1;
 
 
+        ctx.strokeStyle = '#0088FF';
+        ctx.fillStyle = '#0088FF';
+
         let posProj = Complex.projectFrom3d(this.position, camera);
         ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
 
@@ -418,15 +432,19 @@ class Ship {
 
 
         if (this.target.orbit != null && this.relativeOrbit != null) {
-            this.relativeOrbit.draw(camera, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
+            this.relativeOrbit.draw(ctx, camera, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
         } else {
-            this.orbit.draw(camera, true, this.primary.position);
+            this.orbit.draw(ctx, camera, true, this.primary.position);
         }
+
+        ctx.strokeStyle = '#FFFFFF';
 
 
         if (this.target.orbit != null && this.approachTrajectory != null) {
 
             if (enableApproachTrajectory) {
+
+                ctx.strokeStyle = '#FF0088';
 
                 for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
 
@@ -441,6 +459,8 @@ class Ship {
                     ctx.lineTo(trajProj2.x, trajProj2.y);
                     ctx.stroke();
                 }
+
+                ctx.strokeStyle = '#FFFFFF';
 
                 let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
                 let closestProj = Complex.projectFrom3d(closest.plus(this.target.position), camera);
@@ -515,13 +535,13 @@ class Orbit {
         return distance * Math.cos(trueAnomaly) <= maxRight;
     }
 
-    draw(camera, isDrawNodes, translation, yawPitch, roll) {
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
-        let ctx = canvas.getContext('2d');
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.fillStyle = '#FFFFFF';
-        ctx.lineWidth = 1;
+    draw(ctx, camera, isDrawNodes, translation, yawPitch, roll) {
+        // /** @type {HTMLCanvasElement} */
+        // let canvas = document.getElementById('canvas');
+        // let ctx = canvas.getContext('2d');
+        // ctx.strokeStyle = '#FFFFFF';
+        // ctx.fillStyle = '#FFFFFF';
+        // ctx.lineWidth = 1;
 
 
         if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }

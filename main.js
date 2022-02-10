@@ -277,11 +277,15 @@ function main() {
 
         ship.draw(camera, enableApproachTrajectory);
         celestials.forEach((celestial) => {
-            celestial.draw(camera, celestial.label == ship.target.label);
+            celestial.draw(
+                camera,
+                celestial.label == ship.target.label,
+                celestial.label == ship.primary.label
+            );
         });
 
 
-        ctx.fillStyle = '#FFFFFF';
+        ctx.fillStyle = '#888888';
         ctx.font = '12px monospace';
 
         let leftHUD = [];
