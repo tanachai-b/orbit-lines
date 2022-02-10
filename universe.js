@@ -1,19 +1,17 @@
 'use strict';
 
 class Camera {
-    constructor(center) {
-        this.center = center;
-
-
+    constructor(center, yaw, pitch, roll, drawX, drawY, drawWidth, drawHeight) {
         this.position = center.position;
 
-        this.yaw = -Math.PI / 6;
-        this.pitch = -Math.PI / 6;
-        this.roll = 0;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.roll = roll;
 
         this.zoom = 15;
 
 
+        this.center = center;
         this.animatePosition = new Vector(0, 0, 0);
 
         this.destYaw = this.yaw;
@@ -21,6 +19,12 @@ class Camera {
         this.destRoll = this.roll;
 
         this.destZoom = this.zoom;
+
+
+        this.drawX = drawX;
+        this.drawY = drawY;
+        this.drawWidth = drawWidth;
+        this.drawHeight = drawHeight;
 
 
         Camera.addMouseListener(

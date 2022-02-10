@@ -196,11 +196,26 @@ function main() {
     let centerTarget = false;
 
 
-    let camera = new Camera(ship);
-
-
     /** @type {HTMLCanvasElement} */
     let canvas = document.getElementById('canvas');
+
+    let camera1 = new Camera(
+        ship,
+        0, -Math.PI / 2, 0,
+        0, 0, canvas.width / 2, canvas.height / 2
+    );
+    let camera2 = new Camera(
+        ship,
+        -Math.PI / 2, 0, 0,
+        canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
+    );
+    let camera3 = new Camera(
+        ship,
+        0, 0, 0,
+        0, canvas.height / 2, canvas.width / 2, canvas.height / 2
+    );
+
+
     canvas.focus();
     canvas.addEventListener('keypress', (event) => {
 
@@ -237,7 +252,9 @@ function main() {
         targetIndex %= targets.length;
         ship.setTarget(targets[targetIndex]);
 
-        camera.changeCenter(centerTarget ? ship.target : ship);
+        camera1.changeCenter(centerTarget ? ship.target : ship);
+        camera2.changeCenter(centerTarget ? ship.target : ship);
+        camera3.changeCenter(centerTarget ? ship.target : ship);
     });
 
 
@@ -268,21 +285,76 @@ function main() {
         ship.updateRelativeOrbit();
         ship.updateApproachTrajectory();
 
-        camera.update();
+        camera1.update();
+        camera2.update();
+        camera3.update();
 
-        /** @type {HTMLCanvasElement} */
-        let canvas = document.getElementById('canvas');
+
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ship.draw(camera, enableApproachTrajectory);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(camera1.drawX, camera1.drawY, camera1.drawWidth, camera1.drawHeight);
+        ctx.clip();
+
+        ship.draw(camera1, enableApproachTrajectory);
         celestials.forEach((celestial) => {
             celestial.draw(
-                camera,
+                camera1,
                 celestial.label == ship.target.label,
                 celestial.label == ship.primary.label
             );
         });
+
+        ctx.restore();
+
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(camera2.drawX, camera2.drawY, camera2.drawWidth, camera2.drawHeight);
+        ctx.clip();
+
+        ship.draw(camera2, enableApproachTrajectory);
+        celestials.forEach((celestial) => {
+            celestial.draw(
+                camera2,
+                celestial.label == ship.target.label,
+                celestial.label == ship.primary.label
+            );
+        });
+
+        ctx.restore();
+
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(camera3.drawX, camera3.drawY, camera3.drawWidth, camera3.drawHeight);
+        ctx.clip();
+
+        ship.draw(camera3, enableApproachTrajectory);
+        celestials.forEach((celestial) => {
+            celestial.draw(
+                camera3,
+                celestial.label == ship.target.label,
+                celestial.label == ship.primary.label
+            );
+        });
+
+        ctx.restore();
+
+
+
+        ctx.strokeStyle = '#888888';
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2 + 0.5, 0);
+        ctx.lineTo(canvas.width / 2 + 0.5, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2 + 0.5);
+        ctx.lineTo(canvas.width, canvas.height / 2 + 0.5);
+        ctx.stroke();
 
 
         ctx.fillStyle = '#888888';
