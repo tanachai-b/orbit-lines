@@ -21,8 +21,6 @@ class Complex {
     over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() ** 2, 0)); }
 
     static projectFrom3d(point, camera) {
-        // /** @type {HTMLCanvasElement} */
-        // let canvas = document.getElementById('canvas');
 
         let x0 = point.x - camera.position.x;
         let y0 = point.y - camera.position.y;
@@ -43,8 +41,6 @@ class Complex {
     }
 
     static projectSphere(radius, point, camera) {
-        // /** @type {HTMLCanvasElement} */
-        // let canvas = document.getElementById('canvas');
 
         let x0 = point.x - camera.position.x;
         let y0 = point.y - camera.position.y;

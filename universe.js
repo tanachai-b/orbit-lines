@@ -406,7 +406,7 @@ class Ship {
                 closestDistance = diffPos.magnitude();
 
                 this.closestApproach = diffPos;
-                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6) ** 0.5;
+                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) * 10 ** (17.6 / 2));
                 this.approachTime = (this.approachTrajectory.length - 1) / 60 * Math.min(shipPeriod, targetPeriod) * 10 ** (17.6 / 2);
 
                 this.closestShip = shipPosition;
@@ -480,10 +480,10 @@ class Ship {
                 let relTraj1s = [];
                 let relTraj2s = [];
 
-                for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
+                for (let i = 0; i < this.approachTrajectory.length - 5; i += 5) {
 
                     let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-                    let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+                    let traj2 = this.approachTrajectory[i + 5].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
 
                     let relTraj1 = traj1.plus(this.target.position);
                     let relTraj2 = traj2.plus(this.target.position);
@@ -618,7 +618,7 @@ class Orbit {
 
 
         this.positions = [];
-        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
+        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 5) {
             this.getPosition(i, (position) => { this.positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
         }
 
