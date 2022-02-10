@@ -34,8 +34,8 @@ class Complex {
         let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
         let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
-        let calcX = (x2 / Math.max(y2 + 1000000 * 10 ** (camera.zoom / 10), 0)) * 1000000 + camera.drawWidth / 2 + camera.drawX;
-        let calcY = -(z2 / Math.max(y2 + 1000000 * 10 ** (camera.zoom / 10), 0)) * 1000000 + camera.drawHeight / 2 + camera.drawY;
+        let calcX = (x2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawWidth / 2 + camera.drawX;
+        let calcY = -(z2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
 
         return new Complex(calcX, calcY);
     }
@@ -55,7 +55,7 @@ class Complex {
         let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
 
-        let dist = y2 + 1000000 * 10 ** (camera.zoom / 10);
+        let dist = y2 + 1000 * 10 ** (camera.zoom / 10);
         let dir = new Vector(dist, -x2, z2);
         let hyp = dir.magnitude();
 
@@ -71,8 +71,8 @@ class Complex {
 
             let res = upp.timesVector(dir.unit(), dir);
 
-            let calcX = -res.y / Math.max(res.x, 0) * 1000000 + camera.drawWidth / 2 + camera.drawX;
-            let calcY = -res.z / Math.max(res.x, 0) * 1000000 + camera.drawHeight / 2 + camera.drawY;
+            let calcX = -res.y / Math.max(res.x, 0) * 1000 + camera.drawWidth / 2 + camera.drawX;
+            let calcY = -res.z / Math.max(res.x, 0) * 1000 + camera.drawHeight / 2 + camera.drawY;
             ress.push(new Complex(calcX, calcY));
         }
 

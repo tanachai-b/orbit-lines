@@ -29,14 +29,14 @@ class Camera {
 
         Camera.addMouseListener(
             (event) => {
-                // this.destYaw += event.movementX / 200;
-                // this.destPitch -= event.movementY / 200;
+                this.destYaw += event.movementX / 200;
+                this.destPitch -= event.movementY / 200;
 
-                // this.destPitch = Math.min(this.destPitch, Math.PI / 2);
-                // this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
+                this.destPitch = Math.min(this.destPitch, Math.PI / 2);
+                this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
 
             }, (event) => {
-                // this.destZoom += Math.sign(event.deltaY);
+                this.destZoom += Math.sign(event.deltaY);
             },
         );
     }
@@ -59,17 +59,6 @@ class Camera {
         this.animatePosition = this.position.minus(this.center.position);
     }
 
-    update() {
-        this.animatePosition = this.animatePosition.times(0 / 10);
-        this.position = this.center.position.plus(this.animatePosition);
-
-        this.yaw += (this.destYaw - this.yaw) / 1;
-        this.pitch += (this.destPitch - this.pitch) / 1;
-        this.roll += (this.destRoll - this.roll) / 1;
-
-        this.zoom += (this.destZoom - this.zoom) / 1;
-    }
-
     autoZoom(ship, isInitial, enableApproachTrajectory) {
         let furthest = 0;
 
@@ -88,6 +77,23 @@ class Camera {
 
         this.destZoom = Math.log10(furthest) * 10 - 23;
         if (isInitial) this.zoom = this.destZoom;
+    }
+
+    setRotation(yaw, pitch, roll) {
+        this.destYaw = yaw;
+        this.destPitch = pitch;
+        this.destRoll = roll;
+    }
+
+    update() {
+        this.animatePosition = this.animatePosition.times(9 / 10);
+        this.position = this.center.position.plus(this.animatePosition);
+
+        this.yaw += (this.destYaw - this.yaw) / 10;
+        this.pitch += (this.destPitch - this.pitch) / 10;
+        this.roll += (this.destRoll - this.roll) / 10;
+
+        this.zoom += (this.destZoom - this.zoom) / 10;
     }
 }
 

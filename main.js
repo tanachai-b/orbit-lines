@@ -189,8 +189,8 @@ function main() {
     ship.setFrame(earth);
 
     let targets = earth.satellites;
-    let targetIndex = 0;
-    ship.setTarget(earth);
+    let targetIndex = 1;
+    ship.setTarget(iss);
 
     let enableApproachTrajectory = false;
     let centerTarget = false;
@@ -270,6 +270,10 @@ function main() {
         // fullScreenCam.changeCenter(centerTarget ? ship.target : ship.primary);
 
         isRequiredAutoZoom = true;
+
+        topCam.setRotation(0, -Math.PI / 2, 0);
+        frontCam.setRotation(0, 0, 0);
+        rightCam.setRotation(-Math.PI / 2, 0, 0);
     });
 
 
