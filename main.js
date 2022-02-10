@@ -200,17 +200,17 @@ function main() {
     let canvas = document.getElementById('canvas');
 
     let camera1 = new Camera(
-        ship,
+        ship.primary,
         0, -Math.PI / 2, 0,
         0, 0, canvas.width / 2, canvas.height / 2
     );
     let camera2 = new Camera(
-        ship,
+        ship.primary,
         -Math.PI / 2, 0, 0,
         canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
     );
     let camera3 = new Camera(
-        ship,
+        ship.primary,
         0, 0, 0,
         0, canvas.height / 2, canvas.width / 2, canvas.height / 2
     );
@@ -252,9 +252,9 @@ function main() {
         targetIndex %= targets.length;
         ship.setTarget(targets[targetIndex]);
 
-        camera1.changeCenter(centerTarget ? ship.target : ship);
-        camera2.changeCenter(centerTarget ? ship.target : ship);
-        camera3.changeCenter(centerTarget ? ship.target : ship);
+        camera1.changeCenter(centerTarget ? ship.target : ship.primary);
+        camera2.changeCenter(centerTarget ? ship.target : ship.primary);
+        camera3.changeCenter(centerTarget ? ship.target : ship.primary);
     });
 
 
@@ -293,57 +293,14 @@ function main() {
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(camera1.drawX, camera1.drawY, camera1.drawWidth, camera1.drawHeight);
-        ctx.clip();
-
-        ship.draw(camera1, enableApproachTrajectory);
+        ship.draw([camera1, camera2, camera3], enableApproachTrajectory);
         celestials.forEach((celestial) => {
             celestial.draw(
-                camera1,
+                [camera1, camera2, camera3],
                 celestial.label == ship.target.label,
                 celestial.label == ship.primary.label
             );
         });
-
-        ctx.restore();
-
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(camera2.drawX, camera2.drawY, camera2.drawWidth, camera2.drawHeight);
-        ctx.clip();
-
-        ship.draw(camera2, enableApproachTrajectory);
-        celestials.forEach((celestial) => {
-            celestial.draw(
-                camera2,
-                celestial.label == ship.target.label,
-                celestial.label == ship.primary.label
-            );
-        });
-
-        ctx.restore();
-
-
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(camera3.drawX, camera3.drawY, camera3.drawWidth, camera3.drawHeight);
-        ctx.clip();
-
-        ship.draw(camera3, enableApproachTrajectory);
-        celestials.forEach((celestial) => {
-            celestial.draw(
-                camera3,
-                celestial.label == ship.target.label,
-                celestial.label == ship.primary.label
-            );
-        });
-
-        ctx.restore();
-
 
 
         ctx.strokeStyle = '#888888';

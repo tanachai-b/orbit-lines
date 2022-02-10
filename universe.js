@@ -126,7 +126,7 @@ class Celestial {
         this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.primary.position);
     }
 
-    draw(camera, isTarget, isShipPrimary) {
+    draw(cameras, isTarget, isShipPrimary) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -143,30 +143,43 @@ class Celestial {
             ctx.fillStyle = '#888888';
         }
 
-        let posProj = Complex.projectFrom3d(this.position, camera);
-        ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
+        cameras.forEach((camera) => {
 
-        if (this.primary != null) {
-            let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
-            if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
-        } else {
-            ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
-        }
-
-
-        let circle = Complex.projectSphere(this.radius, this.position, camera);
-
-        for (let i = 0; i < circle.length - 1; i++) {
+            ctx.save();
             ctx.beginPath();
-            ctx.moveTo(circle[i].x, circle[i].y);
-            ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
-            ctx.stroke();
-        }
+            ctx.rect(camera.drawX, camera.drawY, camera.drawWidth, camera.drawHeight);
+            ctx.clip();
+
+
+            let posProj = Complex.projectFrom3d(this.position, camera);
+            ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
+
+            if (this.primary != null) {
+                let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
+                if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
+            } else {
+                ctx.fillText(this.label, posProj.x + 8, posProj.y + 4);
+            }
+
+
+            let circle = Complex.projectSphere(this.radius, this.position, camera);
+
+            for (let i = 0; i < circle.length - 1; i++) {
+                ctx.beginPath();
+                ctx.moveTo(circle[i].x, circle[i].y);
+                ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
+                ctx.stroke();
+            }
+
+
+            ctx.restore();
+        });
 
 
         if (isTarget && this.orbit != null) {
-            this.orbit.draw(ctx, camera, false, this.primary.position);
+            this.orbit.draw(ctx, cameras, false, this.primary.position);
         }
+
 
         ctx.strokeStyle = '#FFFFFF';
         ctx.fillStyle = '#FFFFFF';
@@ -406,7 +419,7 @@ class Ship {
         }
     }
 
-    draw(camera, enableApproachTrajectory) {
+    draw(cameras, enableApproachTrajectory) {
         /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
@@ -418,72 +431,131 @@ class Ship {
         ctx.strokeStyle = '#0088FF';
         ctx.fillStyle = '#0088FF';
 
-        let posProj = Complex.projectFrom3d(this.position, camera);
-        ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
 
-        let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
-        if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
+        cameras.forEach((camera) => {
 
-
-        let circle = Complex.projectSphere(this.radius, this.position, camera);
-
-        for (let i = 0; i < circle.length - 1; i++) {
+            ctx.save();
             ctx.beginPath();
-            ctx.moveTo(circle[i].x, circle[i].y);
-            ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
-            ctx.stroke();
-        }
+            ctx.rect(camera.drawX, camera.drawY, camera.drawWidth, camera.drawHeight);
+            ctx.clip();
+
+
+            let posProj = Complex.projectFrom3d(this.position, camera);
+            ctx.strokeRect(posProj.x - 3.5, posProj.y - 3.5, 8, 8);
+
+            let primaryProj = Complex.projectFrom3d(this.primary.position, camera);
+            if (primaryProj.minus(posProj).magnitude() > 20) { ctx.fillText(this.label, posProj.x + 8, posProj.y + 4); }
+
+
+            let circle = Complex.projectSphere(this.radius, this.position, camera);
+
+            for (let i = 0; i < circle.length - 1; i++) {
+                ctx.beginPath();
+                ctx.moveTo(circle[i].x, circle[i].y);
+                ctx.lineTo(circle[i + 1].x, circle[i + 1].y);
+                ctx.stroke();
+            }
+
+
+            ctx.restore();
+        });
 
 
         if (this.target.orbit != null && this.relativeOrbit != null) {
-            this.relativeOrbit.draw(ctx, camera, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
+            this.relativeOrbit.draw(ctx, cameras, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
         } else {
-            this.orbit.draw(ctx, camera, true, this.primary.position);
+            this.orbit.draw(ctx, cameras, true, this.primary.position);
         }
 
+
         ctx.strokeStyle = '#FFFFFF';
+
+
 
 
         if (this.target.orbit != null && this.approachTrajectory != null) {
 
             if (enableApproachTrajectory) {
 
-                ctx.strokeStyle = '#FF0088';
+                let relTraj1s = [];
+                let relTraj2s = [];
 
                 for (let i = 0; i < this.approachTrajectory.length - 1; i++) {
 
                     let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
                     let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
 
-                    let trajProj1 = Complex.projectFrom3d(traj1.plus(this.target.position), camera);
-                    let trajProj2 = Complex.projectFrom3d(traj2.plus(this.target.position), camera);
+                    let relTraj1 = traj1.plus(this.target.position);
+                    let relTraj2 = traj2.plus(this.target.position);
 
-                    ctx.beginPath();
-                    ctx.moveTo(trajProj1.x, trajProj1.y);
-                    ctx.lineTo(trajProj2.x, trajProj2.y);
-                    ctx.stroke();
+                    relTraj1s.push(relTraj1);
+                    relTraj2s.push(relTraj2);
                 }
 
-                ctx.strokeStyle = '#FFFFFF';
 
                 let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-                let closestProj = Complex.projectFrom3d(closest.plus(this.target.position), camera);
-                ctx.beginPath();
-                ctx.strokeRect(closestProj.x - 2, closestProj.y - 2, 4, 4);
-                ctx.stroke();
+                let closest1 = closest.plus(this.target.position);
+
+                cameras.forEach((camera) => {
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(camera.drawX, camera.drawY, camera.drawWidth, camera.drawHeight);
+                    ctx.clip();
+
+
+                    ctx.strokeStyle = '#FF0088';
+
+                    for (let i = 0; i < relTraj1s.length; i++) {
+
+                        let trajProj1 = Complex.projectFrom3d(relTraj1s[i], camera);
+                        let trajProj2 = Complex.projectFrom3d(relTraj2s[i], camera);
+
+                        ctx.beginPath();
+                        ctx.moveTo(trajProj1.x, trajProj1.y);
+                        ctx.lineTo(trajProj2.x, trajProj2.y);
+                        ctx.stroke();
+                    }
+
+                    ctx.strokeStyle = '#FFFFFF';
+
+
+                    let closestProj = Complex.projectFrom3d(closest1, camera);
+                    ctx.beginPath();
+                    ctx.strokeRect(closestProj.x - 2, closestProj.y - 2, 4, 4);
+                    ctx.stroke();
+
+
+                    ctx.restore();
+                });
             }
 
             if (this.primary.label != this.target.label) {
 
-                let closestShipProj = Complex.projectFrom3d(this.closestShip.plus(this.primary.position), camera);
-                ctx.beginPath();
-                ctx.strokeRect(closestShipProj.x - 2, closestShipProj.y - 2, 4, 4);
-                ctx.stroke();
+                let closestShip1 = this.closestShip.plus(this.primary.position);
+                let closestTarget1 = this.closestTarget.plus(this.primary.position);
 
-                let closestTargetProj = Complex.projectFrom3d(this.closestTarget.plus(this.primary.position), camera);
-                ctx.beginPath();
-                ctx.strokeRect(closestTargetProj.x - 2, closestTargetProj.y - 2, 4, 4);
-                ctx.stroke();
+                cameras.forEach((camera) => {
+
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.rect(camera.drawX, camera.drawY, camera.drawWidth, camera.drawHeight);
+                    ctx.clip();
+
+
+                    let closestShipProj = Complex.projectFrom3d(closestShip1, camera);
+                    ctx.beginPath();
+                    ctx.strokeRect(closestShipProj.x - 2, closestShipProj.y - 2, 4, 4);
+                    ctx.stroke();
+
+                    let closestTargetProj = Complex.projectFrom3d(closestTarget1, camera);
+                    ctx.beginPath();
+                    ctx.strokeRect(closestTargetProj.x - 2, closestTargetProj.y - 2, 4, 4);
+                    ctx.stroke();
+
+
+                    ctx.restore();
+                });
             }
         }
     }
@@ -539,102 +611,106 @@ class Orbit {
         return distance * Math.cos(trueAnomaly) <= maxRight;
     }
 
-    draw(ctx, camera, isDrawNodes, translation, yawPitch, roll) {
-        // /** @type {HTMLCanvasElement} */
-        // let canvas = document.getElementById('canvas');
-        // let ctx = canvas.getContext('2d');
-        // ctx.strokeStyle = '#FFFFFF';
-        // ctx.fillStyle = '#FFFFFF';
-        // ctx.lineWidth = 1;
+    draw(ctx, cameras, isDrawNodes, translation, yawPitch, roll) {
 
+        cameras.forEach((camera) => {
 
-        if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
-        if (roll == null) { roll = new Vector(0, 1, 0); }
-
-
-        this.positions = [];
-        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
-            this.getPosition(i, (position) => { this.positions.push(position); });
-        }
-
-        for (let i = 0; i < this.positions.length - 1; i++) {
-            let aProj = Complex.projectFrom3d(this.positions[i].timesVector(yawPitch, roll).plus(translation), camera);
-            let bProj = Complex.projectFrom3d(this.positions[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
-
+            ctx.save();
             ctx.beginPath();
-            ctx.moveTo(aProj.x, aProj.y);
-            ctx.lineTo(bProj.x, bProj.y);
-            ctx.stroke();
-        }
+            ctx.rect(camera.drawX, camera.drawY, camera.drawWidth, camera.drawHeight);
+            ctx.clip();
 
 
-        if (isDrawNodes) {
+            if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
+            if (roll == null) { roll = new Vector(0, 1, 0); }
 
-            let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
-            ctx.beginPath();
-            ctx.moveTo(periProj.x - 4, periProj.y);
-            ctx.lineTo(periProj.x, periProj.y + 4);
-            ctx.lineTo(periProj.x + 4, periProj.y);
-            ctx.lineTo(periProj.x, periProj.y - 4);
-            ctx.closePath();
-            ctx.stroke();
-            ctx.fill();
 
-            if (this.isLeftOfPeri(Math.PI)) {
-                let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
+            this.positions = [];
+            for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180) {
+                this.getPosition(i, (position) => { this.positions.push(position); });
+            }
+
+            for (let i = 0; i < this.positions.length - 1; i++) {
+                let aProj = Complex.projectFrom3d(this.positions[i].timesVector(yawPitch, roll).plus(translation), camera);
+                let bProj = Complex.projectFrom3d(this.positions[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
+
                 ctx.beginPath();
-                ctx.moveTo(apoProj.x - 4, apoProj.y);
-                ctx.lineTo(apoProj.x, apoProj.y + 4);
-                ctx.lineTo(apoProj.x + 4, apoProj.y);
-                ctx.lineTo(apoProj.x, apoProj.y - 4);
-                ctx.closePath();
+                ctx.moveTo(aProj.x, aProj.y);
+                ctx.lineTo(bProj.x, bProj.y);
                 ctx.stroke();
             }
 
-            if (this.isLeftOfPeri(-this.argPeriapsis)) {
-                let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
+
+            if (isDrawNodes) {
+
+                let periProj = Complex.projectFrom3d(this.periapsis.timesVector(yawPitch, roll).plus(translation), camera);
                 ctx.beginPath();
-                ctx.moveTo(ascProj.x, ascProj.y - 4);
-                ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
-                ctx.lineTo(ascProj.x - 3, ascProj.y + 2);
+                ctx.moveTo(periProj.x - 4, periProj.y);
+                ctx.lineTo(periProj.x, periProj.y + 4);
+                ctx.lineTo(periProj.x + 4, periProj.y);
+                ctx.lineTo(periProj.x, periProj.y - 4);
                 ctx.closePath();
                 ctx.stroke();
                 ctx.fill();
+
+                if (this.isLeftOfPeri(Math.PI)) {
+                    let apoProj = Complex.projectFrom3d(this.apoapsis.timesVector(yawPitch, roll).plus(translation), camera);
+                    ctx.beginPath();
+                    ctx.moveTo(apoProj.x - 4, apoProj.y);
+                    ctx.lineTo(apoProj.x, apoProj.y + 4);
+                    ctx.lineTo(apoProj.x + 4, apoProj.y);
+                    ctx.lineTo(apoProj.x, apoProj.y - 4);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+
+                if (this.isLeftOfPeri(-this.argPeriapsis)) {
+                    let ascProj = Complex.projectFrom3d(this.ascending.timesVector(yawPitch, roll).plus(translation), camera);
+                    ctx.beginPath();
+                    ctx.moveTo(ascProj.x, ascProj.y - 4);
+                    ctx.lineTo(ascProj.x + 3, ascProj.y + 2);
+                    ctx.lineTo(ascProj.x - 3, ascProj.y + 2);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.fill();
+                }
+
+                if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
+                    let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
+                    ctx.beginPath();
+                    ctx.moveTo(descProj.x, descProj.y + 4);
+                    ctx.lineTo(descProj.x + 3, descProj.y - 2);
+                    ctx.lineTo(descProj.x - 3, descProj.y - 2);
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+
+
+                let lineStart = this.ascending;
+                let lineEnd = this.descending;
+                if (!this.isLeftOfPeri(-this.argPeriapsis)) lineStart = new Vector(0, 0, 0);
+                if (!this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) lineEnd = new Vector(0, 0, 0);
+
+                this.ascDescLine = [];
+                for (let i = 0; i <= 100; i++) {
+                    let position = lineEnd.minus(lineStart).over(100).times(i).plus(lineStart);
+                    this.ascDescLine.push(position);
+                }
+
+                ctx.setLineDash([1, 10]);
+                for (let i = 0; i < this.ascDescLine.length - 1; i++) {
+                    let start = Complex.projectFrom3d(this.ascDescLine[i].timesVector(yawPitch, roll).plus(translation), camera);
+                    let end = Complex.projectFrom3d(this.ascDescLine[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
+
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.stroke();
+                }
+                ctx.setLineDash([]);
             }
 
-            if (this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) {
-                let descProj = Complex.projectFrom3d(this.descending.timesVector(yawPitch, roll).plus(translation), camera);
-                ctx.beginPath();
-                ctx.moveTo(descProj.x, descProj.y + 4);
-                ctx.lineTo(descProj.x + 3, descProj.y - 2);
-                ctx.lineTo(descProj.x - 3, descProj.y - 2);
-                ctx.closePath();
-                ctx.stroke();
-            }
-
-
-            let lineStart = this.ascending;
-            let lineEnd = this.descending;
-            if (!this.isLeftOfPeri(-this.argPeriapsis)) lineStart = new Vector(0, 0, 0);
-            if (!this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) lineEnd = new Vector(0, 0, 0);
-
-            this.ascDescLine = [];
-            for (let i = 0; i <= 100; i++) {
-                let position = lineEnd.minus(lineStart).over(100).times(i).plus(lineStart);
-                this.ascDescLine.push(position);
-            }
-
-            ctx.setLineDash([1, 10]);
-            for (let i = 0; i < this.ascDescLine.length - 1; i++) {
-                let start = Complex.projectFrom3d(this.ascDescLine[i].timesVector(yawPitch, roll).plus(translation), camera);
-                let end = Complex.projectFrom3d(this.ascDescLine[i + 1].timesVector(yawPitch, roll).plus(translation), camera);
-
-                ctx.beginPath();
-                ctx.moveTo(start.x, start.y);
-                ctx.lineTo(end.x, end.y);
-                ctx.stroke();
-            }
-            ctx.setLineDash([]);
-        }
+            ctx.restore();
+        });
     }
 }
