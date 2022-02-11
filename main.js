@@ -188,7 +188,7 @@ window.onload = function () {
 
     let timeSpeed = 0;
 
-    ship.setFrame(earth);
+    ship.setPrimary(earth);
 
     let targets = earth.satellites;
     let targetIndex = 1;
@@ -223,11 +223,9 @@ window.onload = function () {
     //     0, 0, canvas.width, canvas.height
     // );
 
-    topCam.autoZoom(ship, true);
-    frontCam.autoZoom(ship, true);
-    rightCam.autoZoom(ship, true);
 
-    let isRequiredAutoZoom = false;
+    let keyPressed = null;
+    let isZoomTargetOrbit = false;
 
     canvas.focus();
     canvas.addEventListener('keypress', (event) => {
@@ -242,12 +240,12 @@ window.onload = function () {
                     for (let i = 0; i < ship.primary.primary.satellites.length; i++) {
                         if (ship.primary.label == ship.primary.primary.satellites[i].label) { targetIndex = i; }
                     }
-                    ship.setFrame(ship.primary.primary);
+                    ship.setPrimary(ship.primary.primary);
                     targets = ship.primary.satellites;
                 }
                 break;
             case 'k':
-                ship.setFrame(ship.target);
+                ship.setPrimary(ship.target);
                 targets = ship.primary.satellites;
                 break;
 
@@ -259,6 +257,9 @@ window.onload = function () {
                 enableApproachTrajectory = !enableApproachTrajectory;
                 centerTarget = !centerTarget;
                 break;
+            case 'n':
+                isZoomTargetOrbit = !isZoomTargetOrbit;
+                break;
         }
 
         timeSpeed = Math.max(timeSpeed, 0);
@@ -267,16 +268,16 @@ window.onload = function () {
         targetIndex %= targets.length;
         ship.setTarget(targets[targetIndex]);
 
-        topCam.changeCenter(centerTarget ? ship.target : ship.primary);
-        frontCam.changeCenter(centerTarget ? ship.target : ship.primary);
-        rightCam.changeCenter(centerTarget ? ship.target : ship.primary);
+        topCam.moveTo(centerTarget ? ship.target : ship.primary);
+        frontCam.moveTo(centerTarget ? ship.target : ship.primary);
+        rightCam.moveTo(centerTarget ? ship.target : ship.primary);
         // fullScreenCam.changeCenter(centerTarget ? ship.target : ship.primary);
 
-        isRequiredAutoZoom = true;
+        topCam.rotateTo(0, -Math.PI / 2, 0);
+        frontCam.rotateTo(0, 0, 0);
+        rightCam.rotateTo(-Math.PI / 2, 0, 0);
 
-        topCam.setRotation(0, -Math.PI / 2, 0);
-        frontCam.setRotation(0, 0, 0);
-        rightCam.setRotation(-Math.PI / 2, 0, 0);
+        keyPressed = event.key;
     });
 
 
@@ -308,12 +309,39 @@ window.onload = function () {
         ship.updateApproachTrajectory();
 
 
-        if (isRequiredAutoZoom) {
-            isRequiredAutoZoom = false;
+        if (keyPressed != null || timeElapsed == 0) {
 
-            topCam.autoZoom(ship, false, enableApproachTrajectory);
-            frontCam.autoZoom(ship, false, enableApproachTrajectory);
-            rightCam.autoZoom(ship, false, enableApproachTrajectory);
+            let furthest = 0;
+
+            if (ship.target.label == ship.primary.label) {
+                furthest = ship.orbit.apoapsis.magnitude()
+
+            } else if (enableApproachTrajectory) {
+                furthest = ship.closestApproach.magnitude();
+
+            } else {
+                if (keyPressed != 'n') {
+                    if (ship.orbit.apoapsis.magnitude() > ship.target.orbit.apoapsis.magnitude()) {
+                        isZoomTargetOrbit = false;
+                    } else {
+                        isZoomTargetOrbit = true;
+                    }
+                }
+
+                if (isZoomTargetOrbit) {
+                    furthest = ship.target.orbit.apoapsis.magnitude()
+                } else {
+                    furthest = ship.orbit.apoapsis.magnitude()
+                }
+            }
+
+            let zoom = Math.log10(furthest) * 10 - 23;
+
+            topCam.zoomTo(zoom, timeElapsed == 0);
+            frontCam.zoomTo(zoom, timeElapsed == 0);
+            rightCam.zoomTo(zoom, timeElapsed == 0);
+
+            keyPressed = null;
         }
 
         topCam.update();

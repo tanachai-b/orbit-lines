@@ -4,7 +4,7 @@
 
 class Camera {
     /**
-     * @param {{ position: Vector; }} center
+     * @param {Celestial | Ship} center
      * @param {number} yaw
      * @param {number} pitch
      * @param {number} roll
@@ -70,34 +70,11 @@ class Camera {
     }
 
     /**
-     * @param {{ position: Vector; }} center
+     * @param {Celestial | Ship} center
      */
-    changeCenter(center) {
+    moveTo(center) {
         this.center = center;
         this.animatePosition = this.position.minus(this.center.position);
-    }
-
-    /**
-     * @param {Ship} ship
-     * @param {boolean} isInitial
-     * @param {boolean} [enableApproachTrajectory]
-     */
-    autoZoom(ship, isInitial, enableApproachTrajectory) {
-        let furthest = 0;
-
-        if (ship.target.label != ship.primary.label) {
-            furthest = Math.max(ship.orbit.apoapsis.magnitude(), ship.target.orbit.apoapsis.magnitude())
-        } else {
-            furthest = ship.orbit.apoapsis.magnitude()
-            console.log(furthest);
-        }
-
-        if (ship.target.label != ship.primary.label && enableApproachTrajectory) {
-            furthest = ship.closestApproach.magnitude();
-        }
-
-        this.destZoom = Math.log10(furthest) * 10 - 23;
-        if (isInitial) this.zoom = this.destZoom;
     }
 
     /**
@@ -105,10 +82,19 @@ class Camera {
      * @param {number} pitch
      * @param {number} roll
      */
-    setRotation(yaw, pitch, roll) {
+    rotateTo(yaw, pitch, roll) {
         this.destYaw = yaw;
         this.destPitch = pitch;
         this.destRoll = roll;
+    }
+
+    /**
+     * @param {number} zoom
+     * @param {boolean} isInitial
+     */
+    zoomTo(zoom, isInitial) {
+        this.destZoom = zoom;
+        if (isInitial) this.zoom = this.destZoom;
     }
 
     update() {
@@ -307,9 +293,9 @@ class Ship {
     }
 
     /**
-     * @param {Celestial} frame
+     * @param {Celestial} primary
      */
-    setFrame(frame) { this.primary = frame; }
+    setPrimary(primary) { this.primary = primary; }
     /**
      * @param {Celestial} target
      */
