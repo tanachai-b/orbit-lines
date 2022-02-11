@@ -1,6 +1,18 @@
+//@ts-check
 'use strict';
 
+
 class Camera {
+    /**
+     * @param {{ position: Vector; }} center
+     * @param {number} yaw
+     * @param {number} pitch
+     * @param {number} roll
+     * @param {number} drawX
+     * @param {number} drawY
+     * @param {number} drawWidth
+     * @param {number} drawHeight
+     */
     constructor(center, yaw, pitch, roll, drawX, drawY, drawWidth, drawHeight) {
         this.position = center.position;
 
@@ -28,23 +40,26 @@ class Camera {
 
 
         Camera.addMouseListener(
-            (event) => {
+            (/** @type {MouseEvent} */ event) => {
                 this.destYaw += event.movementX / 200;
                 this.destPitch -= event.movementY / 200;
 
                 this.destPitch = Math.min(this.destPitch, Math.PI / 2);
                 this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
 
-            }, (event) => {
+            }, (/** @type {WheelEvent} */ event) => {
                 this.destZoom += Math.sign(event.deltaY);
             },
         );
     }
 
+    /**
+     * @param {{ (event: MouseEvent): void; }} onMove
+     * @param {{ (event: WheelEvent): void; }} onWheel
+     */
     static addMouseListener(onMove, onWheel) {
         let mButtons = 0;
 
-        /** @type {HTMLCanvasElement} */
         let canvas = document.getElementById('canvas');
         canvas.addEventListener('mousedown', (event) => { mButtons = event.buttons; });
         canvas.addEventListener('mouseup', (event) => { mButtons = event.buttons; });
@@ -54,15 +69,21 @@ class Camera {
         canvas.addEventListener('wheel', (event) => { onWheel(event); });
     }
 
+    /**
+     * @param {{ position: Vector; }} center
+     */
     changeCenter(center) {
         this.center = center;
         this.animatePosition = this.position.minus(this.center.position);
     }
 
+    /**
+     * @param {Ship} ship
+     * @param {boolean} isInitial
+     * @param {boolean} [enableApproachTrajectory]
+     */
     autoZoom(ship, isInitial, enableApproachTrajectory) {
         let furthest = 0;
-
-        console.log(ship.target.label + ' = ' + ship.primary.label);
 
         if (ship.target.label != ship.primary.label) {
             furthest = Math.max(ship.orbit.apoapsis.magnitude(), ship.target.orbit.apoapsis.magnitude())
@@ -79,6 +100,11 @@ class Camera {
         if (isInitial) this.zoom = this.destZoom;
     }
 
+    /**
+     * @param {number} yaw
+     * @param {number} pitch
+     * @param {number} roll
+     */
     setRotation(yaw, pitch, roll) {
         this.destYaw = yaw;
         this.destPitch = pitch;
@@ -98,6 +124,14 @@ class Camera {
 }
 
 class Celestial {
+    /**
+     * @param {string} label
+     * @param {number} radius
+     * @param {number} mass
+     * @param {Celestial} [primary]
+     * @param {Orbit} [orbit]
+     * @param {number} [trueAnomaly]
+     */
     constructor(
         label,
         radius,
@@ -133,6 +167,9 @@ class Celestial {
         this.satellites = [this];
     }
 
+    /**
+     * @param {number} timeSpeed
+     */
     updateVelocity(timeSpeed) {
         if (this.primary == null) return;
 
@@ -152,8 +189,15 @@ class Celestial {
         this.position = this.orbit.getPosition(this.trueAnomaly).plus(this.primary.position);
     }
 
+    /**
+     * @param {Camera[]} cameras
+     * @param {boolean} isTarget
+     * @param {boolean} isShipPrimary
+     */
     draw(cameras, isTarget, isShipPrimary) {
+
         /** @type {HTMLCanvasElement} */
+        // @ts-ignore
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
@@ -169,7 +213,7 @@ class Celestial {
             ctx.fillStyle = '#888888';
         }
 
-        cameras.forEach((camera) => {
+        cameras.forEach((/** @type {Camera} */ camera) => {
 
             ctx.save();
             ctx.beginPath();
@@ -213,6 +257,14 @@ class Celestial {
 }
 
 class Ship {
+    /**
+     * @param {string} label
+     * @param {number} radius
+     * @param {number} mass
+     * @param {Celestial} primary
+     * @param {Orbit} orbit
+     * @param {number} trueAnomaly
+     */
     constructor(
         label,
         radius,
@@ -254,9 +306,20 @@ class Ship {
         this.period = 0;
     }
 
+    /**
+     * @param {Celestial} frame
+     */
     setFrame(frame) { this.primary = frame; }
+    /**
+     * @param {Celestial} target
+     */
     setTarget(target) { this.target = target; }
 
+    /**
+     * @param {number} prograde
+     * @param {number} radialIn
+     * @param {number} normal
+     */
     thrust(prograde, radialIn, normal) {
 
         let relPosition = this.position.minus(this.primary.position);
@@ -267,11 +330,15 @@ class Ship {
         this.velocity = this.velocity.plus(thrust);
     }
 
+    /**
+     * @param {number} timeSpeed
+     * @param {Celestial[]} celestials
+     */
     updateVelocity(timeSpeed, celestials) {
 
         let acceleration = new Vector(0, 0, 0);
 
-        celestials.forEach((celestial) => {
+        celestials.forEach((/** @type {{ position: { minus: (arg0: any) => any; }; mass: number; }} */ celestial) => {
             let distance = celestial.position.minus(this.position);
             let gravity = distance.over(distance.magnitude() ** 3).times(celestial.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * 10 ** (timeSpeed / 2));
             acceleration = acceleration.plus(gravity);
@@ -280,6 +347,9 @@ class Ship {
         this.velocity = this.velocity.plus(acceleration);
     }
 
+    /**
+     * @param {number} timeSpeed
+     */
     updatePosition(timeSpeed) {
         this.position = this.position.plus(this.velocity.times(10 ** (timeSpeed / 2)));
     }
@@ -445,8 +515,14 @@ class Ship {
         }
     }
 
+    /**
+     * @param {Camera[]} cameras
+     * @param {boolean} enableApproachTrajectory
+     */
     draw(cameras, enableApproachTrajectory) {
+
         /** @type {HTMLCanvasElement} */
+        // @ts-ignore
         let canvas = document.getElementById('canvas');
         let ctx = canvas.getContext('2d');
         ctx.strokeStyle = '#FFFFFF';
@@ -458,7 +534,7 @@ class Ship {
         ctx.fillStyle = '#0088FF';
 
 
-        cameras.forEach((camera) => {
+        cameras.forEach((/** @type {Camera} */ camera) => {
 
             ctx.save();
             ctx.beginPath();
@@ -522,7 +598,7 @@ class Ship {
                 let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
                 let closest1 = closest.plus(this.target.position);
 
-                cameras.forEach((camera) => {
+                cameras.forEach((/** @type {Camera} */ camera) => {
 
                     ctx.save();
                     ctx.beginPath();
@@ -561,7 +637,7 @@ class Ship {
                 let closestShip1 = this.closestShip.plus(this.primary.position);
                 let closestTarget1 = this.closestTarget.plus(this.primary.position);
 
-                cameras.forEach((camera) => {
+                cameras.forEach((/** @type {Camera} */ camera) => {
 
                     ctx.save();
                     ctx.beginPath();
@@ -588,6 +664,13 @@ class Ship {
 }
 
 class Orbit {
+    /**
+     * @param {number} semiMajorAxis
+     * @param {number} eccentricity
+     * @param {number} longAscending
+     * @param {number} inclination
+     * @param {number} argPeriapsis
+     */
     constructor(
         semiMajorAxis,
         eccentricity,
@@ -607,6 +690,10 @@ class Orbit {
         this.descending = this.getPosition(-this.argPeriapsis + Math.PI);
     }
 
+    /**
+     * @param {number} trueAnomaly
+     * @param {{ (position: Vector): void; }} [ifLeftOfPeriapsis]
+     */
     getPosition(trueAnomaly, ifLeftOfPeriapsis) {
         let distance = this.semiMajorAxis * (1 - this.eccentricity ** 2) / (1 + this.eccentricity * Math.cos(trueAnomaly));
         let position = new Vector(distance * Math.cos(trueAnomaly), distance * Math.sin(trueAnomaly), 0);
@@ -630,6 +717,9 @@ class Orbit {
         return position4;
     }
 
+    /**
+     * @param {number} trueAnomaly
+     */
     isLeftOfPeri(trueAnomaly) {
         let distance = this.semiMajorAxis * (1 - this.eccentricity ** 2) / (1 + this.eccentricity * Math.cos(trueAnomaly));
         let maxRight = this.semiMajorAxis * (1 - this.eccentricity ** 2) / (1 + this.eccentricity);
@@ -637,15 +727,23 @@ class Orbit {
         return distance * Math.cos(trueAnomaly) <= maxRight;
     }
 
+    /**
+     * @param {CanvasRenderingContext2D} ctx
+     * @param {Camera[]} cameras
+     * @param {boolean} isDrawNodes
+     * @param {Vector} translation
+     * @param {Vector} [yawPitch]
+     * @param {Vector} [roll]
+     */
     draw(ctx, cameras, isDrawNodes, translation, yawPitch, roll) {
 
         if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
         if (roll == null) { roll = new Vector(0, 1, 0); }
 
 
-        this.positions = [];
+        let positions = [];
         for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 5) {
-            this.getPosition(i, (position) => { this.positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
+            this.getPosition(i, (/** @type {Vector} */ position) => { positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
         }
 
 
@@ -660,6 +758,9 @@ class Orbit {
         if (!this.isLeftOfPeri(-this.argPeriapsis)) lineStart = new Vector(0, 0, 0);
         if (!this.isLeftOfPeri(-this.argPeriapsis + Math.PI)) lineEnd = new Vector(0, 0, 0);
 
+        /**
+         * @type {Vector[]}
+         */
         this.ascDescLine = [];
         for (let i = 0; i <= 100; i++) {
             let position = lineEnd.minus(lineStart).over(100).times(i).plus(lineStart);
@@ -667,7 +768,7 @@ class Orbit {
         }
 
 
-        cameras.forEach((camera) => {
+        cameras.forEach((/** @type {Camera} */ camera) => {
 
             ctx.save();
             ctx.beginPath();
@@ -675,9 +776,9 @@ class Orbit {
             ctx.clip();
 
 
-            for (let i = 0; i < this.positions.length - 1; i++) {
-                let aProj = Complex.projectFrom3d(this.positions[i], camera);
-                let bProj = Complex.projectFrom3d(this.positions[i + 1], camera);
+            for (let i = 0; i < positions.length - 1; i++) {
+                let aProj = Complex.projectFrom3d(positions[i], camera);
+                let bProj = Complex.projectFrom3d(positions[i + 1], camera);
 
                 ctx.beginPath();
                 ctx.moveTo(aProj.x, aProj.y);

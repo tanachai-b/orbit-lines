@@ -1,6 +1,8 @@
+//@ts-check
 'use strict';
 
-function main() {
+
+window.onload = function () {
 
     let sun = new Celestial(
         'Sun',
@@ -197,6 +199,7 @@ function main() {
 
 
     /** @type {HTMLCanvasElement} */
+    // @ts-ignore
     let canvas = document.getElementById('canvas');
 
     let topCam = new Camera(
@@ -298,7 +301,7 @@ function main() {
         celestials.forEach((celestial) => { celestial.updateVelocity(timeSpeed); });
         ship.updateVelocity(timeSpeed, celestials);
 
-        celestials.forEach((celestial) => { celestial.updatePosition(timeSpeed); });
+        celestials.forEach((celestial) => { celestial.updatePosition(); });
         ship.updatePosition(timeSpeed);
         ship.updateOrbit();
         ship.updateRelativeOrbit();
@@ -425,15 +428,25 @@ function main() {
 
     }, 1000 / 60);
 
-    function getChevronText(blody) {
-        return `${(ship.primary.label == blody) ? '>>' : (ship.target.label == blody) ? ' >' : '  '} ${blody}`;
+    /**
+     * @param {string} celestialLabel
+     */
+    function getChevronText(celestialLabel) {
+        return `${(ship.primary.label == celestialLabel) ? '>>' : (ship.target.label == celestialLabel) ? ' >' : '  '} ${celestialLabel}`;
     }
 }
 
+/**
+ * @param {number} number
+ * @param {number} digit
+ */
 function round(number, digit) {
     return (Math.round(number * 10 ** digit) / 10 ** digit).toLocaleString('en-US', { maximumFractionDigits: 9 });
 }
 
+/**
+ * @param {number} time
+ */
 function time(time) {
 
     let second = 1;
@@ -442,18 +455,18 @@ function time(time) {
     let day = hour * 24;
     let year = day * 365;
 
-    let years = `${Math.floor(time / year)}`.padStart(0);
-    let days = `${Math.floor((time % year) / day)}`.padStart(3);
-    let hours = `${Math.floor((time % day) / hour)}`.padStart(2);
-    let minutes = `${Math.floor((time % hour) / minute)}`.padStart(2);
-    let seconds = `${Math.floor((time % minute) / second)}`.padStart(2);
+    let years = Math.floor(time / year);
+    let days = Math.floor((time % year) / day);
+    let hours = Math.floor((time % day) / hour);
+    let minutes = Math.floor((time % hour) / minute);
+    let seconds = Math.floor((time % minute) / second);
 
     let result = '';
-    if (years > 0) result += `${years}y `;
-    if (days > 0) result += `${days}d `;
-    if (hours > 0) result += `${hours}h `;
-    if (minutes > 0) result += `${minutes}m `;
-    if (true) result += `${seconds}s `;
+    if (years > 0) result += `${('' + years).padStart(0)}y `;
+    if (days > 0) result += `${('' + days).padStart(3)}d `;
+    if (hours > 0) result += `${('' + hours).padStart(2)}h `;
+    if (minutes > 0) result += `${('' + minutes).padStart(2)}m `;
+    result += `${('' + seconds).padStart(2)}s `;
 
     return result.trim();
 }

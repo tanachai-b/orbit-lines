@@ -1,6 +1,12 @@
+//@ts-check
 'use strict';
 
+
 class Complex {
+    /**
+     * @param {number} x
+     * @param {number} y
+     */
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -12,14 +18,30 @@ class Complex {
 
     conjugate() { return new Complex(this.x, -this.y); }
 
+    /**
+     * @param {Complex} complex
+     */
     plus(complex) { return new Complex(this.x + complex.x, this.y + complex.y); }
 
+    /**
+     * @param {Complex} complex
+     */
     minus(complex) { return new Complex(this.x - complex.x, this.y - complex.y); }
 
+    /**
+     * @param {Complex} complex
+     */
     times(complex) { return new Complex(this.x * complex.x - this.y * complex.y, this.x * complex.y + this.y * complex.x); }
 
+    /**
+     * @param {Complex} complex
+     */
     over(complex) { return this.times(complex.conjugate()).times(new Complex(1 / complex.magnitude() ** 2, 0)); }
 
+    /**
+     * @param {Vector} point
+     * @param {Camera} camera
+     */
     static projectFrom3d(point, camera) {
 
         let x0 = point.x - camera.position.x;
@@ -40,6 +62,11 @@ class Complex {
         return new Complex(calcX, calcY);
     }
 
+    /**
+     * @param {number} radius
+     * @param {Vector} point
+     * @param {Camera} camera
+     */
     static projectSphere(radius, point, camera) {
 
         let x0 = point.x - camera.position.x;
@@ -81,6 +108,11 @@ class Complex {
 }
 
 class Vector {
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @param {number} z
+     */
     constructor(x, y, z) {
         this.x = x;
         this.y = y;
@@ -93,14 +125,30 @@ class Vector {
 
     conjugate() { return new Vector(this.x, -this.y, -this.x); }
 
+    /**
+     * @param {Vector} vector
+     */
     plus(vector) { return new Vector(this.x + vector.x, this.y + vector.y, this.z + vector.z); }
 
+    /**
+     * @param {Vector} vector
+     */
     minus(vector) { return new Vector(this.x - vector.x, this.y - vector.y, this.z - vector.z); }
 
+    /**
+     * @param {number} number
+     */
     times(number) { return new Vector(this.x * number, this.y * number, this.z * number); }
 
+    /**
+     * @param {number} number
+     */
     over(number) { return new Vector(this.x / number, this.y / number, this.z / number); }
 
+    /**
+     * @param {Vector} pointA
+     * @param {Vector} pointB
+     */
     timesVector(pointA, pointB) {
 
         let yaw = Math.atan2(pointA.y, pointA.x);
@@ -138,6 +186,10 @@ class Vector {
         return new Vector(xx3, yy3, zz3).times(pointA.magnitude());
     }
 
+    /**
+     * @param {Vector} pointA
+     * @param {Vector} pointB
+     */
     overVector(pointA, pointB) {
 
         let yaw = Math.atan2(pointA.y, pointA.x);
