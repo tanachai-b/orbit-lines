@@ -570,20 +570,12 @@ class Ship {
             if (enableApproachTrajectory) {
 
                 let relTraj1s = [];
-                let relTraj2s = [];
 
-                for (let i = 0; i < this.approachTrajectory.length - 1; i += 1) {
-
+                for (let i = 0; i < this.approachTrajectory.length; i++) {
                     let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-                    let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-
                     let relTraj1 = traj1.plus(this.target.position);
-                    let relTraj2 = traj2.plus(this.target.position);
-
                     relTraj1s.push(relTraj1);
-                    relTraj2s.push(relTraj2);
                 }
-
 
                 let closest = this.closestApproach.timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
                 let closest1 = closest.plus(this.target.position);
@@ -598,10 +590,10 @@ class Ship {
 
                     ctx.strokeStyle = '#FF0088';
 
-                    for (let i = 0; i < relTraj1s.length; i++) {
+                    for (let i = 0; i < relTraj1s.length - 1; i++) {
 
                         let trajProj1 = Complex.projectFrom3d(relTraj1s[i], camera);
-                        let trajProj2 = Complex.projectFrom3d(relTraj2s[i], camera);
+                        let trajProj2 = Complex.projectFrom3d(relTraj1s[i + 1], camera);
 
                         ctx.beginPath();
                         ctx.moveTo(trajProj1.x, trajProj1.y);
