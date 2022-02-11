@@ -428,6 +428,7 @@ window.onload = function () {
         leftHUD.push('');
         leftHUD.push(`    Approach Trajectory [h] : ${enableApproachTrajectory ? 'On' : 'Off'}`);
         leftHUD.push(`           Camera Focus [h] : ${centerTarget ? 'Target' : 'Ship'}`);
+        leftHUD.push(`                   Zoom [n] : ${isZoomTargetOrbit ? 'Target\'s Orbit' : 'Ship\'s Orbit'}`);
         leftHUD.push('');
         leftHUD.push('               Prograde [w]');
         leftHUD.push('             Retrograde [s]');
