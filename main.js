@@ -217,11 +217,16 @@ window.onload = function () {
         -Math.PI / 2, 0, 0,
         canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
     );
-    // let fullScreenCam = new Camera(
+    // let orbitCam = new Camera(
     //     ship.primary,
     //     0, 0, 0,
-    //     0, 0, canvas.width, canvas.height
+    //     canvas.width / 2, 0, canvas.width / 2, canvas.height / 2
     // );
+    let orbitCam = new Camera(
+        ship.primary,
+        0, 0, 0,
+        0, 0, canvas.width, canvas.height
+    );
 
 
     let keyPressed = null;
@@ -271,7 +276,7 @@ window.onload = function () {
         topCam.moveTo(centerTarget ? ship.target : ship.primary);
         frontCam.moveTo(centerTarget ? ship.target : ship.primary);
         rightCam.moveTo(centerTarget ? ship.target : ship.primary);
-        // fullScreenCam.changeCenter(centerTarget ? ship.target : ship.primary);
+        orbitCam.moveTo(centerTarget ? ship.target : ship.primary);
 
         topCam.rotateTo(0, -Math.PI / 2, 0);
         frontCam.rotateTo(0, 0, 0);
@@ -347,31 +352,31 @@ window.onload = function () {
         topCam.update();
         frontCam.update();
         rightCam.update();
-        // fullScreenCam.update();
+        orbitCam.update();
 
 
         let ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ship.draw([topCam, frontCam, rightCam], enableApproachTrajectory);
+        ship.draw([orbitCam], enableApproachTrajectory);
         celestials.forEach((celestial) => {
             celestial.draw(
-                [topCam, frontCam, rightCam],
+                [orbitCam],
                 celestial.label == ship.target.label,
                 celestial.label == ship.primary.label
             );
         });
 
 
-        ctx.strokeStyle = '#888888';
-        ctx.beginPath();
-        ctx.moveTo(canvas.width / 2 + 0.5, 0);
-        ctx.lineTo(canvas.width / 2 + 0.5, canvas.height);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, canvas.height / 2 + 0.5);
-        ctx.lineTo(canvas.width, canvas.height / 2 + 0.5);
-        ctx.stroke();
+        // ctx.strokeStyle = '#888888';
+        // ctx.beginPath();
+        // ctx.moveTo(canvas.width / 2 + 0.5, 0);
+        // ctx.lineTo(canvas.width / 2 + 0.5, canvas.height);
+        // ctx.stroke();
+        // ctx.beginPath();
+        // ctx.moveTo(0, canvas.height / 2 + 0.5);
+        // ctx.lineTo(canvas.width, canvas.height / 2 + 0.5);
+        // ctx.stroke();
 
 
         ctx.fillStyle = '#888888';

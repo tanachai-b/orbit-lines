@@ -290,6 +290,9 @@ class Ship {
         this.closestTarget = new Vector(0, 0, 0);
 
         this.period = 0;
+
+        this.relOrbYaw = new Vector(0, 0, 0);
+        this.relOrbRoll = new Vector(0, 0, 0);
     }
 
     /**
@@ -499,6 +502,7 @@ class Ship {
             shipAnomaly += shipAngular;
             targetAnomaly += targetAngular;
         }
+        console.log(this.approachTrajectory.length);
     }
 
     /**
@@ -568,10 +572,10 @@ class Ship {
                 let relTraj1s = [];
                 let relTraj2s = [];
 
-                for (let i = 0; i < this.approachTrajectory.length - 5; i += 5) {
+                for (let i = 0; i < this.approachTrajectory.length - 1; i += 1) {
 
                     let traj1 = this.approachTrajectory[i].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
-                    let traj2 = this.approachTrajectory[i + 5].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
+                    let traj2 = this.approachTrajectory[i + 1].timesVector(this.target.position.minus(this.primary.position).unit(), this.target.velocity.minus(this.primary.velocity));
 
                     let relTraj1 = traj1.plus(this.target.position);
                     let relTraj2 = traj2.plus(this.target.position);
@@ -728,7 +732,7 @@ class Orbit {
 
 
         let positions = [];
-        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 5) {
+        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 1) {
             this.getPosition(i, (/** @type {Vector} */ position) => { positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
         }
 
