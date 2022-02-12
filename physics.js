@@ -152,12 +152,7 @@ class Vector {
     timesVector(pointA, pointB) {
 
         let yaw = Math.atan2(pointA.y, pointA.x);
-
-        let x1 = pointA.x * Math.cos(-yaw) - pointA.y * Math.sin(-yaw);
-        let y1 = pointA.y * Math.cos(-yaw) + pointA.x * Math.sin(-yaw);
-        let z1 = pointA.z;
-
-        let pitch = Math.atan2(z1, x1);
+        let pitch = Math.atan2(pointA.z, Math.hypot(pointA.x, pointA.y));
 
 
         let x3 = pointB.x * Math.cos(-yaw) - pointB.y * Math.sin(-yaw);
@@ -169,6 +164,7 @@ class Vector {
         let z4 = z3 * Math.cos(-pitch) + x3 * Math.sin(-pitch);
 
         let roll = Math.atan2(z4, y4);
+        // let roll = Math.atan2(pointB.z * (pointA.x ** 2 + pointA.y ** 2) - (pointB.x * pointA.x + pointB.y * pointA.y) * pointA.z, (pointB.y * pointA.x - pointB.x * pointA.y) * pointA.magnitude());
 
 
         let xx1 = this.x;
@@ -193,12 +189,7 @@ class Vector {
     overVector(pointA, pointB) {
 
         let yaw = Math.atan2(pointA.y, pointA.x);
-
-        let x1 = pointA.x * Math.cos(-yaw) - pointA.y * Math.sin(-yaw);
-        let y1 = pointA.y * Math.cos(-yaw) + pointA.x * Math.sin(-yaw);
-        let z1 = pointA.z;
-
-        let pitch = Math.atan2(z1, x1);
+        let pitch = Math.atan2(pointA.z, Math.hypot(pointA.x, pointA.y));
 
 
         let x3 = pointB.x * Math.cos(-yaw) - pointB.y * Math.sin(-yaw);
