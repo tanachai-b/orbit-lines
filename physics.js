@@ -44,20 +44,26 @@ class Complex {
      */
     static projectFrom3d(point, camera) {
 
-        let x0 = point.x - camera.position.x;
-        let y0 = point.y - camera.position.y;
-        let z0 = point.z - camera.position.z;
+        // let x0 = point.x - camera.position.x;
+        // let y0 = point.y - camera.position.y;
+        // let z0 = point.z - camera.position.z;
 
-        let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
-        let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
-        let z1 = z0;
+        // let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
+        // let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
+        // let z1 = z0;
 
-        let x2 = x1;
-        let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
-        let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
+        // let x2 = x1;
+        // let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
+        // let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
-        let calcX = (x2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawWidth / 2 + camera.drawX;
-        let calcY = -(z2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
+        // let calcX = (x2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawWidth / 2 + camera.drawX;
+        // let calcY = -(z2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
+
+
+        let point1 = point.minus(camera.position).timesVector(camera.yawPitch, camera.rollx);
+
+        let calcX = (point1.x / Math.max(point1.y + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawWidth / 2 + camera.drawX;
+        let calcY = -(point1.z / Math.max(point1.y + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
 
         return new Complex(calcX, calcY);
     }
@@ -69,41 +75,48 @@ class Complex {
      */
     static projectSphere(radius, point, camera) {
 
-        let x0 = point.x - camera.position.x;
-        let y0 = point.y - camera.position.y;
-        let z0 = point.z - camera.position.z;
+        // let x0 = point.x - camera.position.x;
+        // let y0 = point.y - camera.position.y;
+        // let z0 = point.z - camera.position.z;
 
-        let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
-        let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
-        let z1 = z0;
+        // let x1 = x0 * Math.cos(camera.yaw) - y0 * Math.sin(camera.yaw);
+        // let y1 = y0 * Math.cos(camera.yaw) + x0 * Math.sin(camera.yaw);
+        // let z1 = z0;
 
-        let x2 = x1;
-        let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
-        let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
-
-
-        let dist = y2 + 1000 * 10 ** (camera.zoom / 10);
-        let dir = new Vector(dist, -x2, z2);
-        let hyp = dir.magnitude();
-
-        let newx = radius * Math.sqrt(hyp ** 2 - radius ** 2) / hyp
-        let newy = (hyp ** 2 - radius ** 2) / hyp
-        let newPoint = new Vector(newy, -newx, 0);
+        // let x2 = x1;
+        // let y2 = y1 * Math.cos(camera.pitch) + z1 * Math.sin(camera.pitch);
+        // let z2 = z1 * Math.cos(camera.pitch) - y1 * Math.sin(camera.pitch);
 
 
-        let ress = [];
+        // let depth = y2 + 1000 * 10 ** (camera.zoom / 10);
+        // let center = new Vector(depth, -x2, z2);
+        // let centerDistance = center.magnitude();
+
+
+        let point1 = point.minus(camera.position).timesVector(camera.yawPitch, camera.rollx);
+
+        let depth = point1.y + 1000 * 10 ** (camera.zoom / 10);
+        let center = new Vector(depth, -point1.x, point1.z);
+        let centerDistance = center.magnitude();
+
+        let offsetX = radius * Math.sqrt(centerDistance ** 2 - radius ** 2) / centerDistance
+        let offsetY = (centerDistance ** 2 - radius ** 2) / centerDistance
+        let offset = new Vector(offsetY, -offsetX, 0);
+
+
+        let circle = [];
 
         for (let i = 0; i <= Math.PI * 2; i += Math.PI / 180 * 5) {
-            let upp = newPoint.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(i), Math.sin(i)));
+            let circle1 = offset.timesVector(new Vector(1, 0, 0), new Vector(0, Math.cos(i), Math.sin(i)));
 
-            let res = upp.timesVector(dir.unit(), dir);
+            let circle2 = circle1.timesVector(center.unit(), center);
 
-            let calcX = -res.y / Math.max(res.x, 0) * 1000 + camera.drawWidth / 2 + camera.drawX;
-            let calcY = -res.z / Math.max(res.x, 0) * 1000 + camera.drawHeight / 2 + camera.drawY;
-            ress.push(new Complex(calcX, calcY));
+            let calcX = -circle2.y / Math.max(circle2.x, 0) * 1000 + camera.drawWidth / 2 + camera.drawX;
+            let calcY = -circle2.z / Math.max(circle2.x, 0) * 1000 + camera.drawHeight / 2 + camera.drawY;
+            circle.push(new Complex(calcX, calcY));
         }
 
-        return ress;
+        return circle;
     }
 }
 

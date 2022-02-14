@@ -15,10 +15,31 @@ class Camera {
      */
     constructor(center, yaw, pitch, roll, drawX, drawY, drawWidth, drawHeight) {
         this.position = center.position;
+        this.yawPitch = new Vector(1, 0, 0);
+        this.rollx = new Vector(0, 1, 0);
 
-        this.yaw = yaw;
-        this.pitch = pitch;
-        this.roll = roll;
+        this.yawPitch = this.yawPitch.timesVector(
+            new Vector(Math.cos(yaw), Math.sin(yaw), 0),
+            new Vector(-Math.sin(yaw), Math.cos(yaw), 0)
+        );
+        this.rollx = this.rollx.timesVector(
+            new Vector(Math.cos(yaw), Math.sin(yaw), 0),
+            new Vector(-Math.sin(yaw), Math.cos(yaw), 0)
+        );
+
+        this.yawPitch = this.yawPitch.timesVector(
+            new Vector(1, 0, 0),
+            new Vector(0, Math.cos(pitch), -Math.sin(pitch))
+        );
+        this.rollx = this.rollx.timesVector(
+            new Vector(1, 0, 0),
+            new Vector(0, Math.cos(pitch), -Math.sin(pitch))
+        );
+
+
+        // this.yaw = yaw;
+        // this.pitch = pitch;
+        // this.roll = roll;
 
         this.zoom = 15;
 
@@ -26,9 +47,9 @@ class Camera {
         this.center = center;
         this.animatePosition = new Vector(0, 0, 0);
 
-        this.destYaw = this.yaw;
-        this.destPitch = this.pitch;
-        this.destRoll = this.roll;
+        // this.destYaw = this.yaw;
+        // this.destPitch = this.pitch;
+        // this.destRoll = this.roll;
 
         this.destZoom = this.zoom;
 
@@ -41,11 +62,33 @@ class Camera {
 
         Camera.addMouseListener(
             (/** @type {MouseEvent} */ event) => {
-                this.destYaw += event.movementX / 200;
-                this.destPitch -= event.movementY / 200;
+                // this.destYaw += event.movementX / 200;
+                // this.destPitch -= event.movementY / 200;
 
-                this.destPitch = Math.min(this.destPitch, Math.PI / 2);
-                this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
+                // this.destPitch = Math.min(this.destPitch, Math.PI / 2);
+                // this.destPitch = Math.max(this.destPitch, -Math.PI / 2);
+
+
+
+                this.yawPitch = this.yawPitch.timesVector(
+                    new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
+                    new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
+                );
+                this.rollx = this.rollx.timesVector(
+                    new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
+                    new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
+                );
+
+                this.yawPitch = this.yawPitch.timesVector(
+                    new Vector(1, 0, 0),
+                    new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
+                );
+                this.rollx = this.rollx.timesVector(
+                    new Vector(1, 0, 0),
+                    new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
+                );
+
+                console.log(this.yawPitch);
 
             }, (/** @type {WheelEvent} */ event) => {
                 this.destZoom += Math.sign(event.deltaY);
@@ -101,9 +144,9 @@ class Camera {
         this.animatePosition = this.animatePosition.times(9 / 10);
         this.position = this.center.position.plus(this.animatePosition);
 
-        this.yaw += (this.destYaw - this.yaw) / 10;
-        this.pitch += (this.destPitch - this.pitch) / 10;
-        this.roll += (this.destRoll - this.roll) / 10;
+        // this.yaw += (this.destYaw - this.yaw) / 10;
+        // this.pitch += (this.destPitch - this.pitch) / 10;
+        // this.roll += (this.destRoll - this.roll) / 10;
 
         this.zoom += (this.destZoom - this.zoom) / 10;
     }
@@ -515,7 +558,7 @@ class Ship {
             shipAnomaly += shipAngular;
             targetAnomaly += targetAngular;
         }
-        console.log(this.approachTrajectory.length);
+        // console.log(this.approachTrajectory.length);
     }
 
     /**

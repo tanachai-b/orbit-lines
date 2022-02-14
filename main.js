@@ -224,7 +224,7 @@ window.onload = function () {
     // );
     let orbitCam = new Camera(
         ship.primary,
-        -Math.PI / 6, -Math.PI / 6, 0,
+        -Math.PI / 12, -Math.PI / 12, 0,
         0, 0, canvas.width, canvas.height
     );
 
@@ -330,8 +330,8 @@ window.onload = function () {
             if (ship.target.label == ship.primary.label) {
                 furthest = ship.orbit.apoapsis.magnitude()
 
-            // } else if (enableApproachTrajectory) {
-            //     furthest = ship.closestApproach.magnitude();
+                // } else if (enableApproachTrajectory) {
+                //     furthest = ship.closestApproach.magnitude();
 
             } else {
                 if (keyPressed != 'n') {
@@ -355,6 +355,7 @@ window.onload = function () {
             // frontCam.zoomTo(zoom, timeElapsed == 0);
             // rightCam.zoomTo(zoom, timeElapsed == 0);
             orbitCam.zoomTo(zoom, timeElapsed == 0);
+
 
             keyPressed = null;
         }
