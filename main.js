@@ -202,21 +202,21 @@ window.onload = function () {
     // @ts-ignore
     let canvas = document.getElementById('canvas');
 
-    let topCam = new Camera(
-        ship.primary,
-        0, -Math.PI / 2, 0,
-        0, 0, canvas.width / 2, canvas.height / 2
-    );
-    let frontCam = new Camera(
-        ship.primary,
-        0, 0, 0,
-        0, canvas.height / 2, canvas.width / 2, canvas.height / 2
-    );
-    let rightCam = new Camera(
-        ship.primary,
-        -Math.PI / 2, 0, 0,
-        canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
-    );
+    // let topCam = new Camera(
+    //     ship.primary,
+    //     0, -Math.PI / 2, 0,
+    //     0, 0, canvas.width / 2, canvas.height / 2
+    // );
+    // let frontCam = new Camera(
+    //     ship.primary,
+    //     0, 0, 0,
+    //     0, canvas.height / 2, canvas.width / 2, canvas.height / 2
+    // );
+    // let rightCam = new Camera(
+    //     ship.primary,
+    //     -Math.PI / 2, 0, 0,
+    //     canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2
+    // );
     // let orbitCam = new Camera(
     //     ship.primary,
     //     0, 0, 0,
@@ -224,7 +224,7 @@ window.onload = function () {
     // );
     let orbitCam = new Camera(
         ship.primary,
-        0, 0, 0,
+        -Math.PI / 6, -Math.PI / 6, 0,
         0, 0, canvas.width, canvas.height
     );
 
@@ -258,29 +258,38 @@ window.onload = function () {
             case 'l': targetIndex++; break;
             case ';': targetIndex = 0; break;
 
+            case 'y':
+                centerTarget = !centerTarget;
+                break;
             case 'h':
                 enableApproachTrajectory = !enableApproachTrajectory;
-                centerTarget = !centerTarget;
                 break;
             case 'n':
                 isZoomTargetOrbit = !isZoomTargetOrbit;
                 break;
         }
 
-        timeSpeed = Math.max(timeSpeed, 0);
+        if ([',', '.', '\\'].includes(event.key)) {
+            timeSpeed = Math.max(timeSpeed, 0);
+        }
 
-        targetIndex += targets.length;
-        targetIndex %= targets.length;
-        ship.setTarget(targets[targetIndex]);
+        if (['i', 'k', 'j', 'l', ';', 'y'].includes(event.key)) {
+            targetIndex += targets.length;
+            targetIndex %= targets.length;
+            ship.setTarget(targets[targetIndex]);
 
-        topCam.moveTo(centerTarget ? ship.target : ship.primary);
-        frontCam.moveTo(centerTarget ? ship.target : ship.primary);
-        rightCam.moveTo(centerTarget ? ship.target : ship.primary);
-        orbitCam.moveTo(centerTarget ? ship.target : ship.primary);
+            orbitCam.moveTo(centerTarget ? ship.target : ship.primary);
+        }
 
-        topCam.rotateTo(0, -Math.PI / 2, 0);
-        frontCam.rotateTo(0, 0, 0);
-        rightCam.rotateTo(-Math.PI / 2, 0, 0);
+        // if (['h'].includes(event.key)) {
+        //     topCam.moveTo(centerTarget ? ship.target : ship.primary);
+        //     frontCam.moveTo(centerTarget ? ship.target : ship.primary);
+        //     rightCam.moveTo(centerTarget ? ship.target : ship.primary);
+        // }
+
+        // topCam.rotateTo(0, -Math.PI / 2, 0);
+        // frontCam.rotateTo(0, 0, 0);
+        // rightCam.rotateTo(-Math.PI / 2, 0, 0);
 
         keyPressed = event.key;
     });
@@ -314,15 +323,15 @@ window.onload = function () {
         ship.updateApproachTrajectory();
 
 
-        if (keyPressed != null || timeElapsed == 0) {
+        if (timeElapsed == 0 || ['i', 'k', 'j', 'l', ';', 'n'].includes(keyPressed)) {
 
             let furthest = 0;
 
             if (ship.target.label == ship.primary.label) {
                 furthest = ship.orbit.apoapsis.magnitude()
 
-            } else if (enableApproachTrajectory) {
-                furthest = ship.closestApproach.magnitude();
+            // } else if (enableApproachTrajectory) {
+            //     furthest = ship.closestApproach.magnitude();
 
             } else {
                 if (keyPressed != 'n') {
@@ -340,18 +349,19 @@ window.onload = function () {
                 }
             }
 
-            let zoom = Math.log10(furthest) * 10 - 23;
+            let zoom = Math.log10(furthest) * 10 - 26;
 
-            topCam.zoomTo(zoom, timeElapsed == 0);
-            frontCam.zoomTo(zoom, timeElapsed == 0);
-            rightCam.zoomTo(zoom, timeElapsed == 0);
+            // topCam.zoomTo(zoom, timeElapsed == 0);
+            // frontCam.zoomTo(zoom, timeElapsed == 0);
+            // rightCam.zoomTo(zoom, timeElapsed == 0);
+            orbitCam.zoomTo(zoom, timeElapsed == 0);
 
             keyPressed = null;
         }
 
-        topCam.update();
-        frontCam.update();
-        rightCam.update();
+        // topCam.update();
+        // frontCam.update();
+        // rightCam.update();
         orbitCam.update();
 
 
@@ -431,7 +441,7 @@ window.onload = function () {
         leftHUD.push('');
         leftHUD.push('');
         leftHUD.push('');
-        leftHUD.push(`    Approach Trajectory [h] : ${enableApproachTrajectory ? 'On' : 'Off'}`);
+        leftHUD.push(`    Approach Trajectory [y] : ${enableApproachTrajectory ? 'On' : 'Off'}`);
         leftHUD.push(`           Camera Focus [h] : ${centerTarget ? 'Target' : 'Ship'}`);
         leftHUD.push(`                   Zoom [n] : ${isZoomTargetOrbit ? 'Target\'s Orbit' : 'Ship\'s Orbit'}`);
         leftHUD.push('');

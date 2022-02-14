@@ -237,15 +237,15 @@ class Celestial {
                 ctx.strokeStyle = '#FF8800';
                 ctx.fillStyle = '#FF8800';
                 ctx.globalAlpha = 1;
+
+                this.orbit.draw(ctx, cameras, false, this.primary.position, null, null, 1);
             } else {
                 ctx.strokeStyle = '#FFFFFF';
                 ctx.fillStyle = '#FFFFFF';
                 ctx.globalAlpha = 0.2;
+
+                this.orbit.draw(ctx, cameras, false, this.primary.position, null, null, 5);
             }
-
-            this.orbit.draw(ctx, cameras, false, this.primary.position);
-
-
         }
 
 
@@ -486,11 +486,11 @@ class Ship {
             let targetPosition = targetOrbit.getPosition(targetAnomaly);
 
 
-            let shipSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
+            let shipSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.0 * (2 / shipPosition.magnitude() - 1 / shipOrbit.semiMajorAxis));
             let shipVelocity = shipOrbit.getPosition(shipAnomaly + 0.000001).minus(shipPosition).unit().times(shipSpeed);
             let shipAngular = shipVelocity.overVector(shipPosition.unit(), shipVelocity).y / shipPosition.magnitude();
 
-            let targetSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.6 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
+            let targetSpeed = Math.sqrt(this.primary.mass * 6.6743015 * 10 ** -20 / 60 ** 2 * Math.min(shipPeriod, targetPeriod) ** 2 * 10 ** 17.0 * (2 / targetPosition.magnitude() - 1 / targetOrbit.semiMajorAxis));
             let targetVelocity = targetOrbit.getPosition(targetAnomaly + 0.000001).minus(targetPosition).unit().times(targetSpeed);
             let targetAngular = targetVelocity.overVector(targetPosition.unit(), targetVelocity).y / targetPosition.magnitude();
 
@@ -504,8 +504,8 @@ class Ship {
                 closestDistance = diffPos.magnitude();
 
                 this.closestApproach = diffPos;
-                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) * 10 ** (17.6 / 2));
-                this.approachTime = (this.approachTrajectory.length - 1) / 60 * Math.min(shipPeriod, targetPeriod) * 10 ** (17.6 / 2);
+                this.approachSpeed = targetVelocity.minus(shipVelocity).magnitude() / (Math.min(shipPeriod, targetPeriod) * 10 ** (17.0 / 2));
+                this.approachTime = (this.approachTrajectory.length - 1) / 60 * Math.min(shipPeriod, targetPeriod) * 10 ** (17.0 / 2);
 
                 this.closestShip = shipPosition;
                 this.closestTarget = targetPosition;
@@ -567,9 +567,9 @@ class Ship {
 
 
         if (this.target.orbit != null && this.relativeOrbit != null) {
-            this.relativeOrbit.draw(ctx, cameras, true, this.primary.position, this.relOrbYaw, this.relOrbRoll);
+            this.relativeOrbit.draw(ctx, cameras, true, this.primary.position, this.relOrbYaw, this.relOrbRoll, 1);
         } else {
-            this.orbit.draw(ctx, cameras, true, this.primary.position);
+            this.orbit.draw(ctx, cameras, true, this.primary.position, null, null, 1);
         }
 
 
@@ -729,15 +729,17 @@ class Orbit {
      * @param {Vector} translation
      * @param {Vector} [yawPitch]
      * @param {Vector} [roll]
+     * @param {number} [angle]
      */
-    draw(ctx, cameras, isDrawNodes, translation, yawPitch, roll) {
+    draw(ctx, cameras, isDrawNodes, translation, yawPitch, roll, angle) {
 
         if (yawPitch == null) { yawPitch = new Vector(1, 0, 0); }
         if (roll == null) { roll = new Vector(0, 1, 0); }
+        if (angle == null) { angle = 5; }
 
 
         let positions = [];
-        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 5) {
+        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * angle) {
             this.getPosition(i, (/** @type {Vector} */ position) => { positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
         }
 
