@@ -232,13 +232,26 @@ class Celestial {
         });
 
 
-        if (isTarget && this.orbit != null) {
+        if (this.orbit != null) {
+            if (isTarget && !isShipPrimary) {
+                ctx.strokeStyle = '#FF8800';
+                ctx.fillStyle = '#FF8800';
+                ctx.globalAlpha = 1;
+            } else {
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.globalAlpha = 0.2;
+            }
+
             this.orbit.draw(ctx, cameras, false, this.primary.position);
+
+
         }
 
 
         ctx.strokeStyle = '#FFFFFF';
         ctx.fillStyle = '#FFFFFF';
+        ctx.globalAlpha = 1;
     }
 }
 
@@ -724,7 +737,7 @@ class Orbit {
 
 
         let positions = [];
-        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 1) {
+        for (let i = -Math.PI; i <= Math.PI; i += Math.PI / 180 * 5) {
             this.getPosition(i, (/** @type {Vector} */ position) => { positions.push(position.timesVector(yawPitch, roll).plus(translation)); });
         }
 
