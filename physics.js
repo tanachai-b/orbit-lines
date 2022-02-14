@@ -60,7 +60,7 @@ class Complex {
         // let calcY = -(z2 / Math.max(y2 + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
 
 
-        let point1 = point.minus(camera.position).timesVector(camera.yawPitch, camera.rollx);
+        let point1 = point.minus(camera.position).overVector(camera.yawPitch, camera.rollx);
 
         let calcX = (point1.x / Math.max(point1.y + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawWidth / 2 + camera.drawX;
         let calcY = -(point1.z / Math.max(point1.y + 1000 * 10 ** (camera.zoom / 10), 0)) * 1000 + camera.drawHeight / 2 + camera.drawY;
@@ -93,7 +93,7 @@ class Complex {
         // let centerDistance = center.magnitude();
 
 
-        let point1 = point.minus(camera.position).timesVector(camera.yawPitch, camera.rollx);
+        let point1 = point.minus(camera.position).overVector(camera.yawPitch, camera.rollx);
 
         let depth = point1.y + 1000 * 10 ** (camera.zoom / 10);
         let center = new Vector(depth, -point1.x, point1.z);

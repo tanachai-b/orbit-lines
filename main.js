@@ -224,7 +224,7 @@ window.onload = function () {
     // );
     let orbitCam = new Camera(
         ship.primary,
-        -Math.PI / 12, -Math.PI / 12, 0,
+        Math.PI / 12, Math.PI / 12, 0,
         0, 0, canvas.width, canvas.height
     );
 

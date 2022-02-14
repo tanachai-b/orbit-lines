@@ -73,23 +73,10 @@ class Camera {
 
 
 
-                this.destYawPitch = this.destYawPitch.timesVector(
-                    new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
-                    new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
-                );
-                this.destRollx = this.destRollx.timesVector(
-                    new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
-                    new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
-                );
+                this.destYawPitch = new Vector(Math.cos(event.movementX / 200), -Math.sin(event.movementX / 200), 0).timesVector(this.destYawPitch, this.destRollx);
+                this.destRollx = new Vector(Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0).timesVector(this.destYawPitch, this.destRollx);
+                this.destRollx = new Vector(0, Math.cos(event.movementY / 200), -Math.sin(event.movementY / 200)).timesVector(this.destYawPitch, this.destRollx)
 
-                this.destYawPitch = this.destYawPitch.timesVector(
-                    new Vector(1, 0, 0),
-                    new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
-                );
-                this.destRollx = this.destRollx.timesVector(
-                    new Vector(1, 0, 0),
-                    new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
-                );
 
             }, (/** @type {WheelEvent} */ event) => {
                 this.destZoom += Math.sign(event.deltaY);
@@ -150,9 +137,38 @@ class Camera {
         // this.roll += (this.destRoll - this.roll) / 10;
 
 
-
         this.yawPitch = this.yawPitch.plus(this.destYawPitch.minus(this.yawPitch).over(10)).unit();
         this.rollx = this.rollx.plus(this.destRollx.minus(this.rollx).over(10)).unit();
+
+
+
+        // let dir2d = this.destYawPitch.overVector(this.yawPitch, this.rollx);
+        // let dir1d = dir2d.timesVector(new Vector(1, 0, 0), new Vector(0, dir2d.y, -dir2d.z));
+        // let diffAngle = Math.atan2(dir1d.y, dir1d.x) / 10;
+
+        // let roll0 = this.rollx.overVector(this.yawPitch, this.rollx);
+
+        // // console.log(dir1d);
+        // let yawPitch1 = new Vector(Math.cos(diffAngle), Math.sin(diffAngle), 0).timesVector(new Vector(1, 0, 0), new Vector(0, dir2d.y, dir2d.z)).timesVector(this.yawPitch, this.rollx);
+        // let rollx1 = roll0.timesVector(new Vector(1, 0, 0), new Vector(0, dir2d.y, -dir2d.z))
+        //     .timesVector(new Vector(Math.cos(diffAngle), Math.sin(diffAngle), 0), new Vector(-Math.sin(diffAngle), Math.cos(diffAngle), 0))
+        //     .timesVector(new Vector(1, 0, 0), new Vector(0, dir2d.y, dir2d.z))
+        //     .timesVector(this.yawPitch, this.rollx);
+
+
+        // // let roll2d1 = this.rollx.overVector(this.yawPitch, this.rollx);
+        // // let diffRollAngle1 = Math.atan2(roll2d1.y, roll2d1.x);
+        // // let roll2d = this.destRollx.overVector(this.destYawPitch, this.destRollx);
+        // // let diffRollAngle = Math.atan2(roll2d.y, roll2d.x);
+
+        // // let realdifan = (diffRollAngle - diffRollAngle1)/10
+
+        // // let rollx1 = new Vector(0, Math.cos(realdifan), Math.sin(realdifan)).timesVector(new Vector(1, 0, 0), new Vector(0, roll2d1.y, roll2d1.z)).timesVector(this.yawPitch, this.rollx);
+
+
+        // this.yawPitch = yawPitch1;
+        // this.rollx = rollx1;
+
 
 
         this.zoom += (this.destZoom - this.zoom) / 10;
