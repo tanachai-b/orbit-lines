@@ -357,8 +357,66 @@ window.onload = function () {
             orbitCam.zoomTo(zoom, timeElapsed == 0);
 
 
+
+
+
+
+
+
+            // let argAsc = ship.target.orbit.getPosition(-ship.target.orbit.argPeriapsis).unit();
+            // let argAscX = ship.target.orbit.getPosition(-ship.target.orbit.argPeriapsis + Math.PI / 2);
+            // let normal = new Vector(0, 0, 1).timesVector(argAsc, argAscX).timesVector(orbitCam.destYawPitch, orbitCam.destRollx);
+
+            // orbitCam.destYawPitch = orbitCam.destYawPitch.timesVector(
+            //     new Vector(normal.z, 0, normal.x).unit(),
+            //     new Vector(0, 1, 0)
+            // );
+            // orbitCam.destRollx = orbitCam.destRollx.timesVector(
+            //     new Vector(normal.z, 0, normal.x).unit(),
+            //     new Vector(0, 1, 0)
+            // );
+
+
+            // argAsc = ship.target.orbit.getPosition(-ship.target.orbit.argPeriapsis).unit();
+            // argAscX = ship.target.orbit.getPosition(-ship.target.orbit.argPeriapsis + Math.PI / 2);
+            // normal = new Vector(0, 0, 1).timesVector(argAsc, argAscX).timesVector(orbitCam.destYawPitch, orbitCam.destRollx);
+
+            // orbitCam.destYawPitch = orbitCam.destYawPitch.timesVector(
+            //     new Vector(1, 0, 0),
+            //     new Vector(0, normal.z, normal.y)
+            // );
+            // orbitCam.destRollx = orbitCam.destRollx.timesVector(
+            //     new Vector(1, 0, 0),
+            //     new Vector(0, normal.z, normal.y)
+            // );
+
+            // orbitCam.destYawPitch = orbitCam.destYawPitch.timesVector(
+            //     new Vector(1, 0, 0),
+            //     new Vector(0, Math.cos(Math.PI / 6), Math.sin(Math.PI / 6))
+            // );
+            // orbitCam.destRollx = orbitCam.destRollx.timesVector(
+            //     new Vector(1, 0, 0),
+            //     new Vector(0, Math.cos(Math.PI / 6), Math.sin(Math.PI / 6))
+            // );
+
+
+
+
+
+
+
+
+
             keyPressed = null;
         }
+
+
+
+
+
+
+
+
 
         // topCam.update();
         // frontCam.update();

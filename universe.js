@@ -36,6 +36,9 @@ class Camera {
             new Vector(0, Math.cos(pitch), -Math.sin(pitch))
         );
 
+        this.destYawPitch = this.yawPitch;
+        this.destRollx = this.rollx;
+
 
         // this.yaw = yaw;
         // this.pitch = pitch;
@@ -70,25 +73,23 @@ class Camera {
 
 
 
-                this.yawPitch = this.yawPitch.timesVector(
+                this.destYawPitch = this.destYawPitch.timesVector(
                     new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
                     new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
                 );
-                this.rollx = this.rollx.timesVector(
+                this.destRollx = this.destRollx.timesVector(
                     new Vector(Math.cos(event.movementX / 200), Math.sin(event.movementX / 200), 0),
                     new Vector(-Math.sin(event.movementX / 200), Math.cos(event.movementX / 200), 0)
                 );
 
-                this.yawPitch = this.yawPitch.timesVector(
+                this.destYawPitch = this.destYawPitch.timesVector(
                     new Vector(1, 0, 0),
                     new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
                 );
-                this.rollx = this.rollx.timesVector(
+                this.destRollx = this.destRollx.timesVector(
                     new Vector(1, 0, 0),
                     new Vector(0, Math.cos(event.movementY / 200), Math.sin(event.movementY / 200))
                 );
-
-                console.log(this.yawPitch);
 
             }, (/** @type {WheelEvent} */ event) => {
                 this.destZoom += Math.sign(event.deltaY);
@@ -147,6 +148,12 @@ class Camera {
         // this.yaw += (this.destYaw - this.yaw) / 10;
         // this.pitch += (this.destPitch - this.pitch) / 10;
         // this.roll += (this.destRoll - this.roll) / 10;
+
+
+
+        this.yawPitch = this.yawPitch.plus(this.destYawPitch.minus(this.yawPitch).over(10)).unit();
+        this.rollx = this.rollx.plus(this.destRollx.minus(this.rollx).over(10)).unit();
+
 
         this.zoom += (this.destZoom - this.zoom) / 10;
     }
